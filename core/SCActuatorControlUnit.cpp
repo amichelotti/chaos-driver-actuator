@@ -136,62 +136,8 @@ void ::driver::actuator::SCActuatorControlUnit::unitDefineActionAndDataset() thr
                         DataType::TYPE_STRING,
                         DataType::Output, 256);
 
-  addAttributeToDataSet("dev_state",
-                        "Bit field device state",
-                        DataType::TYPE_INT64,
-                        DataType::Output);
-  
+ 
 
-  /*
-   * JAVASCRIPT INTERFACE
-   */
-  addAttributeToDataSet("on",
-                        "power supply is on",
-                        DataType::TYPE_INT32,
-                        DataType::Output);
-  
-  addAttributeToDataSet("alarm",
-                        "actuator alarm",
-                        DataType::TYPE_INT32,
-                        DataType::Output);
-
-
-  ///
-  addAttributeToDataSet("currentSP",
-                        "The maximum/mininimum current applicable",
-                        DataType::TYPE_DOUBLE,
-                        DataType::Input);
-
-  addAttributeToDataSet("slope_up",
-                        "The gain of the noise of the wave",
-                        DataType::TYPE_DOUBLE,
-                        DataType::Input);
-
-  addAttributeToDataSet("slope_down",
-                        "The gain of the noise of the wave",
-                        DataType::TYPE_DOUBLE,
-                        DataType::Input);
-
-  addAttributeToDataSet("driver_timeout",
-                        "Driver timeout in milliseconds",
-                        DataType::TYPE_INT32,
-                        DataType::Input);
-
-  addAttributeToDataSet("command_timeout",
-                        "General command timeout in microseconds",
-                        DataType::TYPE_INT32,
-                        DataType::Input);
-
-  addAttributeToDataSet("delta_setpoint",
-                        "Delta of the setpoint",
-                        DataType::TYPE_INT32,
-                        DataType::Input);
-
-  addAttributeToDataSet("setpoint_affinity",
-                        "Delta of the setpoint",
-                        DataType::TYPE_INT32,
-                        DataType::Input);
-  //define the custom share, across slow command, variable
 }
 
 void ::driver::actuator::SCActuatorControlUnit::unitDefineCustomAttribute() {
