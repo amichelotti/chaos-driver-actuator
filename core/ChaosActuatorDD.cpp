@@ -24,6 +24,7 @@
 #include <chaos/cu_toolkit/driver_manager/driver/AbstractDriverPlugin.h>
 #include "driver/actuator/core/ChaosActuatorInterface.h"
 
+
 #define ACLAPP		LAPP_ << "[ActuatorDD] "
 #define ACDBG		LDBG_ << "[ActuatorDD] "
 #define ACERR		LERR_ << "[ActuatorDD] "

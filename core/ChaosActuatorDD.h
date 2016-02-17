@@ -24,7 +24,7 @@
 // include your class/functions headers here
 
 #include <chaos/cu_toolkit/driver_manager/driver/AbstractDriverPlugin.h>
-//#include <common/powersupply/powersupply.h>
+#include <common/actuators/core/AbstractActuator.h>
 //this need to be out the nasmespace
 DEFINE_CU_DRIVER_DEFINITION_PROTOTYPE(ChaosActuatorDD)
 namespace cu_driver = chaos::cu::driver_manager::driver;
@@ -40,8 +40,9 @@ namespace chaos {
                 
             protected:
                  boost::mutex io_mux;
-
-                ::common::actuators::AbstractActuator* motor;
+                 ::common::actuators::AbstractActuator* motor;
+                
+                 
             public:
                 ChaosActuatorDD();
                 ~ChaosActuatorDD();

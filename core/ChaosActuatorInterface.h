@@ -92,7 +92,7 @@ namespace chaos {
                  @return 0 if success
                  */
                 
-                int poweron(uint32_t timeo_ms=ACTUATORS_DEFAULT_TIMEOUT);
+                int poweron(uint32_t timeo_ms=ACTUATOR_DEFAULT_TIMEOUT);
                 /**
                  @brief gets the power supply state
                  @param state returns a bit field of PowerSupplyStates
@@ -150,7 +150,7 @@ namespace chaos {
                  @brief put back the step motor to the home position)
                  @return 0 if success or an error code
                  */
-                bool homing(int minutes, std::string& mode);
+                bool homing(int minutes, int mode);
                  /**
                  @brief return the position of the step motor in mm starting from the
                   * home position)
@@ -158,6 +158,8 @@ namespace chaos {
                  @return 0 if success or an error code
                  */
                 int getPosition(readingTypes readingType,double& deltaPosition_mm);
+                
+                int moveRelativeMillimeters(double mm);
             };
         }
     }

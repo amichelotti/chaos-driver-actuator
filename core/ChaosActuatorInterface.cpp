@@ -142,8 +142,8 @@ int ChaosActuatorInterface::stopMotion(){
     WRITE_OP_TIM(OP_STOP_MOTION,0);
 }
 
-bool ChaosActuatorInterface::homing(int minutes, std::string& mode){
-    WRITE_OP_TIM(OP_HOMING,0);
+bool ChaosActuatorInterface::homing(int minutes, int mode){
+    WRITE_OP_INT_TIM(OP_HOMING,mode,0);
 }
 
 int getPosition(::common::actuators::AbstractActuator::readingTypes readingType,double& deltaPosition_mm) {
@@ -153,5 +153,12 @@ uint64_t ChaosActuatorInterface::getFeatures() {
     uint64_t feats=0;
     READ_OP_64INT_TIM_NORET(OP_GET_FEATURE,&feats,0);
     return feats;
+}
+
+
+int ChaosActuatorInterface::moveRelativeMillimeters(double mm) {
+    float param=(float) mm;
+    WRITE_OP_FLOAT_TIM(OP_MOVE_RELATIVE_MM,param,0);
+    
 }
 
