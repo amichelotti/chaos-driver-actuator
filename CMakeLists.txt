@@ -1,0 +1,31 @@
+cmake_minimum_required(VERSION 2.6)
+project(chaos_driver_actuator)
+SET(CHAOS_CUS core/SCActuatorControlUnit.cpp)
+include($ENV{CHAOS_BUNDLE}/tools/project_template/CMakeChaos.txt)
+
+add_definitions(-DCHAOS -DDEBUG)
+FILE(GLOB core_src core/*.cpp)
+SET(DRIVERS_LIB )
+#add_subdirectory(models)
+
+MESSAGE(STATUS "Libraries ${DRIVERS_LIB}")
+#ADD_EXECUTABLE(powersupply_cu test/powersupply_cu.cpp )
+#ADD_EXECUTABLE(powersupply_test test/test_power_supply.cpp test/TestPowerSupply.cpp )
+
+
+IF(BUILD_FORCE_STATIC)
+ADD_LIBRARY(${PROJECT_NAME} STATIC ${core_src})
+SET(CMAKE_EXE_LINKER_FLAGS "-static -Wl,--whole-archive -lchaos_common -Wl,--no-whole-archive")
+ELSE()
+ADD_LIBRARY(${PROJECT_NAME}  SHARED ${core_src})
+ENDIF()
+
+#TARGET_LINK_LIBRARIES(actuators_cu ${DRIVERS_LIB} ${PROJECT_NAME} common_serial_ocem common_powersupply common_serial chaos_cutoolkit chaos_common common_debug common_modbus modbus chaos_cutoolkit chaos_uitoolkit ${FrameworkLib})
+#TARGET_LINK_LIBRARIES(powersupply_test ${DRIVERS_LIB} ${PROJECT_NAME} common_serial_ocem common_powersupply common_test chaos_uitoolkit chaos_cutoolkit chaos_common common_debug common_modbus modbus ${FrameworkLib})
+
+
+#INSTALL_TARGETS(/bin powersupply_cu)
+#INSTALL_TARGETS(/bin powersupply_test)
+#INSTALL_TARGETS(/lib ${PROJECT_NAME})
+
+
