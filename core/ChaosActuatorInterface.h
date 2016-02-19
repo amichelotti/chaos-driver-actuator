@@ -160,6 +160,10 @@ namespace chaos {
                 int getPosition(readingTypes readingType,double& deltaPosition_mm);
                 
                 int moveRelativeMillimeters(double mm);
+                
+                int setTimeout(uint64_t timeo_ms);   
+                int getTimeout(uint64_t* timeo_ms);
+                int setSpeed(double speed_mm_per_sec);
             };
         }
     }

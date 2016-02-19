@@ -156,9 +156,24 @@ uint64_t ChaosActuatorInterface::getFeatures() {
 }
 
 
+
 int ChaosActuatorInterface::moveRelativeMillimeters(double mm) {
     float param=(float) mm;
     WRITE_OP_FLOAT_TIM(OP_MOVE_RELATIVE_MM,param,0);
     
 }
 
+int ChaosActuatorInterface::setTimeout(uint64_t timeo_ms) {
+    WRITE_OP_TIM(OP_SET_TIMEOUT,timeo_ms);
+    
+}
+
+int ChaosActuatorInterface::getTimeout(uint64_t* timeo_ms) {
+    READ_OP_64INT_TIM(OP_GET_TIMEOUT,timeo_ms,0);
+}
+int ChaosActuatorInterface::setSpeed(double speed_mm_per_sec) {
+        float param=(float) speed_mm_per_sec;
+    WRITE_OP_FLOAT_TIM(OP_SET_SPEED,param,0);
+
+    
+}
