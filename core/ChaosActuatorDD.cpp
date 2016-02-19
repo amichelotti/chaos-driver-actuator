@@ -66,38 +66,31 @@ cu_driver::MsgManagmentResultType::MsgManagmentResult ChaosActuatorDD::execOpcod
              ACDBG<< "Deinitializing";
              out->result = motor->deinit();
             break;
-            
-        case OP_SET_SP:
-            ACDBG<< "Set Current SP to:"<<in->fvalue0<<" timeo:"<<in->timeout;
-            out->result = motor->setCurrentSP(in->fvalue0,in->timeout);
-            break;
-            
-       
-            
-        case OP_GET_SP: // get current set point
-            out->result = motor->getCurrentSP(&out->fvalue0,in->timeout);
-            ACDBG<< "Got Current SP "<<out->fvalue0;
-            break;
+        
         case OP_RESET_ALARMS:
-            ACDBG<<"Reset alarms to:"<<in->alarm_mask<<" timeout:"<<in->timeout;
-            out->result = motor->resetAlarms(in->alarm_mask,in->timeout);
+            ACDBG<<"Reset alarms to:"<<in->alarm_mask;
+            out->result = motor->resetAlarms(in->alarm_mask);
             break;
         case OP_GET_ALARMS:
-            out->result = motor->getAlarms(&out->alarm_mask,in->timeout);
-            ACDBG<<"Got alarms to:"<<out->alarm_mask<<" timeout:"<<in->timeout;
-            break;
-            
-        case OP_GET_FEATURE:{
-            uint64_t feat=motor->getFeatures();
-            out->alarm_mask=feat;
-            ACDBG<<"Got Features:"<<feat;
-        }
+            out->result = motor->getAlarms(&out->alarm_mask);
+            ACDBG<<"Got alarms to:"<<out->alarm_mask;
             break;
         
-        case OP_POWERON:
-            ACDBG<<"Poweron "<<" timeout:"<<in->timeout;
-            out->result = motor->poweron(in->timeout);
+        case OP_SET_TIMEOUT:
+            out->result= motor->setTimeout(in->timeout);
+            ACDBG<<"Set timeout to:"<<in->timeout;
             break;
+//        case OP_GET_FEATURE:{
+//            uint64_t feat=motor->getFeatures();
+//            out->alarm_mask=feat;
+//            ACDBG<<"Got Features:"<<feat;
+//        }
+            break;
+        
+//        case OP_POWERON:
+//            ACDBG<<"Poweron "<<" timeout:"<<in->timeout;
+//            out->result = motor->poweron(in->timeout);
+//            break;
         case OP_GET_STATE:{
             std::string desc;
             out->result = motor->getState(&out->ivalue,desc);
@@ -107,26 +100,26 @@ cu_driver::MsgManagmentResultType::MsgManagmentResult ChaosActuatorDD::execOpcod
         }
         case OP_GET_SWVERSION:{
             std::string ver;
-            out->result = motor->getSWVersion(ver,in->timeout);
-            ACDBG<<"Got HW Version:\""<<ver<<"\" timeout:"<<in->timeout;
+            out->result = motor->getSWVersion(ver);
+            ACDBG<<"Got HW Version:\""<<ver;
             strncpy(out->str,ver.c_str(),MAX_STR_SIZE);;
 
             break;
         }
         case OP_GET_HWVERSION:{
             std::string ver;
-            out->result = motor->getHWVersion(ver,in->timeout);
-            ACDBG<<"Got SW Version:\""<<ver<<"\" timeout:"<<in->timeout;
+            out->result = motor->getHWVersion(ver);
+            ACDBG<<"Got SW Version:\""<<ver;
             strncpy(out->str,ver.c_str(),MAX_STR_SIZE);;
 
             break;
         }
                 
-        case OP_GET_ALARM_DESC:
-            out->result = motor->getAlarmDesc(&out->alarm_mask);
-            ACDBG<<"Got Alarm maxk "<<out->alarm_mask;
-
-            break;
+//        case OP_GET_ALARM_DESC:
+//            out->result = motor->getAlarmDesc(&out->alarm_mask);
+//            ACDBG<<"Got Alarm maxk "<<out->alarm_mask;
+//
+//            break;
         default:
             ACERR<<"Opcode not supported:"<<cmd->opcode;
     }
