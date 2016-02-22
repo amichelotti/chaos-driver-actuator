@@ -2,6 +2,7 @@
  *	AbstractActuatorCommand.h
  *	!CHOAS
  *	Created by Claudio Bisegni.
+ *      Adapted for actuators by Alessandro D'Uffizi
  *
  *    	Copyright 2013 INFN, National Institute of Nuclear Physics
  *
@@ -21,7 +22,7 @@
 #ifndef __Actuator__AbstractActuatorCommand__
 #define __Actuator__AbstractActuatorCommand__
 
-#include "ActuatorCostants.h"
+//#include "ActuatorConstants.h"
 
 #include <driver/actuator/core/ChaosActuatorInterface.h>
 

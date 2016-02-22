@@ -44,10 +44,10 @@ void AbstractActuatorCommand::setHandler(c_data::CDataWrapper *data) {
     o_alarms = getAttributeCache()->getRWPtr<uint64_t>(DOMAIN_OUTPUT, "alarms");
 	
 	//get pointer to the output datase variable
-	chaos::cu::driver_manager::driver::DriverAccessor *power_supply_accessor = driverAccessorsErogator->getAccessoInstanceByIndex(0);
-	if(power_supply_accessor != NULL) {
+	chaos::cu::driver_manager::driver::DriverAccessor *actuator_accessor = driverAccessorsErogator->getAccessoInstanceByIndex(0);
+	if(actuator_accessor != NULL) {
 	  if(actuator_drv == NULL){
-	    actuator_drv = new chaos::driver::actuator::ChaosActuatorInterface(power_supply_accessor);
+	    actuator_drv = new chaos::driver::actuator::ChaosActuatorInterface(actuator_accessor);
 	  }
 	}
 }
@@ -67,7 +67,7 @@ void AbstractActuatorCommand::getState(int& current_state, std::string& current_
 	int err = 0;
 	std::string state_str;
 	int32_t i_driver_timeout = getAttributeCache()->getValue<int32_t>(DOMAIN_INPUT, "driver_timeout");
-	if((err=actuator_drv->getState(&current_state, state_str, i_driver_timeout?i_driver_timeout:10000)) != 0) {
+	if((err=actuator_drv->getState(&current_state, state_str)) != 0) {
 		setWorkState(false);
 		CMDCUERR_ << boost::str( boost::format("Error getting the actuator state = %1% ") % err);
 	}
