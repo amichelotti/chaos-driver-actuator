@@ -169,40 +169,28 @@ void ::driver::actuator::SCActuatorControlUnit::unitInit() throw(CException) {
     throw chaos::CException(-2, "Cannot allocate driver resources", __FUNCTION__);
   }
 
-  if (actuator_drv->init() != 0) {
+  if (actuator_drv->init(NULL) != 0) {
     throw chaos::CException(-3, "Cannot initialize actuator " + control_unit_instance, __FUNCTION__);
 
   }
   //check mandatory default values
   /*
    */
-  SCCUAPP << "check mandatory default values";
-  getAttributeRangeValueInfo(std::string("currentSP"), attr_info);
+  /*SCCUAPP << "check mandatory default values";
+  getAttributeRangeValueInfo(std::string("currentSP"), attr_info);*/
 
   // REQUIRE MIN MAX SET IN THE MDS
-  if (attr_info.maxRange.size()) {
+  /*if (attr_info.maxRange.size()) {
     SCCUAPP << "max_current max=" << (max_range = attr_info.maxRange);
         SCCUAPP << "min_current min=" << (min_range = attr_info.minRange);
 
-  }
+  }*/
 
-  // REQUIRE MIN MAX SET IN THE MDS
-  if (attr_info.minRange.size()) {
-        SCCUAPP << "min_current min=" << (min_range = attr_info.minRange);
-
-  }
-
-
-  // retrive the attribute description from the device database
+    // retrive the attribute description from the device database
   /*
    * current_sp_attr_info.reset();
    */
-  if (*asup <= 0) {
-    throw chaos::CException(-4, "No slop up speed set", __FUNCTION__);
-  }
-  if (*asdown <= 0) {
-    throw chaos::CException(-5, "No slop down speed set", __FUNCTION__);
-  }
+ 
 
 
   if (actuator_drv->getState(&state_id, state_str) != 0) {
@@ -216,16 +204,6 @@ void ::driver::actuator::SCActuatorControlUnit::unitInit() throw(CException) {
     SCCUAPP << "hardware found: \"" << device_hw << "\"";
   }
 
-
-/*
-  SCCUAPP << "set default slope value up:" << *asup << " down:" << *asdown;
-  err = actuator_drv->setCurrentRampSpeed(*asup, *asdown);
-  if ((err != chaos::ErrorCode::EC_NO_ERROR) && (err != chaos::ErrorCode::EC_NODE_OPERATION_NOT_SUPPORTED)) {
-    throw chaos::CException(-7, "Error setting slope ", __FUNCTION__);
-    //TODO: check the  boost::bad_format_string: format-string is ill-formed
-    //throw chaos::CException(2, boost::str( boost::format("Error %1 setting the slope in state %2%[%3%]") % err % state_str % state_id), std::string(__FUNCTION__));
-  }
-*/
 }
 
 // Abstract method for the start of the control unit
@@ -371,27 +349,7 @@ bool ::driver::actuator::SCActuatorControlUnit::powerON(bool sync) {
   return result;
 }
 */
-/*
-bool ::driver::actuator::SCActuatorControlUnit::powerStandby(bool sync) {
-  uint64_t cmd_id;
-  bool result = true;
-  std::auto_ptr<CDataWrapper> cmd_pack(new CDataWrapper());
-  cmd_pack->addInt32Value(CMD_PS_MODE_TYPE, 0);
-  //send command
-  submitBatchCommand(CMD_PS_MODE_ALIAS,
-                     cmd_pack.release(),
-                     cmd_id,
-                     0,
-                     50,
-                     SubmissionRuleType::SUBMIT_AND_Stack);
-  if (sync) {
-    //! whait for the current command id to finisch
-    result = whaitOnCommandID(cmd_id);
-  }
-  return result;
-}
 
-*/
 
 /*
 bool ::driver::powersupply::SCActuatorControlUnit::setRampSpeed(double sup,

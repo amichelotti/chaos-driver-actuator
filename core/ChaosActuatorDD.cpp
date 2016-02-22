@@ -36,7 +36,7 @@ DEFAULT_CU_DRIVER_PLUGIN_CONSTRUCTOR_WITH_NS(chaos::driver::actuator, ChaosActua
 	
 }
 
-//default descrutcor
+//default destructor
 ChaosActuatorDD::~ChaosActuatorDD() {
 	
 }
@@ -59,14 +59,53 @@ cu_driver::MsgManagmentResultType::MsgManagmentResult ChaosActuatorDD::execOpcod
     switch(cmd->opcode){
         case OP_INIT:
              ACDBG<< "Initializing";
-             out->result = motor->init();
+             out->result = motor->init(NULL);
             break;
             
         case OP_DEINIT:
              ACDBG<< "Deinitializing";
              out->result = motor->deinit();
             break;
+        case OP_SET_TIMEOUT:
+            out->result= motor->setTimeout(in->timeout);
+            ACDBG<<"Set timeout to:"<<in->timeout;
+            break;
         
+        case OP_GET_TIMEOUT:
+            out->result= motor->getTimeout(&out->alarm_mask);
+            ACDBG<<"Got timeout to: "<<out->alarm_mask;
+            break;
+            
+         case OP_SET_SPEED:
+            out->result= motor->setSpeed(in->fvalue0);
+            ACDBG<<"Set speed to:"<<in->fvalue0;
+            break;
+            
+        case OP_SET_ACCELERATION:
+            out->result= motor->setAcceleration(in->fvalue0);
+            ACDBG<<"Set acceleration to:"<<in->fvalue0;
+            break;
+            
+        case OP_SET_ADDITIVE:
+            motor->setAdditive(in->ivalue);
+            ACDBG<<"Set additive to:"<<in->ivalue;
+            break;
+        
+        case OP_SET_REFERENCE:
+            out->result= motor->setReferenceBase(in->ivalue);
+            ACDBG<<"Set referenceBase to:"<<in->ivalue;
+            break;
+            
+        case OP_SET_MOVEMENT:
+            out->result= motor->setMovement(in->ivalue);
+            ACDBG<<"Set Movement to:"<<in->ivalue;
+            break;    
+            
+        case OP_GET_POSITION:
+            out->result=motor->getPosition((::common::actuators::AbstractActuator::readingTypes)in->ivalue,&out->fvalue0);
+            ACDBG<<"Got Position :"<< out->fvalue0;
+            break; 
+            
         case OP_RESET_ALARMS:
             ACDBG<<"Reset alarms to:"<<in->alarm_mask;
             out->result = motor->resetAlarms(in->alarm_mask);
@@ -75,29 +114,41 @@ cu_driver::MsgManagmentResultType::MsgManagmentResult ChaosActuatorDD::execOpcod
             out->result = motor->getAlarms(&out->alarm_mask);
             ACDBG<<"Got alarms to:"<<out->alarm_mask;
             break;
-        
-        case OP_SET_TIMEOUT:
-            out->result= motor->setTimeout(in->timeout);
-            ACDBG<<"Set timeout to:"<<in->timeout;
-            break;
-//        case OP_GET_FEATURE:{
-//            uint64_t feat=motor->getFeatures();
-//            out->alarm_mask=feat;
-//            ACDBG<<"Got Features:"<<feat;
-//        }
+            
+         case OP_MOVE_RELATIVE_MM:
+            out->result = motor->moveRelativeMillimeters(in->fvalue0);
+            ACDBG<<"Got alarms to:"<<out->alarm_mask;
             break;
         
-//        case OP_POWERON:
-//            ACDBG<<"Poweron "<<" timeout:"<<in->timeout;
-//            out->result = motor->poweron(in->timeout);
-//            break;
-        case OP_GET_STATE:{
+        case OP_MOVE_ABSOLUTE_MM:
+            out->result = motor->moveAbsoluteMillimeters(in->fvalue0);
+            ACDBG<<"Got alarms to:"<<out->alarm_mask;
+            break;
+       
+        case OP_STOP_MOTION:
+            out->result = motor->stopMotion();
+            ACDBG<<"Stop Motion, result:"<< out->result;
+            break;
+        
+        case OP_HOMING:
+            out->result = motor->homing( (::common::actuators::AbstractActuator::homingType)in->ivalue );
+            ACDBG<<"Set homing, homing type:"<< in->ivalue;
+            break;
+            
+            
+        case OP_POWERON:
+            out->result = motor->poweron();
+            ACDBG<<"Set Power on, result:"<< out->result;
+            break;
+            
+         case OP_GET_STATE:{
             std::string desc;
             out->result = motor->getState(&out->ivalue,desc);
             strncpy(out->str,desc.c_str(),MAX_STR_SIZE);
             ACDBG<<"Got State: "<<out->ivalue<<" \""<<desc;
             break;
         }
+            
         case OP_GET_SWVERSION:{
             std::string ver;
             out->result = motor->getSWVersion(ver);
@@ -113,13 +164,16 @@ cu_driver::MsgManagmentResultType::MsgManagmentResult ChaosActuatorDD::execOpcod
             strncpy(out->str,ver.c_str(),MAX_STR_SIZE);;
 
             break;
+        }            
+       
+            
+        case OP_GET_FEATURE:{
+            uint64_t feat=motor->getFeatures();
+            out->alarm_mask=feat;
+            ACDBG<<"Got Features:"<<feat;
         }
-                
-//        case OP_GET_ALARM_DESC:
-//            out->result = motor->getAlarmDesc(&out->alarm_mask);
-//            ACDBG<<"Got Alarm maxk "<<out->alarm_mask;
-//
-//            break;
+            break;
+        
         default:
             ACERR<<"Opcode not supported:"<<cmd->opcode;
     }
