@@ -66,10 +66,7 @@ namespace driver {
 
 			//-----------utility methdo for the restore operation---------
 			bool powerON(bool sync = true);
-			bool powerStandby(bool sync = true);
-			bool setPolarity(int polarity, bool sync = true);
-			bool setCurrent(double current_set_point, bool sync = true);
-			bool setRampSpeed(double sup, double sdown, bool sync = true);
+			
 		public:
 			/*
 			 Construct a new CU with an identifier

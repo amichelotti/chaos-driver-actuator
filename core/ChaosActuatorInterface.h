@@ -36,6 +36,7 @@ namespace chaos {
                 OP_RESET_ALARMS,
                 OP_GET_ALARMS,
                 OP_MOVE_RELATIVE_MM,
+                OP_MOVE_ABSOLUTE_MM,
                 OP_STOP_MOTION,
                 OP_HOMING,
                 OP_POWERON,
@@ -72,26 +73,65 @@ namespace chaos {
                 chaos_driver::DrvMsg message;
                 
             public:
-                ChaosActuatorInterface(chaos_driver::DriverAccessor*_accessor):accessor(_accessor){};
+                ChaosActuatorInterface(chaos_driver::DriverAccessor*_accessor);;
 		chaos_driver::DriverAccessor* accessor;
                 
-                                               
+                     /**
+                 @brief initialize and poweron the power supply
+                 @return 0 if success
+                 */
+                int init(void*);
+                /**
+                 @brief de-initialize the power supply and close the communication
+                 @return 0 if success
+                 */
+                int  deinit();
+                int setTimeout(uint64_t timeo_ms);   
+                int getTimeout(uint64_t* timeo_ms);  
+                
+                int setSpeed(double speed_mm_per_sec);
+                int setAcceleration(double acceleration_mm_per_sec2);
+                void setAdditive(bool isAdditive);
+                int setReferenceBase(int32_t referenceBase);
+                int setMovement(int32_t movement);
+                 /**
+                 @brief return the position of the step motor in mm starting from the
+                  * home position)
+                 @param readingType the position reading method to be used to
+                 @return 0 if success or an error code
+                 */
+                int getPosition(readingTypes readingType,float *deltaPosition_mm);
+                
                 int resetAlarms(uint64_t alrm);
                 
+                
                 /**
-                 @brief get alarms
-                 @param alrm returns a 64 bit field PowerSupplyEvents containing the alarms
-                 @param timeo_ms timeout in ms for the completion of the operation (0 wait indefinitively)
-                 @return 0 if success
+                 @brief returns the bitfield of implemented alarms
+                 @param alarm 64bit bitfield containing the implemented alarms
+                 @return 0 if success or an error code
                  */
                 
                 int getAlarms(uint64_t*alrm);
-                /**
-                 @brief shuts down the power supply, the communication could drop
-                 @param timeo_ms timeout in ms for the completion of the operation (0 wait indefinitively)
-                 @return 0 if success
-                 */
                 
+                
+                int moveRelativeMillimeters(double mm);
+                int moveAbsoluteMillimeters(double mm);
+                  /**
+                 @brief stop the motion of the actuator (if is in movement)
+                 @return 0 if success or an error code
+                 */
+                int stopMotion();
+                
+                /**
+                 @brief put back the step motor to the home position)
+                 @return 0 if success or an error code
+                 */
+                int homing(homingType mode);
+                
+<<<<<<< HEAD
+=======
+                
+>>>>>>> ActuatorDD
                 int poweron(uint32_t timeo_ms=ACTUATORS_DEFAULT_TIMEOUT);
                 /**
                  @brief gets the power supply state
@@ -102,17 +142,7 @@ namespace chaos {
                  */
                 
                 int getState(int* state,std::string& desc);
-                /**
-                 @brief initialize and poweron the power supply
-                 @return 0 if success
-                 */
-                int init();
-                /**
-                 @brief de-initialize the power supply and close the communication
-                 @return 0 if success
-                 */
-                int deinit();
-                
+           
                 /**
                  @brief returns the SW/FW version of the driver/FW
                  @param version returning string
@@ -127,43 +157,23 @@ namespace chaos {
                  */
                 int getHWVersion(std::string& version);
             
-            
-                /**
-                 @brief returns the bitfield of implemented alarms
-                 @param alarm 64bit bitfield containing the implemented alarms
-                 @return 0 if success or an error code
-                 */
-                int getAlarmDesc(uint64_t* alarm);
-               
                 /**
                  @brief return a bitfield of capabilities of the actuator
                  @return the a bit field of capability
                  */
                 uint64_t getFeatures() ;
-                /**
-                 @brief stop the motion of the actuator (if is in movement)
-                 @return 0 if success or an error code
-                 */
-                int stopMotion();
+              
                 
-                /**
-                 @brief put back the step motor to the home position)
-                 @return 0 if success or an error code
-                 */
-                bool homing(int minutes, int mode);
-                 /**
-                 @brief return the position of the step motor in mm starting from the
-                  * home position)
-                 @param readingType the position reading method to be used to
-                 @return 0 if success or an error code
-                 */
-                int getPosition(readingTypes readingType,double& deltaPosition_mm);
                 
-                int moveRelativeMillimeters(double mm);
                 
-                int setTimeout(uint64_t timeo_ms);   
-                int getTimeout(uint64_t* timeo_ms);
-                int setSpeed(double speed_mm_per_sec);
+                
+                
+               
+                
+                
+                
+                
+                
             };
         }
     }
