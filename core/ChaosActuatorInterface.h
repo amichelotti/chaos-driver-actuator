@@ -128,7 +128,14 @@ namespace chaos {
                  */
                 int homing(homingType mode);
                 
+<<<<<<< HEAD
                 
+=======
+<<<<<<< HEAD
+=======
+                
+>>>>>>> ActuatorDD
+>>>>>>> 96d7c39
                 int poweron(uint32_t timeo_ms=ACTUATORS_DEFAULT_TIMEOUT);
                 /**
                  @brief gets the power supply state
