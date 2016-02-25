@@ -1,8 +1,7 @@
 /*
- *	AbstractActuatorCommand.h
+ *	CmdACTDefault.h
  *	!CHOAS
  *	Created by Claudio Bisegni.
- *      Adapted for actuators by Alessandro D'Uffizi
  *
  *    	Copyright 2013 INFN, National Institute of Nuclear Physics
  *
@@ -19,14 +18,11 @@
  *    	limitations under the License.
  */
 
-#ifndef __Actuator__AbstractActuatorCommand__
-#define __Actuator__AbstractActuatorCommand__
+#ifndef __Actuator__CmdACTDefault__
+#define __Actuator__CmdACTDefault__
 
-#include "ActuatorConstants.h"
+#include "AbstractActuatorCommand.h"
 
-#include <driver/actuator/core/ChaosActuatorInterface.h>
-
-#include <chaos/cu_toolkit/control_manager/slow_command/SlowCommand.h>
 
 namespace c_data = chaos::common::data;
 namespace ccc_slow_command = chaos::cu::control_manager::slow_command;
@@ -34,31 +30,40 @@ namespace ccc_slow_command = chaos::cu::control_manager::slow_command;
 namespace driver {
 	namespace actuator {
 		
-		class AbstractActuatorCommand : public ccc_slow_command::SlowCommand {
+		DEFINE_BATCH_COMMAND_CLASS(CmdACTDefault,AbstractActuatorCommand) {
+			uint64_t		sequence_number;
+            uint64_t		last_slow_acq_time;
+			unsigned int	slow_acquisition_idx;
+			
+			uint64_t	*o_dev_state;
+                      ::common::actuators::AbstractActuator::readingTypes   readTyp;
+                        double          *o_position;
+			double		*o_acceleration;
+			
+			int32_t		*o_on;
+			
+			int32_t		*o_alarm;
 
-		public:
-		  AbstractActuatorCommand();
-		  ~AbstractActuatorCommand();
 		protected:
-			char		*o_status;
-			int32_t		*o_status_id;
-			uint64_t	*o_alarms;
-			//reference of the chaos bastraction ofactuator driver
-			chaos::driver::actuator::ChaosActuatorInterface *actuator_drv;
-			
-			//implemented handler
+			// return the implemented handler
 			uint8_t implementedHandler();
-
-			void ccHandler();
 			
-			// set the data fr the command
+			// Start the command execution
 			void setHandler(c_data::CDataWrapper *data);
-
-			void getState(int& current_state, std::string& current_state_str);
 			
-			void setWorkState(bool working);
+			// Aquire the necessary data for the command
+			/*!
+			 The acquire handler has the purpose to get all necessary data need the by CC handler.
+			 \return the mask for the runnign state
+			 */
+			void acquireHandler();
+		public:
+			CmdACTDefault();
+			~CmdACTDefault();
 		};
+		
 	}
 }
 
-#endif /* defined(__Actuator__AbstractActuatorCommand__) */
+
+#endif /* defined(__Actuator__CmdACTDefault__) */

@@ -23,9 +23,9 @@
 #include <boost/lexical_cast.hpp>
 
 //---comands----
-/*
-#include "CmdPSDefault.h"
-#include "CmdPSMode.h"
+
+#include "CmdACTDefault.h"
+/*#include "CmdPSMode.h"
 #include "CmdPSReset.h"
 #include "CmdPSSetSlope.h"
 #include "CmdPSSetCurrent.h"
@@ -75,8 +75,9 @@ PUBLISHABLE_CONTROL_UNIT_IMPLEMENTATION(::driver::actuator::SCActuatorControlUni
  */
 void ::driver::actuator::SCActuatorControlUnit::unitDefineActionAndDataset() throw(chaos::CException) {
   //install all command
+
+  installCommand(BATCH_COMMAND_GET_DESCRIPTION(CmdACTDefault), true);
 /*
-  installCommand(BATCH_COMMAND_GET_DESCRIPTION(CmdPSDefault), true);
   installCommand(BATCH_COMMAND_GET_DESCRIPTION(CmdPSMode));
   installCommand(BATCH_COMMAND_GET_DESCRIPTION(CmdPSReset));
   installCommand(BATCH_COMMAND_GET_DESCRIPTION(CmdPSSetSlope));
@@ -103,6 +104,11 @@ void ::driver::actuator::SCActuatorControlUnit::unitDefineActionAndDataset() thr
                         "movement",
                         DataType::TYPE_INT32,
                         DataType::Input);
+  
+   addAttributeToDataSet("readingType",
+                        "readingType",
+                        DataType::TYPE_INT32,
+                        DataType::Input);
  
   addAttributeToDataSet("referenceBase",
                         "reference base",
@@ -120,6 +126,10 @@ void ::driver::actuator::SCActuatorControlUnit::unitDefineActionAndDataset() thr
                         DataType::TYPE_DOUBLE,
                         DataType::Output);
   
+  addAttributeToDataSet("position_sp",
+                        "position Set Point",
+                        DataType::TYPE_DOUBLE,
+                        DataType::Output);
   
   addAttributeToDataSet("alarms",
                         "Alarms",
@@ -136,7 +146,22 @@ void ::driver::actuator::SCActuatorControlUnit::unitDefineActionAndDataset() thr
                         DataType::TYPE_STRING,
                         DataType::Output, 256);
 
+  
+  
+  addAttributeToDataSet("driver_timeout",
+                        "Driver timeout in milliseconds",
+                        DataType::TYPE_INT32,
+                        DataType::Input);
  
+  addAttributeToDataSet("delta_setpoint",
+                        "Delta of the setpoint",
+                        DataType::TYPE_INT32,
+                        DataType::Input);
+
+  addAttributeToDataSet("setpoint_affinity",
+                        "Delta of the setpoint",
+                        DataType::TYPE_INT32,
+                        DataType::Input);
 
 }
 
@@ -155,9 +180,7 @@ void ::driver::actuator::SCActuatorControlUnit::unitInit() throw(CException) {
   std::string state_str;
   RangeValueInfo attr_info;
 
-  const double *asup = getAttributeCache()->getROPtr<double>(DOMAIN_INPUT, "slope_up");
-  const double *asdown = getAttributeCache()->getROPtr<double>(DOMAIN_INPUT, "slope_down");
-  int32_t *status_id = getAttributeCache()->getRWPtr<int32_t>(DOMAIN_OUTPUT, "status_id");
+   int32_t *status_id = getAttributeCache()->getRWPtr<int32_t>(DOMAIN_OUTPUT, "status_id");
 
 
   chaos::cu::driver_manager::driver::DriverAccessor *actuator_accessor = getAccessoInstanceByIndex(0);

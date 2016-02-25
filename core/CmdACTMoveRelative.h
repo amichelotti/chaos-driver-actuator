@@ -1,8 +1,7 @@
 /*
- *	AbstractActuatorCommand.h
+ *	CmdACTSetCurrent.h
  *	!CHOAS
  *	Created by Claudio Bisegni.
- *      Adapted for actuators by Alessandro D'Uffizi
  *
  *    	Copyright 2013 INFN, National Institute of Nuclear Physics
  *
@@ -19,14 +18,12 @@
  *    	limitations under the License.
  */
 
-#ifndef __Actuator__AbstractActuatorCommand__
-#define __Actuator__AbstractActuatorCommand__
+#ifndef __Actuator__CmdSetCurrent__
+#define __Actuator__CmdSetCurrent__
 
-#include "ActuatorConstants.h"
+#include "AbstractActuatorCommand.h"
 
-#include <driver/actuator/core/ChaosActuatorInterface.h>
-
-#include <chaos/cu_toolkit/control_manager/slow_command/SlowCommand.h>
+#include <bitset>
 
 namespace c_data = chaos::common::data;
 namespace ccc_slow_command = chaos::cu::control_manager::slow_command;
@@ -34,31 +31,40 @@ namespace ccc_slow_command = chaos::cu::control_manager::slow_command;
 namespace driver {
 	namespace actuator {
 		
-		class AbstractActuatorCommand : public ccc_slow_command::SlowCommand {
-
-		public:
-		  AbstractActuatorCommand();
-		  ~AbstractActuatorCommand();
-		protected:
-			char		*o_status;
-			int32_t		*o_status_id;
-			uint64_t	*o_alarms;
-			//reference of the chaos bastraction ofactuator driver
-			chaos::driver::actuator::ChaosActuatorInterface *actuator_drv;
+		//! Command for change the mode of the actuator
+		DEFINE_BATCH_COMMAND_CLASS(CmdACTMoveRelative,AbstractActuatorCommand) {
 			
+			double	*o_position_sp;
+			double	*o_position;
+			double *i_speed;
+			
+			const uint32_t	*i_command_timeout;
+			const uint32_t	*i_delta_setpoint;
+			
+			const uint32_t	*i_setpoint_affinity;
+::common::actuators::AbstractActuator::readingTypes readTyp;
+
+			//is the delta to the setpoint that notify the end of command
+			double affinity_set_delta;
+                         bool slow_acquisition_index;
+		protected:
 			//implemented handler
 			uint8_t implementedHandler();
-
-			void ccHandler();
 			
-			// set the data fr the command
+			// Set handler
 			void setHandler(c_data::CDataWrapper *data);
 
-			void getState(int& current_state, std::string& current_state_str);
+			//custom acquire method
+			void acquireHandler();
+
+			//Correlation and commit phase
+			void ccHandler();
 			
-			void setWorkState(bool working);
+			//manage the timeout
+			bool timeoutHandler();
 		};
 	}
 }
 
-#endif /* defined(__Actuator__AbstractActuatorCommand__) */
+
+#endif /* defined(__Actuator__CmdSetCurrent__) */
