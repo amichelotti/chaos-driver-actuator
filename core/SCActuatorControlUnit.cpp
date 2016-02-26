@@ -25,6 +25,7 @@
 //---comands----
 
 #include "CmdACTDefault.h"
+#include "CmdACTMoveRelative.h"
 /*#include "CmdPSMode.h"
 #include "CmdPSReset.h"
 #include "CmdPSSetSlope.h"
@@ -77,9 +78,9 @@ void ::driver::actuator::SCActuatorControlUnit::unitDefineActionAndDataset() thr
   //install all command
 
   installCommand(BATCH_COMMAND_GET_DESCRIPTION(CmdACTDefault), true);
-/*
-  installCommand(BATCH_COMMAND_GET_DESCRIPTION(CmdPSMode));
-  installCommand(BATCH_COMMAND_GET_DESCRIPTION(CmdPSReset));
+
+  installCommand(BATCH_COMMAND_GET_DESCRIPTION(CmdACTMoveRelative));
+/*  installCommand(BATCH_COMMAND_GET_DESCRIPTION(CmdPSReset));
   installCommand(BATCH_COMMAND_GET_DESCRIPTION(CmdPSSetSlope));
   installCommand(BATCH_COMMAND_GET_DESCRIPTION(CmdPSSetCurrent));
   installCommand(BATCH_COMMAND_GET_DESCRIPTION(CmdSetPolarity));
