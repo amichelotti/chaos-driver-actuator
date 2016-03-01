@@ -250,10 +250,11 @@ void ::driver::actuator::SCActuatorControlUnit::unitDeinit() throw(CException) {
 //! restore the control unit to snapshot
 #define RESTORE_LAPP SCCUAPP << "[RESTORE-" <<getCUID() << "] "
 #define RESTORE_LERR SCCUERR << "[RESTORE-" <<getCUID() << "] "
-/*
-bool ::driver::powersupply::SCActuatorControlUnit::unitRestoreToSnapshot(chaos::cu::control_manager::AbstractSharedDomainCache *const snapshot_cache) throw(chaos::CException) {
-  RESTORE_LAPP << "Check if restore cache has the needed data";
-  //check if in the restore cache we have all information we need
+
+bool ::driver::actuator::SCActuatorControlUnit::unitRestoreToSnapshot(chaos::cu::control_manager::AbstractSharedDomainCache *const snapshot_cache) throw(chaos::CException) {
+//  RESTORE_LAPP << "Check if restore cache has the needed data";
+/* 
+ //check if in the restore cache we have all information we need
   if (!snapshot_cache->getSharedDomain(DOMAIN_OUTPUT).hasAttribute("status_id")) return false;
   if (!snapshot_cache->getSharedDomain(DOMAIN_OUTPUT).hasAttribute("polarity")) return false;
   if (!snapshot_cache->getSharedDomain(DOMAIN_OUTPUT).hasAttribute("current_sp")) return false;
@@ -349,9 +350,11 @@ bool ::driver::powersupply::SCActuatorControlUnit::unitRestoreToSnapshot(chaos::
     RESTORE_LAPP << "[metric] Restore has fault in " << restore_duration_in_ms << " milliseconds";
     throw ex;
   }
-  return true;
-}
 */
+  return false;
+
+}
+
 //-----------utility methdo for the restore operation---------
 /*
 bool ::driver::actuator::SCActuatorControlUnit::powerON(bool sync) {
