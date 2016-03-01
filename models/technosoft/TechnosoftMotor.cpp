@@ -26,8 +26,6 @@
 // initialization format is <ACTUATOR TYPE>:'<INITALISATION PARAMETERS>'
 static const boost::regex power_supply_init_match("(\\w+):(.+)");
 
-// initialisation format for ocem <serialstring>:<slaveid>
-static const boost::regex power_supply_hazemeyer_init_match("([\\w\\/,]+):(\\d+)");
 
 //GET_PLUGIN_CLASS_DEFINITION
 //we need only to define the driver because we don't are makeing a plugin
@@ -65,20 +63,30 @@ void chaos::driver::actuator::C_TechnosoftMotor::driverInit(const char *initPara
     if(regex_match(inputStr, match, power_supply_init_match, boost::match_extra)){
         std::string actuatorType=match[1];
         std::string initString=match[2];
-        if(actuatorType=="TechnosoftActuator"){
-            if(regex_match(initString, match, power_supply_hazemeyer_init_match, boost::match_extra)){
+        if(actuatorType=="TechnosoftActuator")
+        {
                 std::string dev=match[1];
-                std::string slaveid=match[2];
-                PSLAPP<<"Allocating HazemeyerAL250 device \""<<slaveid<<"\""<<" on dev:\""<<dev<<"\""<<std::endl;
-                motor = new ::common::actuators::models::ActuatorTechnoSoft(dev.c_str(),atoi(slaveid.c_str()));
+                std::string slaveid=match[2]; 
+                PSLAPP<<"Allocating technosoft device" <<std::endl;
+                motor = new ::common::actuators::models::ActuatorTechnoSoft();
+                //dev.c_str(),atoi(slaveid.c_str()));
                 if(motor==NULL){
                       throw chaos::CException(1, "Cannot allocate resources for C_TechnosoftMotor", "C_TechnosoftMotor::driverInit");
                 }
+                else 
+                {
+                  if (  motor->init((void*)initString.c_str()) < 0) {
+                      PSLAPP<<"Init Failed" <<std::endl;
+                      throw chaos::CException(1, "Bad parameters for C_TechnosoftMotor","C_TechnosoftMotor::driverInit");
+                  }
+                  else
+                      PSLAPP<<"Init Done" <<std::endl;
+                }
             
-            } else {
-                 throw chaos::CException(1, "Bad parameters for C_TechnosoftMotor <serial port>,<slaveid>,<maxcurr:maxvoltage>", "OcemDD::driverInit");
+           
+            //     
 
-            }
+           
         } else {
             throw chaos::CException(1, "Unsupported driver", "C_TechnosoftMotor::driverInit");
         
@@ -89,7 +97,7 @@ void chaos::driver::actuator::C_TechnosoftMotor::driverInit(const char *initPara
     }
     
     std::string ver;
-    motor->getSWVersion(ver,0);
+    motor->getSWVersion(ver);
     PSLAPP<<"Initialising PowerSupply Driver \""<<ver<<"\""<<std::endl;
     
 }
