@@ -6,7 +6,7 @@ include($ENV{CHAOS_BUNDLE}/tools/project_template/CMakeChaos.txt)
 add_definitions(-DCHAOS -DDEBUG)
 FILE(GLOB core_src core/*.cpp)
 SET(DRIVERS_LIB )
-#add_subdirectory(models)
+add_subdirectory(models)
 
 MESSAGE(STATUS "Libraries ${DRIVERS_LIB}")
 #ADD_EXECUTABLE(powersupply_cu test/powersupply_cu.cpp )
