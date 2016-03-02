@@ -24,13 +24,12 @@
 #define PSLAPP LAPP_ << "[ChaosActuatorDD] "
 #endif
 
-// include your class/functions headers here
-#include "../../../../common/actuators/models/technosoft/ActuatorTechnoSoft.h"
 #include <chaos/cu_toolkit/driver_manager/driver/AbstractDriverPlugin.h>
 
 #include <driver/actuator/core/ChaosActuatorDD.h>
 //this need to be out the namespace
-DEFINE_CU_DRIVER_DEFINITION_PROTOTYPE(C_TechnosoftMotor)
+
+DEFINE_CU_DRIVER_DEFINITION_PROTOTYPE(TechnosoftMotor)
 namespace cu_driver = chaos::cu::driver_manager::driver;
 
 namespace chaos {
@@ -40,13 +39,13 @@ namespace chaos {
             /*
              driver definition
              */
-            class C_TechnosoftMotor: public ChaosActuatorDD{
+            class TechnosoftMotor: public ChaosActuatorDD{
                 //::common::powersupply::TechnosoftMotor *Unit;
-                void driverInit(const char *initParameter) throw(chaos::CException);
+	      void driverInit(const char *initParameter) throw(chaos::CException);
                 
             public:
-                C_TechnosoftMotor();
-                ~C_TechnosoftMotor();
+                TechnosoftMotor();
+                ~TechnosoftMotor();
             };
         }
     }

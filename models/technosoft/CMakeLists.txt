@@ -11,8 +11,14 @@ ADD_LIBRARY(${PROJECT_NAME} STATIC ${src})
 ELSE()
 ADD_LIBRARY(${PROJECT_NAME} SHARED ${src})
 ENDIF()
-TARGET_LINK_LIBRARIES(${PROJECT_NAME} chaos_driver_actuator common_actuators)
+INSTALL(FILES ${src} DESTINATION include/driver/actuators/models/technosoft)
+ADD_EXECUTABLE(test_technosoft_cu test/main.cpp)
+TARGET_LINK_LIBRARIES(${PROJECT_NAME} chaos_driver_actuator common_actuators common_actuators_technosoft)
+TARGET_LINK_LIBRARIES(test_technosoft_cu ${PROJECT_NAME} chaos_driver_actuator common_actuators common_actuators_technosoft chaos_cutoolkit chaos_common ${FrameworkLib})
+FILE(GLOB src *.h)
+
 INSTALL_TARGETS(/lib ${PROJECT_NAME} )
+INSTALL_TARGETS(/bin test_technosoft_cu)
 
 
 

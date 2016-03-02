@@ -26,6 +26,7 @@
 #include <chaos/cu_toolkit/driver_manager/driver/AbstractDriverPlugin.h>
 #include <common/actuators/core/AbstractActuator.h>
 //this need to be out the nasmespace
+
 DEFINE_CU_DRIVER_DEFINITION_PROTOTYPE(ChaosActuatorDD)
 namespace cu_driver = chaos::cu::driver_manager::driver;
 

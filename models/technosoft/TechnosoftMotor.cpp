@@ -1,5 +1,5 @@
 /*
- *	Hazemeyer AL250 Device Driver
+ *	
  *	!CHAOS
  *	Created by Alessandro D'Uffizi
  *
@@ -18,7 +18,7 @@
  *    	limitations under the License.
  */
 #include "TechnosoftMotor.h"
-
+#include <common/actuators/models/technosoft/ActuatorTechnoSoft.h>
 #include <string>
 #include <boost/regex.hpp>
 #include <chaos/cu_toolkit/driver_manager/driver/AbstractDriverPlugin.h>
@@ -30,35 +30,35 @@ static const boost::regex power_supply_init_match("(\\w+):(.+)");
 //GET_PLUGIN_CLASS_DEFINITION
 //we need only to define the driver because we don't are makeing a plugin
 
-OPEN_CU_DRIVER_PLUGIN_CLASS_DEFINITION(C_TechnosoftMotor, 1.0.0, chaos::driver::actuator::C_TechnosoftMotor)
-REGISTER_CU_DRIVER_PLUGIN_CLASS_INIT_ATTRIBUTE(chaos::driver::actuator::C_TechnosoftMotor, http_address/dnsname:port)
+OPEN_CU_DRIVER_PLUGIN_CLASS_DEFINITION(TechnosoftMotor, 1.0.0, chaos::driver::actuator::TechnosoftMotor)
+REGISTER_CU_DRIVER_PLUGIN_CLASS_INIT_ATTRIBUTE(chaos::driver::actuator::TechnosoftMotor, http_address/dnsname:port)
 CLOSE_CU_DRIVER_PLUGIN_CLASS_DEFINITION
 
 //register the two plugin
 OPEN_REGISTER_PLUGIN
-REGISTER_PLUGIN(chaos::driver::actuator::C_TechnosoftMotor)
+REGISTER_PLUGIN(chaos::driver::actuator::TechnosoftMotor)
 CLOSE_REGISTER_PLUGIN
 
 
 //default constructor definition
-chaos::driver::actuator::C_TechnosoftMotor::C_TechnosoftMotor() {
+chaos::driver::actuator::TechnosoftMotor::TechnosoftMotor() {
     motor = NULL;
    
 	
 }
 
 //default descrutcor
-chaos::driver::actuator::C_TechnosoftMotor::~C_TechnosoftMotor() {
+chaos::driver::actuator::TechnosoftMotor::~TechnosoftMotor() {
 	
 }
 
-void chaos::driver::actuator::C_TechnosoftMotor::driverInit(const char *initParameter) throw(chaos::CException) {
+void chaos::driver::actuator::TechnosoftMotor::driverInit(const char *initParameter) throw(chaos::CException) {
     //check the input parameter
 	boost::smatch match;
 	std::string inputStr = initParameter;
 	PSLAPP << "Init  driver initialisation string:\""<<initParameter<<"\""<<std::endl;
     if(motor){
-          throw chaos::CException(1, "Already Initialised", "C_TechnosoftMotor::driverInit");
+          throw chaos::CException(1, "Already Initialised", "TechnosoftMotor::driverInit");
     }
     if(regex_match(inputStr, match, power_supply_init_match, boost::match_extra)){
         std::string actuatorType=match[1];
@@ -71,13 +71,13 @@ void chaos::driver::actuator::C_TechnosoftMotor::driverInit(const char *initPara
                 motor = new ::common::actuators::models::ActuatorTechnoSoft();
                 //dev.c_str(),atoi(slaveid.c_str()));
                 if(motor==NULL){
-                      throw chaos::CException(1, "Cannot allocate resources for C_TechnosoftMotor", "C_TechnosoftMotor::driverInit");
+                      throw chaos::CException(1, "Cannot allocate resources for TechnosoftMotor", "TechnosoftMotor::driverInit");
                 }
                 else 
                 {
                   if (  motor->init((void*)initString.c_str()) < 0) {
                       PSLAPP<<"Init Failed" <<std::endl;
-                      throw chaos::CException(1, "Bad parameters for C_TechnosoftMotor","C_TechnosoftMotor::driverInit");
+                      throw chaos::CException(1, "Bad parameters for TechnosoftMotor","TechnosoftMotor::driverInit");
                   }
                   else
                       PSLAPP<<"Init Done" <<std::endl;
@@ -88,11 +88,11 @@ void chaos::driver::actuator::C_TechnosoftMotor::driverInit(const char *initPara
 
            
         } else {
-            throw chaos::CException(1, "Unsupported driver", "C_TechnosoftMotor::driverInit");
+            throw chaos::CException(1, "Unsupported driver", "TechnosoftMotor::driverInit");
         
         }
     } else {
-            throw chaos::CException(1, "Malformed initialisation string", "C_TechnosoftMotor::driverInit");
+            throw chaos::CException(1, "Malformed initialisation string", "TechnosoftMotor::driverInit");
     
     }
     
