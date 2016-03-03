@@ -26,6 +26,6 @@ ENDIF()
 
 #INSTALL_TARGETS(/bin powersupply_cu)
 #INSTALL_TARGETS(/bin powersupply_test)
-#INSTALL_TARGETS(/lib ${PROJECT_NAME})
+INSTALL_TARGETS(/lib ${PROJECT_NAME})
 
 
