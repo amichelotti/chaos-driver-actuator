@@ -23,9 +23,6 @@
 #include <boost/regex.hpp>
 #include <chaos/cu_toolkit/driver_manager/driver/AbstractDriverPlugin.h>
 
-// initialization format is <ACTUATOR TYPE>:'<INITALISATION PARAMETERS>'
-static const boost::regex power_supply_init_match("(\\w+):(.+)");
-
 
 //GET_PLUGIN_CLASS_DEFINITION
 //we need only to define the driver because we don't are makeing a plugin
@@ -60,45 +57,22 @@ void chaos::driver::actuator::TechnosoftMotor::driverInit(const char *initParame
     if(motor){
           throw chaos::CException(1, "Already Initialised", "TechnosoftMotor::driverInit");
     }
-    if(regex_match(inputStr, match, power_supply_init_match, boost::match_extra)){
-        std::string actuatorType=match[1];
-        std::string initString=match[2];
-        if(actuatorType=="TechnosoftActuator")
-        {
-                std::string dev=match[1];
-                std::string slaveid=match[2]; 
-                PSLAPP<<"Allocating technosoft device" <<std::endl;
-                motor = new ::common::actuators::models::ActuatorTechnoSoft();
-                //dev.c_str(),atoi(slaveid.c_str()));
-                if(motor==NULL){
-                      throw chaos::CException(1, "Cannot allocate resources for TechnosoftMotor", "TechnosoftMotor::driverInit");
-                }
-                else 
-                {
-                  if (  motor->init((void*)initString.c_str()) < 0) {
-                      PSLAPP<<"Init Failed" <<std::endl;
-                      throw chaos::CException(1, "Bad parameters for TechnosoftMotor","TechnosoftMotor::driverInit");
-                  }
-                  else
-                      PSLAPP<<"Init Done" <<std::endl;
-                }
-            
-           
-            //     
-
-           
-        } else {
-            throw chaos::CException(1, "Unsupported driver", "TechnosoftMotor::driverInit");
-        
-        }
-    } else {
-            throw chaos::CException(1, "Malformed initialisation string", "TechnosoftMotor::driverInit");
+    motor = new ::common::actuators::models::ActuatorTechnoSoft();
     
+    if(motor==NULL){
+      throw chaos::CException(1, "Cannot allocate resources for TechnosoftMotor", "TechnosoftMotor::driverInit");
+    } else {
+      if (  motor->init((void*)initParameter) < 0) {
+	PSLAPP<<"Init Failed of:" <<initParameter<<std::endl;
+	throw chaos::CException(1, "Bad parameters for TechnosoftMotor","TechnosoftMotor::driverInit");
+      } else {
+	PSLAPP<<"Init Done" <<std::endl;
+      }
     }
     
     std::string ver;
     motor->getSWVersion(ver);
-    PSLAPP<<"Initialising PowerSupply Driver \""<<ver<<"\""<<std::endl;
+    PSLAPP<<"Initialising Driver \""<<ver<<"\""<<std::endl;
     
 }
 
