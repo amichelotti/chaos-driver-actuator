@@ -107,7 +107,7 @@ PREPARE_OP_RET_INT_TIMEOUT(op,timeout); \
 accessor->send(&message);\
 return ret.result;
 
-int ChaosActuatorInterface::init(void*){
+int ChaosActuatorInterface::init(void*d){
     WRITE_OP_TIM(OP_INIT,0);
 }
 

@@ -73,7 +73,7 @@ namespace chaos {
                 chaos_driver::DrvMsg message;
                 
             public:
-              ChaosActuatorInterface(chaos_driver::DriverAccessor*_accessor){};
+	    ChaosActuatorInterface(chaos_driver::DriverAccessor*_accessor):accessor(_accessor){};
 		chaos_driver::DriverAccessor* accessor;
                 
                      /**

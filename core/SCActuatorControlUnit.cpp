@@ -193,10 +193,14 @@ void ::driver::actuator::SCActuatorControlUnit::unitInit() throw(CException) {
     throw chaos::CException(-2, "Cannot allocate driver resources", __FUNCTION__);
   }
 
+  /*
+
+    // perfomed in driver initialization
   if (actuator_drv->init(NULL) != 0) {
     throw chaos::CException(-3, "Cannot initialize actuator " + control_unit_instance, __FUNCTION__);
 
   }
+  */
   //check mandatory default values
   /*
    */

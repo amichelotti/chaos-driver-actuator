@@ -21,7 +21,7 @@
 #define __driver_TechnosoftMotor_h__
 
 #ifndef PSLAPP
-#define PSLAPP LAPP_ << "[ChaosActuatorDD] "
+#define PSLAPP LAPP_ << "[TechnosoftMotor] "
 #endif
 
 #include <chaos/cu_toolkit/driver_manager/driver/AbstractDriverPlugin.h>
