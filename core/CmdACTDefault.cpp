@@ -55,23 +55,26 @@ uint8_t CmdACTDefault::implementedHandler() {
     // Start the command execution
 void CmdACTDefault::setHandler(c_data::CDataWrapper *data) {
 	
-        int *tmpInt;
+        const int *tmpInt;
+	CMDCU_ << "Set Handler";
 	AbstractActuatorCommand::setHandler(data);
+	CMDCU_ << "After parental Set Handler";
 
 	//set the default scheduling to one seconds
 	setFeatures(features::FeaturesFlagTypes::FF_SET_SCHEDULER_DELAY, (uint64_t)1000000);
 
 	//get channel pointer
-	tmpInt =  getAttributeCache()->getRWPtr<int32_t>(DOMAIN_INPUT, "readingType") ;
+	tmpInt =  getAttributeCache()->getROPtr<int32_t>(DOMAIN_INPUT, "readingType") ;
+	CMDCU_ << "Set Handler readingType is " << *tmpInt;
                 
+	CMDCU_ << "Set Handler before getting RWPtr at position";
         readTyp=(::common::actuators::AbstractActuator::readingTypes) *tmpInt;
 	o_position = getAttributeCache()->getRWPtr<double>(DOMAIN_OUTPUT, "position");
 		
-	o_dev_state = getAttributeCache()->getRWPtr<uint64_t>(DOMAIN_OUTPUT, "dev_state");
-	o_on = getAttributeCache()->getRWPtr<int32_t>(DOMAIN_OUTPUT, "on");
 	
-	o_alarm = getAttributeCache()->getRWPtr<int32_t>(DOMAIN_OUTPUT, "alarm");
+	o_alarm = getAttributeCache()->getRWPtr<int32_t>(DOMAIN_OUTPUT, "alarms");
 
+	CMDCU_ << "ENDING Set Handler";
 	BC_NORMAL_RUNNIG_PROPERTY
         sequence_number = 0;
 	slow_acquisition_idx = 0;
@@ -91,8 +94,6 @@ void CmdACTDefault::acquireHandler() {
 	uint64_t tmp_uint64 = 0;
 	CMDCU_ << "Acquiring data";
 	
-	boost::shared_ptr<SharedCacheLockDomain> r_lock = getAttributeCache()->getLockOnCustomAttributeCache();
-	r_lock->lock();
 	
     if((err = actuator_drv->getPosition(readTyp,&tmp_float))==0){
 		*o_position = (double)tmp_float;
