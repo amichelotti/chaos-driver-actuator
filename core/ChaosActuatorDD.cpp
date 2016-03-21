@@ -50,7 +50,7 @@ void ChaosActuatorDD::driverDeinit() throw(chaos::CException) {
 
 
 cu_driver::MsgManagmentResultType::MsgManagmentResult ChaosActuatorDD::execOpcode(cu_driver::DrvMsgPtr cmd){
-        boost::mutex::scoped_lock lock(io_mux);
+//        boost::mutex::scoped_lock lock(io_mux);
 
     cu_driver::MsgManagmentResultType::MsgManagmentResult result = cu_driver::MsgManagmentResultType::MMR_EXECUTED;
     actuator_iparams_t *in = (actuator_iparams_t *)cmd->inputData;
