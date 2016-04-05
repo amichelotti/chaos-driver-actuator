@@ -56,7 +56,7 @@ void own::CmdACTMoveRelative::setHandler(c_data::CDataWrapper *data) {
 	int err = 0;
 	int state;
         int *tmpInt;
-        float position;
+        double position;
 	std::string state_str;
 	float offset_mm = 0.f;
 	chaos::common::data::RangeValueInfo attr_info;
@@ -187,9 +187,8 @@ void own::CmdACTMoveRelative::setHandler(c_data::CDataWrapper *data) {
 
 void own::CmdACTMoveRelative::acquireHandler() {
 	int err = 0;
-	float tmp_float;
         int state=0;
-        float position;
+        double position;
         
 	std::string state_str;
 	//acquire the current readout

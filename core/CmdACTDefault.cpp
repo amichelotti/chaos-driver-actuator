@@ -89,14 +89,14 @@ void CmdACTDefault::acquireHandler() {
 	string desc;
 	int err = 0;
 	int stato = 0;
-	float tmp_float = 0.0F;
+	double tmp_float = 0.0F;
 	int tmp_uint32 = 0;
 	uint64_t tmp_uint64 = 0;
 	CMDCU_ << "Acquiring data";
 	
 	
     if((err = actuator_drv->getPosition(readTyp,&tmp_float))==0){
-		*o_position = (double)tmp_float;
+		*o_position = tmp_float;
     } else {
 		LOG_AND_TROW(CMDCUERR_, 1, boost::str( boost::format("Error calling driver on get position readout with code %1%") % err));
 	}

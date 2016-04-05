@@ -48,8 +48,8 @@ namespace chaos {
             } ChaosActuatorOpcode;
             
             typedef struct {
-                float fvalue0;
-                float fvalue1;
+                double fvalue0;
+                double fvalue1;
 
                 int ivalue;
                 uint32_t timeout;
@@ -58,8 +58,8 @@ namespace chaos {
             } actuator_iparams_t;
             
             typedef struct {
-                float fvalue0;
-                float fvalue1;
+                double fvalue0;
+                double fvalue1;
                 int ivalue;
                 int result;
                 uint64_t alarm_mask;
@@ -100,7 +100,7 @@ namespace chaos {
                  @param readingType the position reading method to be used to
                  @return 0 if success or an error code
                  */
-                int getPosition(readingTypes readingType,float *deltaPosition_mm);
+                int getPosition(readingTypes readingType,double *deltaPosition_mm);
                 
                 int resetAlarms(uint64_t alrm);
                 
