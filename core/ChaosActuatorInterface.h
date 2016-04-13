@@ -13,6 +13,7 @@
 #include <chaos/cu_toolkit/driver_manager/driver/DriverTypes.h>
 #include <chaos/cu_toolkit/driver_manager/driver/DriverAccessor.h>
 #include <common/actuators/core/AbstractActuator.h>
+#include <common/debug/core/debug.h>
 
 #include <stdint.h>
 namespace chaos_driver=::chaos::cu::driver_manager::driver;
@@ -50,8 +51,9 @@ namespace chaos {
             typedef struct {
                 double fvalue0;
                 double fvalue1;
+		char str[MAX_STR_SIZE];
 
-                int ivalue;
+                int32_t ivalue;
                 uint32_t timeout;
                 uint64_t alarm_mask;
                 
@@ -60,8 +62,8 @@ namespace chaos {
             typedef struct {
                 double fvalue0;
                 double fvalue1;
-                int ivalue;
-                int result;
+                int32_t ivalue;
+                int32_t result;
                 uint64_t alarm_mask;
                 char str[MAX_STR_SIZE];
             } actuator_oparams_t;

@@ -62,18 +62,17 @@ void chaos::driver::actuator::TechnosoftMotor::driverInit(const char *initParame
     if(motor==NULL){
       throw chaos::CException(1, "Cannot allocate resources for TechnosoftMotor", "TechnosoftMotor::driverInit");
     } else {
-      int ret;
+   /*   int ret;
       if (  (ret=motor->init((void*)initParameter)) < 0) {
 	PSLAPP<<"Init Failed of:" <<initParameter<<" ret:"<<ret<<std::endl;
 	throw chaos::CException(1, "Bad parameters for TechnosoftMotor","TechnosoftMotor::driverInit");
       } else {
 	PSLAPP<<"Init Done" <<std::endl;
       }
+    */
     }
     
-    std::string ver;
-    motor->getSWVersion(ver);
-    PSLAPP<<"Initialising Driver \""<<ver<<"\""<<std::endl;
+    //rett= motor->getPosition((::common::actuators::AbstractActuator::readingTypes)1,&mmpos);
     
 }
 

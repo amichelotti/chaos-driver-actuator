@@ -58,8 +58,8 @@ cu_driver::MsgManagmentResultType::MsgManagmentResult ChaosActuatorDD::execOpcod
 
     switch(cmd->opcode){
         case OP_INIT:
-             ACDBG<< "Initializing";
-             out->result = motor->init(NULL);
+             ACDBG<< "Initializing ALEDEBUG";
+             out->result = motor->init(in->str);
             break;
             
         case OP_DEINIT:
@@ -117,12 +117,12 @@ cu_driver::MsgManagmentResultType::MsgManagmentResult ChaosActuatorDD::execOpcod
             
          case OP_MOVE_RELATIVE_MM:
             out->result = motor->moveRelativeMillimeters(in->fvalue0);
-            ACDBG<<"Got alarms to:"<<out->alarm_mask;
+            ACDBG<<"Move relative result:"<<out->result;
             break;
         
         case OP_MOVE_ABSOLUTE_MM:
             out->result = motor->moveAbsoluteMillimeters(in->fvalue0);
-            ACDBG<<"Got alarms to:"<<out->alarm_mask;
+            ACDBG<<"Moved Absolute result:"<<out->result;
             break;
        
         case OP_STOP_MOTION:

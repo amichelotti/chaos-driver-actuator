@@ -21,7 +21,7 @@
 #include "SCActuatorControlUnit.h"
 #include <boost/format.hpp>
 #include <boost/lexical_cast.hpp>
-
+#include <common/debug/core/debug.h>
 //---comands----
 
 #include "CmdACTDefault.h"
@@ -147,6 +147,10 @@ void ::driver::actuator::SCActuatorControlUnit::unitDefineActionAndDataset() thr
                         DataType::TYPE_STRING,
                         DataType::Output, 256);
 
+addAttributeToDataSet("InitString",
+                        "InitString",
+                        DataType::TYPE_STRING,
+                        DataType::Input, 256);
   
   
   addAttributeToDataSet("driver_timeout",
@@ -172,7 +176,7 @@ void ::driver::actuator::SCActuatorControlUnit::unitDefineCustomAttribute() {
 
 // Abstract method for the initialization of the control unit
 void ::driver::actuator::SCActuatorControlUnit::unitInit() throw(CException) {
-  SCCUAPP << "Starting restore";
+  SCCUAPP << "Starting unitInit";
 
   int err = 0;
   int state_id;
@@ -192,15 +196,22 @@ void ::driver::actuator::SCActuatorControlUnit::unitInit() throw(CException) {
   if (actuator_drv == NULL) {
     throw chaos::CException(-2, "Cannot allocate driver resources", __FUNCTION__);
   }
+  std::string *initString=(std::string*)getAttributeCache()->getROPtr<std::string>(DOMAIN_INPUT, "InitString") ;
+  if (initString->c_str() == NULL)
+  {
+	initString=new std::string();
+	initString->assign("/dev/ttyr1c,myslit,/home/chaos/chaos-distrib/etc/common_actuators_technosoft/1setup001.t.zip,14");
+	DPRINT("assigned by default");
+  }
 
-  /*
+  
 
     // perfomed in driver initialization
-  if (actuator_drv->init(NULL) != 0) {
+  if (actuator_drv->init((void*)initString->c_str()) != 0) {
     throw chaos::CException(-3, "Cannot initialize actuator " + control_unit_instance, __FUNCTION__);
 
   }
-  */
+  
   //check mandatory default values
   /*
    */
@@ -219,11 +230,12 @@ void ::driver::actuator::SCActuatorControlUnit::unitInit() throw(CException) {
    * current_sp_attr_info.reset();
    */
  
-
+  //actuator_drv->moveRelativeMillimeters(3.3);
 
   if (actuator_drv->getState(&state_id, state_str) != 0) {
     throw chaos::CException(-6, "Error getting the state of the actuator, possibily off", __FUNCTION__);
   }
+  
   *status_id = state_id;
   //notify change on status_id cached attribute
   getAttributeCache()->setOutputDomainAsChanged();

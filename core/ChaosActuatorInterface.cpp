@@ -8,6 +8,7 @@
 #include "ChaosActuatorInterface.h"
 using namespace chaos::driver::actuator;
 
+
 #define PREPARE_OP_RET_INT_TIMEOUT(op,tim) \
 actuator_oparams_t ret;\
 actuator_iparams_t idata;\
@@ -77,6 +78,14 @@ accessor->send(&message);\
 pstring = ret.str;\
 return ret.result;
 
+
+#define WRITE_OP_STRING_TIM(op,pstring,timeout) \
+PREPARE_OP_RET_INT_TIMEOUT(op,timeout); \
+strncpy(idata.str,(char*)pstring,MAX_STR_SIZE); \
+accessor->send(&message);\
+return ret.result;
+
+
 #define READ_OP_INT_TIM(op,pival,timeout) \
 PREPARE_OP_RET_INT_TIMEOUT(op,timeout); \
 accessor->send(&message);\
@@ -107,8 +116,15 @@ PREPARE_OP_RET_INT_TIMEOUT(op,timeout); \
 accessor->send(&message);\
 return ret.result;
 
+#define WRITE_OP_BASE(op) \
+PREPARE_OP_BASE(op); \
+accessor->send(&message);\
+return 0;
+
 int ChaosActuatorInterface::init(void*d){
-    WRITE_OP_TIM(OP_INIT,0);
+    DPRINT("ALEDEBUG INTERFACE INIT %x ",d);
+    DPRINT("ALEDEBUG INTERFACE INIT as char  %s ",(char*)d);
+    WRITE_OP_STRING_TIM(OP_INIT,(char*)d,0);
 }
 
 int ChaosActuatorInterface::deinit(){
@@ -188,7 +204,8 @@ int ChaosActuatorInterface::poweron(uint32_t timeo_ms){
 }
 
 int ChaosActuatorInterface::getState(int* state,std::string& desc){
-    READ_OP_INT_STRING_TIM(OP_GET_STATE, state, desc,0);
+    //READ_OP_INT_STRING_TIM(OP_GET_STATE, state, desc,0);
+    WRITE_OP_TIM(OP_GET_STATE,0);
 
 }
 
