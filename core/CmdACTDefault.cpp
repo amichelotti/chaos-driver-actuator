@@ -89,7 +89,7 @@ void CmdACTDefault::acquireHandler() {
 	string desc;
 	int err = 0;
 	int stato = 0;
-	double tmp_float = 0.0F;
+	float tmp_float = 0.0F;
 	int tmp_uint32 = 0;
 	uint64_t tmp_uint64 = 0;
 	CMDCU_ << "Acquiring data";
@@ -101,7 +101,7 @@ void CmdACTDefault::acquireHandler() {
 		LOG_AND_TROW(CMDCUERR_, 1, boost::str( boost::format("Error calling driver on get position readout with code %1%") % err));
 	}
 
-		
+	tmp_uint64=0;		
 	if((err = actuator_drv->getAlarms(&tmp_uint64)) == 0){
 		*o_alarms = tmp_uint64;
 	} else {
@@ -124,16 +124,10 @@ void CmdACTDefault::acquireHandler() {
     CMDCU_ << "alarms ->" << *o_alarms;
     CMDCU_ << "status_id -> " << *o_status_id;
 	
-	/*
-	 * Javascript Interface
-	 */
-//	*o_on = (*o_status_id & common::actuator::POWER_SUPPLY_STATE_ON) ? 1:0;
-	*o_alarm = (*o_alarms!=0)?1:0;
+//	*o_alarm = (*o_alarms!=0)?1:0;
 
       
     CMDCU_ << "status. -> " << o_status;
-    CMDCU_ << "dev_state -> " << *o_dev_state;
-    CMDCU_ << "sequence_number -> " << sequence_number;
 	
 	//force output dataset as changed
 	getAttributeCache()->setOutputDomainAsChanged();

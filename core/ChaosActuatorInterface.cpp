@@ -166,7 +166,7 @@ int ChaosActuatorInterface::setMovement(int32_t movement)
 {
     WRITE_OP_INT_TIM(OP_SET_MOVEMENT,movement,0);
 }
-int ChaosActuatorInterface::getPosition(::common::actuators::AbstractActuator::readingTypes readingType,double *deltaPosition_mm) {
+int ChaosActuatorInterface::getPosition(::common::actuators::AbstractActuator::readingTypes readingType,float *deltaPosition_mm) {
     READ_OP_FLOAT_PARAM_INT(OP_GET_POSITION,readingType,deltaPosition_mm,0);
 }
 

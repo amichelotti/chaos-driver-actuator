@@ -58,7 +58,7 @@ cu_driver::MsgManagmentResultType::MsgManagmentResult ChaosActuatorDD::execOpcod
 
     switch(cmd->opcode){
         case OP_INIT:
-             ACDBG<< "Initializing ALEDEBUG";
+             ACDBG<< "Initializing";
              out->result = motor->init(in->str);
             break;
             
