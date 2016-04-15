@@ -56,7 +56,7 @@ void own::CmdACTMoveRelative::setHandler(c_data::CDataWrapper *data) {
 	int err = 0;
 	int state;
         int *tmpInt;
-        float position;
+        double position;
 	std::string state_str;
 	float offset_mm = 0.f;
 	chaos::common::data::RangeValueInfo attr_info;
@@ -188,7 +188,8 @@ void own::CmdACTMoveRelative::setHandler(c_data::CDataWrapper *data) {
 void own::CmdACTMoveRelative::acquireHandler() {
 	int err = 0;
         int state=0;
-        float position;
+        double position;
+	std::string desc;
         
 	std::string state_str;
 	//acquire the current readout
@@ -211,7 +212,7 @@ void own::CmdACTMoveRelative::acquireHandler() {
 	
 	} else {
 	    SCLDBG_ << "fetch alarms readout";
-		if((err = actuator_drv->getAlarms(o_alarms))){
+		if((err = actuator_drv->getAlarms(o_alarms,desc))){
 			LOG_AND_TROW(SCLERR_, 2, boost::str(boost::format("Error fetching alarms readout with code %1%") % err));
 		}
 	}

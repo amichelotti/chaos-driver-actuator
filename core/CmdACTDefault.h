@@ -38,6 +38,7 @@ namespace driver {
 			uint64_t	*o_dev_state;
                       ::common::actuators::AbstractActuator::readingTypes   readTyp;
                         double          *o_position;
+                        double          *o_positionEnc;
 			double		*o_acceleration;
 			
 			int32_t		*o_on;

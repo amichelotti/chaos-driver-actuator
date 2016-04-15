@@ -83,15 +83,16 @@ void CmdACTDefault::setHandler(c_data::CDataWrapper *data) {
     // Aquire the necessary data for the command
 /*!
  The acquire handler has the purpose to get all necessary data need the by CC handler.
- \return the mask for the runnign state
+ \return the mask for the running state
  */
 void CmdACTDefault::acquireHandler() {
-	string desc;
+	std::string desc;
 	int err = 0;
-	int stato = 0;
-	float tmp_float = 0.0F;
+	int32_t stato = -1;
+	double tmp_float = 0.0F;
 	int tmp_uint32 = 0;
-	uint64_t tmp_uint64 = 0;
+	uint64_t tmp_uint64 = -1;
+        double EncRead;
 	CMDCU_ << "Acquiring data";
 	
 	
@@ -100,9 +101,15 @@ void CmdACTDefault::acquireHandler() {
     } else {
 		LOG_AND_TROW(CMDCUERR_, 1, boost::str( boost::format("Error calling driver on get position readout with code %1%") % err));
 	}
-
+    if((err = actuator_drv->getPosition(::common::actuators::AbstractActuator::READ_ENCODER,&tmp_float))==0){
+		EncRead = tmp_float;
+    } else {
+		LOG_AND_TROW(CMDCUERR_, 1, boost::str( boost::format("Error calling driver on get position readout with code %1%") % err));
+	}
+        
+        
 	tmp_uint64=0;		
-	if((err = actuator_drv->getAlarms(&tmp_uint64)) == 0){
+	if((err = actuator_drv->getAlarms(&tmp_uint64,desc)) == 0){
 		*o_alarms = tmp_uint64;
 	} else {
 		LOG_AND_TROW(CMDCUERR_, 2, boost::str( boost::format("Error calling driver on get alarms readout with code %1%") % err));
@@ -115,19 +122,20 @@ void CmdACTDefault::acquireHandler() {
 		//the new pointer need to be got (set new size can reallocate the pointer)
 		o_status = getAttributeCache()->getRWPtr<char>(DOMAIN_OUTPUT, "status");
 		//copy up to 255 and put the termination character
-		strncpy(o_status, desc.c_str(), 256);
+		//strncpy(o_status, desc.c_str(), 256);
 	} else {
 		LOG_AND_TROW(CMDCUERR_, 3, boost::str( boost::format("Error calling driver on get state readout with code %1%") % err));
 	}
 
     CMDCU_ << "position ->" << *o_position;
+    CMDCU_ << "position by encoder ->" << EncRead;
     CMDCU_ << "alarms ->" << *o_alarms;
     CMDCU_ << "status_id -> " << *o_status_id;
+    CMDCU_ << "status. -> " << o_status;
 	
 //	*o_alarm = (*o_alarms!=0)?1:0;
 
       
-    CMDCU_ << "status. -> " << o_status;
 	
 	//force output dataset as changed
 	getAttributeCache()->setOutputDomainAsChanged();

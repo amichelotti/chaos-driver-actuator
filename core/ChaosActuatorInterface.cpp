@@ -49,7 +49,7 @@ return ret.result;
 #define WRITE_OP_FLOAT_TIM(op,fval,timeout) \
 PREPARE_OP_RET_INT_TIMEOUT(op,timeout); \
 idata.fvalue0=fval;\
- accessor->send(&message,100);			\
+accessor->send(&message,100);	\
 return ret.result;
 
 #define WRITE_OP_2FLOAT_TIM(op,fval0,fval1,timeout) \
@@ -166,7 +166,7 @@ int ChaosActuatorInterface::setMovement(int32_t movement)
 {
     WRITE_OP_INT_TIM(OP_SET_MOVEMENT,movement,0);
 }
-int ChaosActuatorInterface::getPosition(::common::actuators::AbstractActuator::readingTypes readingType,float *deltaPosition_mm) {
+int ChaosActuatorInterface::getPosition(::common::actuators::AbstractActuator::readingTypes readingType,double *deltaPosition_mm) {
     READ_OP_FLOAT_PARAM_INT(OP_GET_POSITION,readingType,deltaPosition_mm,0);
 }
 
@@ -174,7 +174,7 @@ int ChaosActuatorInterface::resetAlarms(uint64_t alrm){
     WRITE_OP_64INT_TIM(OP_RESET_ALARMS,alrm,0);
 }
 
-int ChaosActuatorInterface::getAlarms(uint64_t*alrm){
+int ChaosActuatorInterface::getAlarms(uint64_t*alrm,std::string& desc){
     READ_OP_64INT_TIM(OP_GET_ALARMS,alrm,0);
 }
 
@@ -204,8 +204,8 @@ int ChaosActuatorInterface::poweron(uint32_t timeo_ms){
 }
 
 int ChaosActuatorInterface::getState(int* state,std::string& desc){
-    //READ_OP_INT_STRING_TIM(OP_GET_STATE, state, desc,0);
-    WRITE_OP_TIM(OP_GET_STATE,0);
+    READ_OP_INT_STRING_TIM(OP_GET_STATE, state, desc,0);
+    //WRITE_OP_TIM(OP_GET_STATE,0);
 
 }
 

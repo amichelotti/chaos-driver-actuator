@@ -212,7 +212,7 @@ void ::driver::actuator::SCActuatorControlUnit::unitInit() throw(CException) {
 
   }
   DPRINT("ALEDEBUG before moving");
-  actuator_drv->moveRelativeMillimeters(2.45);
+  actuator_drv->moveRelativeMillimeters(-2.45);
   DPRINT("ALEDEBUG after moving");
   
   //check mandatory default values

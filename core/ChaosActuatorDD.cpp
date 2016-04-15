@@ -110,10 +110,13 @@ cu_driver::MsgManagmentResultType::MsgManagmentResult ChaosActuatorDD::execOpcod
             ACDBG<<"Reset alarms to:"<<in->alarm_mask;
             out->result = motor->resetAlarms(in->alarm_mask);
             break;
-        case OP_GET_ALARMS:
-            out->result = motor->getAlarms(&out->alarm_mask);
-            ACDBG<<"Got alarms to:"<<out->alarm_mask;
+        case OP_GET_ALARMS: {
+	    std::string desc;
+            out->result = motor->getAlarms(&out->alarm_mask,desc);
+            strncpy(out->str,desc.c_str(),MAX_STR_SIZE);
+            ACDBG<<"Got alarms to:"<<out->alarm_mask << desc;
             break;
+           }
             
          case OP_MOVE_RELATIVE_MM:
             out->result = motor->moveRelativeMillimeters(in->fvalue0);
