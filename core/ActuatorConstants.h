@@ -47,8 +47,10 @@ namespace driver {
 		//! The alias of the slope down parameter
 		const char * const CMD_ACT_SET_SLOPE_DOWN = "sslp_down";
 		
-		//! The alias of the "set slope" command of the type
+		//! The alias of the "move rel" command of the type
 		const char * const CMD_ACT_MOVE_RELATIVE_ALIAS = "mov_rel";
+		//! The alias of the "move absolute" command of the type
+		const char * const CMD_ACT_MOVE_ABSOLUTE_ALIAS = "move_absolute";
 		//! The alias of the current to set
 		const char * const CMD_ACT_MM_OFFSET = "offset_mm";
         

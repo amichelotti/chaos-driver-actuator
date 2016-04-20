@@ -1,5 +1,5 @@
 /*
- *	CmdACTMoveRelative.cpp
+ *	CmdACTMoveAbsolute.cpp
  *	!CHAOS
  *	Created by Alessandro D'Uffizi.
  *
@@ -17,18 +17,16 @@
  *    	See the License for the specific language governing permissions and
  *    	limitations under the License.
  */
-
-
-#include "CmdACTMoveRelative.h"
+#include "CmdACTMoveAbsolute.h"
 
 #include <cmath>
 #include <boost/format.hpp>
 #include <boost/lexical_cast.hpp>
 #include <sstream>
 
-#define SCLAPP_ INFO_LOG(CmdACTMoveRelative) << "[" << getDeviceID() << "] "
-#define SCLDBG_ DBG_LOG(CmdACTMoveRelative) << "[" << getDeviceID() << "] "
-#define SCLERR_ ERR_LOG(CmdACTMoveRelative) << "[" << getDeviceID() << "] "
+#define SCLAPP_ INFO_LOG(CmdACTMoveAbsolute) << "[" << getDeviceID() << "] "
+#define SCLDBG_ DBG_LOG(CmdACTMoveAbsolute) << "[" << getDeviceID() << "] "
+#define SCLERR_ ERR_LOG(CmdACTMoveAbsolute) << "[" << getDeviceID() << "] "
 
 
 namespace own =  driver::actuator;
@@ -36,18 +34,18 @@ namespace c_data = chaos::common::data;
 namespace chaos_batch = chaos::common::batch_command;
 
 
-BATCH_COMMAND_OPEN_DESCRIPTION_ALIAS(driver::actuator::,CmdACTMoveRelative,CMD_ACT_MOVE_RELATIVE_ALIAS,
-                                                          "Move from current position to an offset (mm)",
-                                                          "0cf52f73-55eb-4e13-8712-3d54486040d8")
+BATCH_COMMAND_OPEN_DESCRIPTION_ALIAS(driver::actuator::,CmdACTMoveAbsolute,CMD_ACT_MOVE_ABSOLUTE_ALIAS,
+                                                          "Move from home position to an offset (mm)",
+                                                          "0cf52f76-55eb-4rt3-8712-3d54484043d8")
 BATCH_COMMAND_ADD_DOUBLE_PARAM(CMD_ACT_MM_OFFSET, "offset in mm",chaos::common::batch_command::BatchCommandAndParameterDescriptionkey::BC_PARAMETER_FLAG_MANDATORY)
 BATCH_COMMAND_CLOSE_DESCRIPTION()
 
 // return the implemented handler
-uint8_t own::CmdACTMoveRelative::implementedHandler(){
+uint8_t own::CmdACTMoveAbsolute::implementedHandler(){
     return	AbstractActuatorCommand::implementedHandler()|chaos_batch::HandlerType::HT_Acquisition;
 }
 
-void own::CmdACTMoveRelative::setHandler(c_data::CDataWrapper *data) {
+void own::CmdACTMoveAbsolute::setHandler(c_data::CDataWrapper *data) {
     chaos::common::data::RangeValueInfo current_sp_attr_info;
     chaos::common::data::RangeValueInfo attributeInfo;
 	AbstractActuatorCommand::setHandler(data);
@@ -148,7 +146,7 @@ void own::CmdACTMoveRelative::setHandler(c_data::CDataWrapper *data) {
     }
     
 
-    SCLDBG_ << "compute timeout for moving relative = " << offset_mm;
+    SCLDBG_ << "compute timeout for moving Absolute = " << offset_mm;
 	
   	
 		
@@ -172,7 +170,7 @@ void own::CmdACTMoveRelative::setHandler(c_data::CDataWrapper *data) {
 	SCLDBG_ << "The setpoint affinity value is of +-" << affinity_set_delta << " of millimeters";
 
 	SCLDBG_ << "Move of offset " << offset_mm;
-	if((err = actuator_drv->moveRelativeMillimeters(offset_mm)) != 0) {
+	if((err = actuator_drv->moveAbsoluteMillimeters(offset_mm)) != 0) {
 		LOG_AND_TROW(SCLERR_, 1, boost::str(boost::format("Error %1% setting current") % err));
 	}
 	
@@ -185,7 +183,7 @@ void own::CmdACTMoveRelative::setHandler(c_data::CDataWrapper *data) {
 
 }
 
-void own::CmdACTMoveRelative::acquireHandler() {
+void own::CmdACTMoveAbsolute::acquireHandler() {
 	int err = 0;
         int state=0;
         double position;
@@ -220,7 +218,7 @@ void own::CmdACTMoveRelative::acquireHandler() {
 	getAttributeCache()->setOutputDomainAsChanged();
 }
 
-void own::CmdACTMoveRelative::ccHandler() {
+void own::CmdACTMoveAbsolute::ccHandler() {
 	//check if we are int the delta of the setpoit to end the command
 	double delta_position_reached = std::abs(*o_position_sp - *o_position);
 	SCLDBG_ << "Readout: "<< *o_position <<" SetPoint: "<< *o_position_sp <<" Delta to reach: " << delta_position_reached;
@@ -240,7 +238,7 @@ void own::CmdACTMoveRelative::ccHandler() {
 	}
 }
 
-bool own::CmdACTMoveRelative::timeoutHandler() {
+bool own::CmdACTMoveAbsolute::timeoutHandler() {
 	double delta_position_reached = std::abs(*o_position_sp - *o_position);
 	uint64_t elapsed_msec = chaos::common::utility::TimingUtil::getTimeStamp() - getSetTime();
 	//move the state machine on fault

@@ -1,7 +1,7 @@
 /*
- *	CmdACTSetCurrent.h
+ *	CmdACTMoveAbsolute.h
  *	!CHOAS
- *	Created by Claudio Bisegni.
+ *	Created by Alessandro D'Uffizi.
  *
  *    	Copyright 2013 INFN, National Institute of Nuclear Physics
  *
@@ -18,8 +18,8 @@
  *    	limitations under the License.
  */
 
-#ifndef __Actuator__CmdMoveRelative__
-#define __Actuator__CmdMoveRelative__
+#ifndef __Actuator__CmdMoveAbsolute__
+#define __Actuator__CmdMoveAbsolute__
 
 #include "AbstractActuatorCommand.h"
 
@@ -32,7 +32,7 @@ namespace driver {
 	namespace actuator {
 		
 		//! Command for change the mode of the actuator
-		DEFINE_BATCH_COMMAND_CLASS(CmdACTMoveRelative,AbstractActuatorCommand) {
+		DEFINE_BATCH_COMMAND_CLASS(CmdACTMoveAbsolute,AbstractActuatorCommand) {
 			
 			double	*o_position_sp;
 			double	*o_position;
@@ -68,3 +68,4 @@ namespace driver {
 
 
 #endif /* defined(__Actuator__CmdSetCurrent__) */
+

@@ -26,6 +26,7 @@
 
 #include "CmdACTDefault.h"
 #include "CmdACTMoveRelative.h"
+#include "CmdACTMoveAbsolute.h"
 /*#include "CmdPSMode.h"
 #include "CmdPSReset.h"
 #include "CmdPSSetSlope.h"
@@ -80,9 +81,9 @@ void ::driver::actuator::SCActuatorControlUnit::unitDefineActionAndDataset() thr
   installCommand(BATCH_COMMAND_GET_DESCRIPTION(CmdACTDefault), true);
 
   installCommand(BATCH_COMMAND_GET_DESCRIPTION(CmdACTMoveRelative));
+  installCommand(BATCH_COMMAND_GET_DESCRIPTION(CmdACTMoveAbsolute));
 /*  installCommand(BATCH_COMMAND_GET_DESCRIPTION(CmdPSReset));
   installCommand(BATCH_COMMAND_GET_DESCRIPTION(CmdPSSetSlope));
-  installCommand(BATCH_COMMAND_GET_DESCRIPTION(CmdPSSetCurrent));
   installCommand(BATCH_COMMAND_GET_DESCRIPTION(CmdSetPolarity));
 */
   //setup the dataset
@@ -211,8 +212,7 @@ void ::driver::actuator::SCActuatorControlUnit::unitInit() throw(CException) {
     throw chaos::CException(-3, "Cannot initialize actuator " + control_unit_instance, __FUNCTION__);
 
   }
-  DPRINT("ALEDEBUG before moving");
-  actuator_drv->moveRelativeMillimeters(-2.45);
+  //actuator_drv->moveRelativeMillimeters(-2.45);
   DPRINT("ALEDEBUG after moving");
   
   //check mandatory default values
