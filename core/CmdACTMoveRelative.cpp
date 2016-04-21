@@ -48,7 +48,7 @@ uint8_t own::CmdACTMoveRelative::implementedHandler(){
 }
 
 void own::CmdACTMoveRelative::setHandler(c_data::CDataWrapper *data) {
-    chaos::common::data::RangeValueInfo current_sp_attr_info;
+    chaos::common::data::RangeValueInfo position_sp_attr_info;
     chaos::common::data::RangeValueInfo attributeInfo;
 	AbstractActuatorCommand::setHandler(data);
 
@@ -61,15 +61,17 @@ void own::CmdACTMoveRelative::setHandler(c_data::CDataWrapper *data) {
 	float offset_mm = 0.f;
 	chaos::common::data::RangeValueInfo attr_info;
 	o_position = getAttributeCache()->getRWPtr<double>(DOMAIN_OUTPUT, "position");
-	i_speed = getAttributeCache()->getRWPtr<double>(DOMAIN_INPUT, "speed");		
+	o_position_sp = getAttributeCache()->getRWPtr<double>(DOMAIN_OUTPUT, "position_sp");
+	i_speed = ( double*) getAttributeCache()->getROPtr<double>(DOMAIN_INPUT, "speed");		
 	i_command_timeout = getAttributeCache()->getROPtr<uint32_t>(DOMAIN_INPUT, "command_timeout");
 	i_delta_setpoint = getAttributeCache()->getROPtr<uint32_t>(DOMAIN_INPUT, "delta_setpoint");
 	i_setpoint_affinity = getAttributeCache()->getROPtr<uint32_t>(DOMAIN_INPUT, "setpoint_affinity");
-        tmpInt =  getAttributeCache()->getRWPtr<int32_t>(DOMAIN_INPUT, "readingType") ;
+        tmpInt =  (int*) getAttributeCache()->getROPtr<int32_t>(DOMAIN_INPUT, "readingType") ;
         readTyp=(::common::actuators::AbstractActuator::readingTypes) *tmpInt;
         
         getDeviceDatabase()->getAttributeRangeValueInfo("position_sp", attr_info);
  // REQUIRE MIN MAX SET IN THE MDS
+/*
   if (attr_info.maxRange.size()) {
       max_position = atof(attr_info.maxRange.c_str());
     SCLDBG_ << "max_position max=" << max_position;
@@ -92,7 +94,7 @@ void own::CmdACTMoveRelative::setHandler(c_data::CDataWrapper *data) {
 
   }
         
-        
+  */      
   
  
 
@@ -106,12 +108,14 @@ void own::CmdACTMoveRelative::setHandler(c_data::CDataWrapper *data) {
 		strncpy(o_status, state_str.c_str(), 256);
 	}
 
+/*
         if(((*o_status_id)&::common::actuators::ACTUATOR_READY)==0){
             SCLERR_ << boost::str( boost::format("Bad state for moving actuator %1%[%2%]") % o_status % *o_status_id);
 	    BC_END_RUNNIG_PROPERTY;
 	    return;
         }
-	
+*/	
+	SCLDBG_ << "fetch position readout";
         if ((err = actuator_drv->getPosition(readTyp,&position)) !=0) {
 		LOG_AND_TROW(SCLERR_, 1, boost::str(boost::format("Error fetching position with code %1%") % err));
 	} else {
@@ -121,6 +125,7 @@ void own::CmdACTMoveRelative::setHandler(c_data::CDataWrapper *data) {
         
        
 		
+	SCLDBG_ << "check data";
 	if(!data ||
 	   !data->hasKey(CMD_ACT_MM_OFFSET)) {
 		SCLERR_ << "Offset millimeters parameter not present";
@@ -139,14 +144,16 @@ void own::CmdACTMoveRelative::setHandler(c_data::CDataWrapper *data) {
         BC_END_RUNNIG_PROPERTY;
         return;
     }
+    
+/*
     if((position + offset_mm) > max_position || (position + offset_mm)<min_position){
           std::stringstream ss;
-        ss<<"final position:"<<position+ offset_mm <<" out of bounds ";
-		SCLERR_ << boost::str( boost::format("current %1% outside  the maximum/minimum 'currentSP' \"max_position\":%2% \"min_position\":%3%" ) % (position + offset_mm) % max_position % min_position);
+        ss<<"ALEDEBUG final position:"<<position+ offset_mm <<" out of bounds ";
+	//	SCLERR_ << boost::str( boost::format("position %1 'currentSP' \"max_position\":%2% \"min_position\":%3%" ) % (position + offset_mm) % max_position % min_position);
 		BC_END_RUNNIG_PROPERTY;
 		return;
     }
-    
+  */  
 
     SCLDBG_ << "compute timeout for moving relative = " << offset_mm;
 	
@@ -154,6 +161,7 @@ void own::CmdACTMoveRelative::setHandler(c_data::CDataWrapper *data) {
 		
 	uint64_t computed_timeout = offset_mm / *i_speed;
 	SCLDBG_ << "Calculated timeout is = " << computed_timeout;
+	SCLDBG_ << "o_position_sp is = " << *o_position_sp;
 	setFeatures(chaos_batch::features::FeaturesFlagTypes::FF_SET_COMMAND_TIMEOUT, computed_timeout);
 	
         
@@ -178,7 +186,8 @@ void own::CmdACTMoveRelative::setHandler(c_data::CDataWrapper *data) {
 	
 	//assign new position setpoint
 	slow_acquisition_index = false;
-	*o_position_sp = position+offset_mm;
+        
+	*o_position_sp =((double)  position+(double)offset_mm);
 	actuator_drv->accessor->base_opcode_priority=100;
 	setWorkState(true);
 	BC_EXEC_RUNNIG_PROPERTY;
@@ -192,6 +201,7 @@ void own::CmdACTMoveRelative::acquireHandler() {
 	std::string desc;
         
 	std::string state_str;
+	SCLDBG_ << "Start Acquire Handler " ;
 	//acquire the current readout
 	SCLDBG_ << "fetch current readout";
         

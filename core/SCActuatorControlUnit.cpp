@@ -22,7 +22,7 @@
 #include <boost/format.hpp>
 #include <boost/lexical_cast.hpp>
 #include <common/debug/core/debug.h>
-//---comands----
+//---commands----
 
 #include "CmdACTDefault.h"
 #include "CmdACTMoveRelative.h"
@@ -71,6 +71,16 @@ PUBLISHABLE_CONTROL_UNIT_IMPLEMENTATION(::driver::actuator::SCActuatorControlUni
   }
 }
 
+bool ::driver::actuator::SCActuatorControlUnit::setSpeed(const std::string &name,double value,uint32_t size){
+        int err= -1;
+          const double *speed = getAttributeCache()->getROPtr<double>(DOMAIN_INPUT, "speed");
+          if(value>=0){
+                    SCCUAPP << "set speed:"<<value<< "::" << speed;
+
+                  err = actuator_drv->setSpeed(value);
+          }
+         return (err!=chaos::ErrorCode::EC_NO_ERROR);
+}
 
 /*
  Return the default configuration
@@ -117,6 +127,11 @@ void ::driver::actuator::SCActuatorControlUnit::unitDefineActionAndDataset() thr
                         DataType::TYPE_INT32,
                         DataType::Input);
 
+addAttributeToDataSet("dev_state",
+                        "Bit field device state",
+                        DataType::TYPE_INT64,
+                        DataType::Output);
+
           
   addAttributeToDataSet("additive",
                         "additive",
@@ -158,6 +173,11 @@ addAttributeToDataSet("InitString",
                         "Driver timeout in milliseconds",
                         DataType::TYPE_INT32,
                         DataType::Input);
+  
+ addAttributeToDataSet("command_timeout",
+                        "Command timeout in milliseconds",
+                        DataType::TYPE_INT32,
+                        DataType::Input);
  
   addAttributeToDataSet("delta_setpoint",
                         "Delta of the setpoint",
@@ -168,6 +188,10 @@ addAttributeToDataSet("InitString",
                         "Delta of the setpoint",
                         DataType::TYPE_INT32,
                         DataType::Input);
+
+ addHandlerOnInputAttributeName< ::driver::actuator::SCActuatorControlUnit, double >(this,
+                                                                      &::driver::actuator::SCActuatorControlUnit::setSpeed,
+                                                                      "speed");
 
 }
 
@@ -397,29 +421,6 @@ bool ::driver::actuator::SCActuatorControlUnit::powerON(bool sync) {
 */
 
 
-/*
-bool ::driver::powersupply::SCActuatorControlUnit::setRampSpeed(double sup,
-                                                                   double sdown,
-                                                                   bool sync) {
-  uint64_t cmd_id;
-  bool result = true;
-  std::auto_ptr<CDataWrapper> cmd_pack(new CDataWrapper());
-  cmd_pack->addDoubleValue(CMD_PS_SET_SLOPE_UP, sup);
-  cmd_pack->addDoubleValue(CMD_PS_SET_SLOPE_DOWN, sdown);
-  //send command
-  submitBatchCommand(CMD_PS_SET_SLOPE_ALIAS,
-                     cmd_pack.release(),
-                     cmd_id,
-                     0,
-                     50,
-                     SubmissionRuleType::SUBMIT_AND_Stack);
-  if (sync) {
-    //! whait for the current command id to finisch
-    result = whaitOnCommandID(cmd_id);
-  }
-  return result;
-}
-*/
 
 bool ::driver::actuator::SCActuatorControlUnit::waitOnCommandID(uint64_t cmd_id) {
   std::auto_ptr<CommandState> cmd_state;
@@ -458,3 +459,6 @@ bool ::driver::actuator::SCActuatorControlUnit::waitOnCommandID(uint64_t cmd_id)
   return (cmd_state.get() &&
       cmd_state->last_event == BatchCommandEventType::EVT_COMPLETED);
 }
+
+
+

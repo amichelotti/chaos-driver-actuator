@@ -67,14 +67,12 @@ void CmdACTDefault::setHandler(c_data::CDataWrapper *data) {
 	tmpInt =  getAttributeCache()->getROPtr<int32_t>(DOMAIN_INPUT, "readingType") ;
 	CMDCU_ << "Set Handler readingType is " << *tmpInt;
                 
-	CMDCU_ << "Set Handler before getting RWPtr at position";
         readTyp=(::common::actuators::AbstractActuator::readingTypes) *tmpInt;
 	o_position = getAttributeCache()->getRWPtr<double>(DOMAIN_OUTPUT, "position");
 		
 	
 	o_alarm = getAttributeCache()->getRWPtr<int32_t>(DOMAIN_OUTPUT, "alarms");
 
-	CMDCU_ << "ENDING Set Handler";
 	BC_NORMAL_RUNNIG_PROPERTY
         sequence_number = 0;
 	slow_acquisition_idx = 0;
@@ -93,9 +91,11 @@ void CmdACTDefault::acquireHandler() {
 	int tmp_uint32 = 0;
 	uint64_t tmp_uint64 = -1;
         double EncRead;
+        double *pos_sp;
 	CMDCU_ << "Acquiring data";
 	
 	
+	pos_sp = getAttributeCache()->getRWPtr<double>(DOMAIN_OUTPUT, "position_sp");
     if((err = actuator_drv->getPosition(readTyp,&tmp_float))==0){
 		*o_position = tmp_float;
     } else {
@@ -127,6 +127,7 @@ void CmdACTDefault::acquireHandler() {
 		LOG_AND_TROW(CMDCUERR_, 3, boost::str( boost::format("Error calling driver on get state readout with code %1%") % err));
 	}
 
+    CMDCU_ << "position_sp ->" << *pos_sp;
     CMDCU_ << "position ->" << *o_position;
     CMDCU_ << "position by encoder ->" << EncRead;
     CMDCU_ << "alarms ->" << *o_alarms;

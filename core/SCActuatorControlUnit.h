@@ -79,6 +79,8 @@ namespace driver {
 			 Base destructor
 			 */
 			~SCActuatorControlUnit();
+			/*handlers*/
+			bool setSpeed(const std::string &name,double value,uint32_t size);
 		};
 	}
 }

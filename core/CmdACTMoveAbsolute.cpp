@@ -46,7 +46,7 @@ uint8_t own::CmdACTMoveAbsolute::implementedHandler(){
 }
 
 void own::CmdACTMoveAbsolute::setHandler(c_data::CDataWrapper *data) {
-    chaos::common::data::RangeValueInfo current_sp_attr_info;
+    chaos::common::data::RangeValueInfo position_sp_attr_info;
     chaos::common::data::RangeValueInfo attributeInfo;
 	AbstractActuatorCommand::setHandler(data);
 
@@ -59,14 +59,17 @@ void own::CmdACTMoveAbsolute::setHandler(c_data::CDataWrapper *data) {
 	float offset_mm = 0.f;
 	chaos::common::data::RangeValueInfo attr_info;
 	o_position = getAttributeCache()->getRWPtr<double>(DOMAIN_OUTPUT, "position");
-	i_speed = getAttributeCache()->getRWPtr<double>(DOMAIN_INPUT, "speed");		
+        o_position_sp = getAttributeCache()->getRWPtr<double>(DOMAIN_OUTPUT, "position_sp");
+
+	i_speed = (double*) getAttributeCache()->getROPtr<double>(DOMAIN_INPUT, "speed");		
 	i_command_timeout = getAttributeCache()->getROPtr<uint32_t>(DOMAIN_INPUT, "command_timeout");
 	i_delta_setpoint = getAttributeCache()->getROPtr<uint32_t>(DOMAIN_INPUT, "delta_setpoint");
 	i_setpoint_affinity = getAttributeCache()->getROPtr<uint32_t>(DOMAIN_INPUT, "setpoint_affinity");
-        tmpInt =  getAttributeCache()->getRWPtr<int32_t>(DOMAIN_INPUT, "readingType") ;
+        tmpInt = (int*) getAttributeCache()->getROPtr<int32_t>(DOMAIN_INPUT, "readingType") ;
         readTyp=(::common::actuators::AbstractActuator::readingTypes) *tmpInt;
         
         getDeviceDatabase()->getAttributeRangeValueInfo("position_sp", attr_info);
+/*
  // REQUIRE MIN MAX SET IN THE MDS
   if (attr_info.maxRange.size()) {
       max_position = atof(attr_info.maxRange.c_str());
@@ -90,7 +93,7 @@ void own::CmdACTMoveAbsolute::setHandler(c_data::CDataWrapper *data) {
 
   }
         
-        
+  */      
   
  
 
@@ -104,12 +107,13 @@ void own::CmdACTMoveAbsolute::setHandler(c_data::CDataWrapper *data) {
 		strncpy(o_status, state_str.c_str(), 256);
 	}
 
+/*
         if(((*o_status_id)&::common::actuators::ACTUATOR_READY)==0){
             SCLERR_ << boost::str( boost::format("Bad state for moving actuator %1%[%2%]") % o_status % *o_status_id);
 	    BC_END_RUNNIG_PROPERTY;
 	    return;
         }
-	
+*/	
         if ((err = actuator_drv->getPosition(readTyp,&position)) !=0) {
 		LOG_AND_TROW(SCLERR_, 1, boost::str(boost::format("Error fetching position with code %1%") % err));
 	} else {
@@ -121,28 +125,21 @@ void own::CmdACTMoveAbsolute::setHandler(c_data::CDataWrapper *data) {
 		
 	if(!data ||
 	   !data->hasKey(CMD_ACT_MM_OFFSET)) {
-		SCLERR_ << "Offset millimeters parameter not present";
+		SCLERR_ << "Position millimeters parameter not present";
 		BC_END_RUNNIG_PROPERTY;
 		return;
 	}
 	if(!data->isDoubleValue(CMD_ACT_MM_OFFSET)) {
-		SCLERR_ << "Offset millimeters parameter is not a Double data type";
+		SCLERR_ << "Position millimeters parameter is not a Double data type";
 		BC_END_RUNNIG_PROPERTY;
 		return;
 	}
     
     offset_mm = static_cast<float>(data->getDoubleValue(CMD_ACT_MM_OFFSET));
     if(isnan(offset_mm)==true){
-        SCLERR_ << "Offset millimeters parameter is not a valid double number (nan?)";
+        SCLERR_ << "Position parameter is not a valid double number (nan?)";
         BC_END_RUNNIG_PROPERTY;
         return;
-    }
-    if((position + offset_mm) > max_position || (position + offset_mm)<min_position){
-          std::stringstream ss;
-        ss<<"final position:"<<position+ offset_mm <<" out of bounds ";
-		SCLERR_ << boost::str( boost::format("current %1% outside  the maximum/minimum 'currentSP' \"max_position\":%2% \"min_position\":%3%" ) % (position + offset_mm) % max_position % min_position);
-		BC_END_RUNNIG_PROPERTY;
-		return;
     }
     
 
@@ -155,12 +152,6 @@ void own::CmdACTMoveAbsolute::setHandler(c_data::CDataWrapper *data) {
 	setFeatures(chaos_batch::features::FeaturesFlagTypes::FF_SET_COMMAND_TIMEOUT, computed_timeout);
 	
         
-        //set current set poi into the output channel
-	if(*i_delta_setpoint && (offset_mm < *i_delta_setpoint)) {
-		SCLERR_ << "The offset don't pass delta check of = " << *i_delta_setpoint << " setpoint point = "<<offset_mm <<" actual position" << *o_position_sp;
-		BC_END_RUNNIG_PROPERTY;
-		return;
-	}
 
 	if(*i_setpoint_affinity) {
 		affinity_set_delta = *i_setpoint_affinity;
@@ -169,14 +160,14 @@ void own::CmdACTMoveAbsolute::setHandler(c_data::CDataWrapper *data) {
 	}
 	SCLDBG_ << "The setpoint affinity value is of +-" << affinity_set_delta << " of millimeters";
 
-	SCLDBG_ << "Move of offset " << offset_mm;
+	SCLDBG_ << "Move to position " << offset_mm;
 	if((err = actuator_drv->moveAbsoluteMillimeters(offset_mm)) != 0) {
 		LOG_AND_TROW(SCLERR_, 1, boost::str(boost::format("Error %1% setting current") % err));
 	}
 	
 	//assign new position setpoint
 	slow_acquisition_index = false;
-	*o_position_sp = position+offset_mm;
+	*o_position_sp = offset_mm;
 	actuator_drv->accessor->base_opcode_priority=100;
 	setWorkState(true);
 	BC_EXEC_RUNNIG_PROPERTY;

@@ -122,8 +122,6 @@ accessor->send(&message);\
 return 0;
 
 int ChaosActuatorInterface::init(void*d){
-    DPRINT("ALEDEBUG INTERFACE INIT %x ",d);
-    DPRINT("ALEDEBUG INTERFACE INIT as char  %s ",(char*)d);
     WRITE_OP_STRING_TIM(OP_INIT,(char*)d,0);
 }
 
