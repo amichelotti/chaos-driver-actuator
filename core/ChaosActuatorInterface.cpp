@@ -149,10 +149,9 @@ int ChaosActuatorInterface::setAcceleration(double acceleration_mm_per_sec2) {
     WRITE_OP_FLOAT_TIM(OP_SET_SPEED,param,0);
 }
 
-void ChaosActuatorInterface::setAdditive(bool isAdditive)
+int ChaosActuatorInterface::setAdditive(bool isAdditive)
 {
-    WRITE_OP_INT_TIM_NORET(OP_SET_ADDITIVE,isAdditive,0);
-    return;
+    WRITE_OP_INT_TIM(OP_SET_ADDITIVE,isAdditive,0);
 }
 
 int ChaosActuatorInterface::setReferenceBase(int32_t referenceBase)
@@ -226,6 +225,9 @@ uint64_t ChaosActuatorInterface::getFeatures() {
     return feats;
 }
 
+int ChaosActuatorInterface::setTrapezoidalProfile(double, double, bool, int32_t, int32_t) {
+return 0;
+}
 
 
 

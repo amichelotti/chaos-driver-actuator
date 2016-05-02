@@ -93,7 +93,7 @@ namespace chaos {
                 
                 int setSpeed(double speed_mm_per_sec);
                 int setAcceleration(double acceleration_mm_per_sec2);
-                void setAdditive(bool isAdditive);
+                int setAdditive(bool isAdditive);
                 int setReferenceBase(int32_t referenceBase);
                 int setMovement(int32_t movement);
                  /**
@@ -129,6 +129,8 @@ namespace chaos {
                  @return 0 if success or an error code
                  */
                 int homing(homingType mode);
+                int setTrapezoidalProfile(double, double, int, short int, short int);
+
                 
 
                 int poweron(uint32_t timeo_ms=ACTUATORS_DEFAULT_TIMEOUT);
@@ -161,7 +163,7 @@ namespace chaos {
                  @return the a bit field of capability
                  */
                 uint64_t getFeatures() ;
-              
+		int setTrapezoidalProfile(double, double, bool, int32_t, int32_t) ;              
                 
                 
                 

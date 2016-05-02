@@ -73,13 +73,15 @@ PUBLISHABLE_CONTROL_UNIT_IMPLEMENTATION(::driver::actuator::SCActuatorControlUni
 
 bool ::driver::actuator::SCActuatorControlUnit::setSpeed(const std::string &name,double value,uint32_t size){
         int err= -1;
+	  SCCUAPP << "ALEDEBUG HANDLER setspeed" ;
           const double *speed = getAttributeCache()->getROPtr<double>(DOMAIN_INPUT, "speed");
           if(value>=0){
                     SCCUAPP << "set speed:"<<value<< "::" << speed;
 
                   err = actuator_drv->setSpeed(value);
           }
-         return (err!=chaos::ErrorCode::EC_NO_ERROR);
+         //return (err==chaos::ErrorCode::EC_NO_ERROR);
+         return true;
 }
 
 /*
