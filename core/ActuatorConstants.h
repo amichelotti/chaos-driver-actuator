@@ -40,8 +40,8 @@ namespace driver {
 		//! The alias of the "reset" command of the type
 		const char * const CMD_ACT_RESET_ALIAS = "rset";
 
-		//! The alias of the "set slope" command of the type
-		const char * const CMD_ACT_SET_SLOPE_ALIAS = "sslp";
+		//! The alias of the "stop motion" command of the type
+		const char * const CMD_ACT_STOPMOTION_ALIAS = "stop";
 		//! The alias of the slope up parameter
 		const char * const CMD_ACT_SET_SLOPE_UP = "sslp_up";
 		//! The alias of the slope down parameter
