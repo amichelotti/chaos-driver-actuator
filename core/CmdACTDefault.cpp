@@ -127,12 +127,12 @@ void CmdACTDefault::acquireHandler() {
 		LOG_AND_TROW(CMDCUERR_, 3, boost::str( boost::format("Error calling driver on get state readout with code %1%") % err));
 	}
 
+    CMDCU_ << "Reading Type ->" << (int) readTyp;
     CMDCU_ << "position_sp ->" << *pos_sp;
     CMDCU_ << "position ->" << *o_position;
     CMDCU_ << "position by encoder ->" << EncRead;
     CMDCU_ << "alarms ->" << *o_alarms;
     CMDCU_ << "status_id -> " << *o_status_id;
-    CMDCU_ << "status. -> " << o_status;
 	
 //	*o_alarm = (*o_alarms!=0)?1:0;
 

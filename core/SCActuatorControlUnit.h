@@ -80,7 +80,9 @@ namespace driver {
 			 */
 			~SCActuatorControlUnit();
 			/*handlers*/
-			bool setSpeed(const std::string &name,double value,uint32_t size);
+	bool setSpeed(const std::string &name ,double value,size_t size);
+	bool setAcceleration(const std::string &name ,double value,size_t size);
+	bool setMovement(const std::string &name ,int32_t value,size_t size);
 		};
 	}
 }

@@ -28,12 +28,7 @@
 #include "CmdACTMoveRelative.h"
 #include "CmdACTMoveAbsolute.h"
 #include "CmdACTStopMotion.h"
-/*#include "CmdPSMode.h"
-#include "CmdPSReset.h"
-#include "CmdPSSetSlope.h"
-#include "CmdPSSetCurrent.h"
-#include "CmdSetPolarity.h"
-*/
+
 using namespace chaos;
 
 using namespace chaos::common::data;
@@ -72,17 +67,35 @@ PUBLISHABLE_CONTROL_UNIT_IMPLEMENTATION(::driver::actuator::SCActuatorControlUni
   }
 }
 
-bool ::driver::actuator::SCActuatorControlUnit::setSpeed(const std::string &name,double value,uint32_t size){
+bool ::driver::actuator::SCActuatorControlUnit::setSpeed(const std::string &name,double value,size_t size){
         int err= -1;
-	  SCCUAPP << "ALEDEBUG HANDLER setspeed" ;
           const double *speed = getAttributeCache()->getROPtr<double>(DOMAIN_INPUT, "speed");
           if(value>=0){
                     SCCUAPP << "set speed:"<<value<< "::" << speed;
 
                   err = actuator_drv->setSpeed(value);
           }
-         //return (err==chaos::ErrorCode::EC_NO_ERROR);
-         return true;
+         return (err==chaos::ErrorCode::EC_NO_ERROR);
+}
+bool ::driver::actuator::SCActuatorControlUnit::setAcceleration(const std::string &name,double value,size_t size){
+          int err= -1;
+          const double *acc = getAttributeCache()->getROPtr<double>(DOMAIN_INPUT, "acceleration");
+	  SCCUAPP << "ALEDEBUG HANDLER setAcceleration" ;
+          if(value>=0){
+                  SCCUAPP << "set acceleration:"<<value<< "::" << acc;
+                  err = actuator_drv->setAcceleration(value);
+          }
+         return (err==chaos::ErrorCode::EC_NO_ERROR);
+}
+bool ::driver::actuator::SCActuatorControlUnit::setMovement(const std::string &name,int32_t value,size_t size){
+          int err= -1;
+          const int32_t *mov = getAttributeCache()->getROPtr<int32_t>(DOMAIN_INPUT, "movement");
+	  SCCUAPP << "ALEDEBUG HANDLER setMovement" ;
+          if(value>=0){
+                  SCCUAPP << "set movement:"<<value<< "::" << mov;
+                  err = actuator_drv->setMovement(value);
+          }
+         return (err==chaos::ErrorCode::EC_NO_ERROR);
 }
 
 /*
@@ -193,9 +206,15 @@ addAttributeToDataSet("InitString",
                         DataType::Input);
 
  addHandlerOnInputAttributeName< ::driver::actuator::SCActuatorControlUnit, double >(this,
-                                                                      &::driver::actuator::SCActuatorControlUnit::setSpeed,
+                                                                 &::driver::actuator::SCActuatorControlUnit::setSpeed,
                                                                       "speed");
 
+ addHandlerOnInputAttributeName< ::driver::actuator::SCActuatorControlUnit, double >(this,
+                                                            &::driver::actuator::SCActuatorControlUnit::setAcceleration,
+                                                              "acceleration");
+ addHandlerOnInputAttributeName< ::driver::actuator::SCActuatorControlUnit, int32_t >(this,
+                                                            &::driver::actuator::SCActuatorControlUnit::setMovement,
+                                                              "movement");
 }
 
 void ::driver::actuator::SCActuatorControlUnit::unitDefineCustomAttribute() {

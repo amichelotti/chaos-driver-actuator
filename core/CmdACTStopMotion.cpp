@@ -94,4 +94,19 @@ void own::CmdACTStopMotion::ccHandler() {
 }
 // empty timeout handler
 bool own::CmdACTStopMotion::timeoutHandler() {
+	uint64_t elapsed_msec;
+	setWorkState(false);
+	actuator_drv->accessor->base_opcode_priority=50;
+	if (o_status && ::common::actuators::ACTUATOR_MOTION_COMPLETED)
+        {
+	   uint64_t elapsed_msec = chaos::common::utility::TimingUtil::getTimeStamp() - getSetTime();
+	   SCLDBG_ << "[metric] Motor Stopped on timeout in " << elapsed_msec << " milliseconds";
+	   //the command is endedn because we have reached the affinitut delta set
+	   BC_END_RUNNIG_PROPERTY;
+	}else {
+           SCLERR_ << "[metric] Motor not stopped before timeout of " << elapsed_msec << " milliseconds";
+	   BC_FAULT_RUNNIG_PROPERTY;
+	}
+	return false;
+	
 }
