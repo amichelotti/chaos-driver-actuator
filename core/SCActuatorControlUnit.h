@@ -72,17 +72,19 @@ namespace driver {
 			 Construct a new CU with an identifier
 			 */
 			SCActuatorControlUnit(const std::string& _control_unit_id,
-									 const std::string& _control_unit_param,
-									 const ControlUnitDriverList& _control_unit_drivers);
+							 const std::string& _control_unit_param,
+							 const ControlUnitDriverList& _control_unit_drivers);
 			
 			/*
 			 Base destructor
 			 */
 			~SCActuatorControlUnit();
 			/*handlers*/
-	bool setSpeed(const std::string &name ,double value,size_t size);
-	bool setAcceleration(const std::string &name ,double value,size_t size);
-	bool setMovement(const std::string &name ,int32_t value,size_t size);
+			bool setSpeed(const std::string &name ,double value,size_t size);
+			bool setAcceleration(const std::string &name ,double value,size_t size);
+			bool setMovement(const std::string &name ,int32_t value,size_t size);
+			bool MoveRelative(const std::string &name,double offset,size_t size);
+			bool MoveAbsolute(const std::string &name,double position,size_t size);
 		};
 	}
 }

@@ -35,7 +35,7 @@ namespace driver {
 		//! The alias of the "mode" command of the type
 		const char * const CMD_ACT_MODE_ALIAS = "mode";
 		//! The alias of the parameter of the type {0-to stadby, 1-to operational}
-		const char * const CMD_ACT_MODE_TYPE = "mode_type";
+		const char * const CMD_ACT_MOVE_RELATIVE = "move_rela";
 		
 		//! The alias of the "reset" command of the type
 		const char * const CMD_ACT_RESET_ALIAS = "rset";
@@ -50,7 +50,8 @@ namespace driver {
 		//! The alias of the "move rel" command of the type
 		const char * const CMD_ACT_MOVE_RELATIVE_ALIAS = "mov_rel";
 		//! The alias of the "move absolute" command of the type
-		const char * const CMD_ACT_MOVE_ABSOLUTE_ALIAS = "move_absolute";
+		const char * const CMD_ACT_MOVE_ABSOLUTE_ALIAS = "mov_abs";
+		const char * const CMD_ACT_MOVE_ABSOLUTE = "move_absolute";
 		//! The alias of the current to set
 		const char * const CMD_ACT_MM_OFFSET = "offset_mm";
         

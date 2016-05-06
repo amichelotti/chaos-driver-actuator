@@ -67,6 +67,35 @@ PUBLISHABLE_CONTROL_UNIT_IMPLEMENTATION(::driver::actuator::SCActuatorControlUni
   }
 }
 
+bool ::driver::actuator::SCActuatorControlUnit::MoveRelative(const std::string &name,double offset,size_t size) {
+  uint64_t cmd_id;
+  bool result = true;
+  std::auto_ptr<CDataWrapper> cmd_pack(new CDataWrapper());
+  cmd_pack->addDoubleValue(CMD_ACT_MOVE_RELATIVE,offset );
+  //send command
+  submitBatchCommand( CMD_ACT_MOVE_RELATIVE_ALIAS,
+                     cmd_pack.release(),
+                     cmd_id,
+                     0,
+                     50,
+                     SubmissionRuleType::SUBMIT_AND_Stack);
+  return true;
+}
+bool ::driver::actuator::SCActuatorControlUnit::MoveAbsolute(const std::string &name,double position,size_t size) {
+  uint64_t cmd_id;
+  bool result = true;
+  std::auto_ptr<CDataWrapper> cmd_pack(new CDataWrapper());
+  cmd_pack->addDoubleValue(CMD_ACT_MOVE_ABSOLUTE_ALIAS,position );
+  //send command
+                    SCCUAPP << "ALEDEBUG: move absolute handler:"<<position;
+  submitBatchCommand( CMD_ACT_MOVE_ABSOLUTE_ALIAS,
+                     cmd_pack.release(),
+                     cmd_id,
+                     0,
+                     50,
+                     SubmissionRuleType::SUBMIT_AND_Stack);
+  return true;
+}
 bool ::driver::actuator::SCActuatorControlUnit::setSpeed(const std::string &name,double value,size_t size){
         int err= -1;
           const double *speed = getAttributeCache()->getROPtr<double>(DOMAIN_INPUT, "speed");
@@ -215,6 +244,12 @@ addAttributeToDataSet("InitString",
  addHandlerOnInputAttributeName< ::driver::actuator::SCActuatorControlUnit, int32_t >(this,
                                                             &::driver::actuator::SCActuatorControlUnit::setMovement,
                                                               "movement");
+ addHandlerOnInputAttributeName< ::driver::actuator::SCActuatorControlUnit, double >(this,
+                                                            &::driver::actuator::SCActuatorControlUnit::MoveRelative,
+                                                              "mov_rel");
+ addHandlerOnInputAttributeName< ::driver::actuator::SCActuatorControlUnit, double >(this,
+                                                            &::driver::actuator::SCActuatorControlUnit::MoveAbsolute,
+                                                              "mov_abs");
 }
 
 void ::driver::actuator::SCActuatorControlUnit::unitDefineCustomAttribute() {
@@ -259,7 +294,6 @@ void ::driver::actuator::SCActuatorControlUnit::unitInit() throw(CException) {
 
   }
   //actuator_drv->moveRelativeMillimeters(-2.45);
-  DPRINT("ALEDEBUG after moving");
   
   //check mandatory default values
   /*

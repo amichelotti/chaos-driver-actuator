@@ -37,7 +37,7 @@ namespace chaos_batch = chaos::common::batch_command;
 BATCH_COMMAND_OPEN_DESCRIPTION_ALIAS(driver::actuator::,CmdACTMoveAbsolute,CMD_ACT_MOVE_ABSOLUTE_ALIAS,
                                                           "Move from home position to an offset (mm)",
                                                           "0cf52f76-55eb-4rt3-8712-3d54484043d8")
-BATCH_COMMAND_ADD_DOUBLE_PARAM(CMD_ACT_MM_OFFSET, "offset in mm",chaos::common::batch_command::BatchCommandAndParameterDescriptionkey::BC_PARAMETER_FLAG_MANDATORY)
+BATCH_COMMAND_ADD_DOUBLE_PARAM(CMD_ACT_MM_OFFSET, "position mm",chaos::common::batch_command::BatchCommandAndParameterDescriptionkey::BC_PARAMETER_FLAG_MANDATORY)
 BATCH_COMMAND_CLOSE_DESCRIPTION()
 
 // return the implemented handler

@@ -87,6 +87,7 @@ void CmdACTDefault::acquireHandler() {
 	std::string desc;
 	int err = 0;
 	int32_t stato = -1;
+	const int32_t *tmpInt;
 	double tmp_float = 0.0F;
 	int tmp_uint32 = 0;
 	uint64_t tmp_uint64 = -1;
@@ -94,6 +95,8 @@ void CmdACTDefault::acquireHandler() {
         double *pos_sp;
 	CMDCU_ << "Acquiring data";
 	
+	tmpInt =  getAttributeCache()->getROPtr<int32_t>(DOMAIN_INPUT, "readingType") ;
+        readTyp=(::common::actuators::AbstractActuator::readingTypes) *tmpInt;
 	
 	pos_sp = getAttributeCache()->getRWPtr<double>(DOMAIN_OUTPUT, "position_sp");
     if((err = actuator_drv->getPosition(readTyp,&tmp_float))==0){
