@@ -42,17 +42,17 @@ namespace driver {
 
 		//! The alias of the "stop motion" command of the type
 		const char * const CMD_ACT_STOPMOTION_ALIAS = "stop";
-		//! The alias of the slope up parameter
-		const char * const CMD_ACT_SET_SLOPE_UP = "sslp_up";
-		//! The alias of the slope down parameter
-		const char * const CMD_ACT_SET_SLOPE_DOWN = "sslp_down";
+		//! The alias of the homing command 
+		const char * const CMD_ACT_HOMING_ALIAS = "homing";
+		//! The alias of the homing type parameter
+		const char * const CMD_ACT_HOMINGTYPE = "homing type";
 		
 		//! The alias of the "move rel" command of the type
 		const char * const CMD_ACT_MOVE_RELATIVE_ALIAS = "mov_rel";
 		//! The alias of the "move absolute" command of the type
 		const char * const CMD_ACT_MOVE_ABSOLUTE_ALIAS = "mov_abs";
 		const char * const CMD_ACT_MOVE_ABSOLUTE = "move_absolute";
-		//! The alias of the current to set
+		//! The alias of the offset  to set
 		const char * const CMD_ACT_MM_OFFSET = "offset_mm";
         
             //! The alias of the "set polarity" command

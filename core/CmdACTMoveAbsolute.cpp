@@ -107,13 +107,13 @@ void own::CmdACTMoveAbsolute::setHandler(c_data::CDataWrapper *data) {
 		strncpy(o_status, state_str.c_str(), 256);
 	}
 
-/*
+
         if(((*o_status_id)&::common::actuators::ACTUATOR_READY)==0){
             SCLERR_ << boost::str( boost::format("Bad state for moving actuator %1%[%2%]") % o_status % *o_status_id);
 	    BC_END_RUNNIG_PROPERTY;
 	    return;
         }
-*/	
+	
         if ((err = actuator_drv->getPosition(readTyp,&position)) !=0) {
 		LOG_AND_TROW(SCLERR_, 1, boost::str(boost::format("Error fetching position with code %1%") % err));
 	} else {

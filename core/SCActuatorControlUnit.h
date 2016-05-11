@@ -85,6 +85,7 @@ namespace driver {
 			bool setMovement(const std::string &name ,int32_t value,size_t size);
 			bool MoveRelative(const std::string &name,double offset,size_t size);
 			bool MoveAbsolute(const std::string &name,double position,size_t size);
+			bool Homing(const std::string &name,int32_t homTyp ,size_t size);
 		};
 	}
 }

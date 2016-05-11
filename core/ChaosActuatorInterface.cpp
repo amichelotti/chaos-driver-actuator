@@ -146,7 +146,7 @@ int ChaosActuatorInterface::setSpeed(double speed_mm_per_sec) {
 
 int ChaosActuatorInterface::setAcceleration(double acceleration_mm_per_sec2) {
        float param=(float) acceleration_mm_per_sec2;
-    WRITE_OP_FLOAT_TIM(OP_SET_SPEED,param,0);
+    WRITE_OP_FLOAT_TIM(OP_SET_ACCELERATION,param,0);
 }
 
 int ChaosActuatorInterface::setAdditive(bool isAdditive)
@@ -163,6 +163,35 @@ int ChaosActuatorInterface::setMovement(int32_t movement)
 {
     WRITE_OP_INT_TIM(OP_SET_MOVEMENT,movement,0);
 }
+int ChaosActuatorInterface::sethighSpeedHoming(double speed_mm_per_sec) {
+        float param=(float) speed_mm_per_sec;
+    WRITE_OP_FLOAT_TIM(OP_SET_HSPEED_HOM,param,0);
+}
+int ChaosActuatorInterface::setlowSpeedHoming(double speed_mm_per_sec) {
+        float param=(float) speed_mm_per_sec;
+    WRITE_OP_FLOAT_TIM(OP_SET_LSPEED_HOM,param,0);
+}
+
+int ChaosActuatorInterface::setAccelerationHoming(double acceleration_mm_per_sec2) {
+       float param=(float) acceleration_mm_per_sec2;
+    WRITE_OP_FLOAT_TIM(OP_SET_ACCELERATION_HOM,param,0);
+}
+
+int ChaosActuatorInterface::setAdditiveHoming(bool isAdditive)
+{
+    WRITE_OP_INT_TIM(OP_SET_ADDITIVE_HOM,isAdditive,0);
+}
+
+int ChaosActuatorInterface::setReferenceBaseHoming(int32_t referenceBase)
+{
+    WRITE_OP_INT_TIM(OP_SET_REFERENCE_HOM,referenceBase,0);
+}
+
+int ChaosActuatorInterface::setMovementHoming(int32_t movement)
+{
+    WRITE_OP_INT_TIM(OP_SET_MOVEMENT_HOM,movement,0);
+}
+
 int ChaosActuatorInterface::getPosition(::common::actuators::AbstractActuator::readingTypes readingType,double *deltaPosition_mm) {
     READ_OP_FLOAT_PARAM_INT(OP_GET_POSITION,readingType,deltaPosition_mm,0);
 }

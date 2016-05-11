@@ -101,6 +101,26 @@ cu_driver::MsgManagmentResultType::MsgManagmentResult ChaosActuatorDD::execOpcod
             ACDBG<<"Set Movement to:"<<in->ivalue;
             break;    
             
+        case OP_SET_ACCELERATION_HOM:
+            out->result= motor->setAccelerationHoming(in->fvalue0);
+            ACDBG<<"Set acceleration for homing to:"<<in->fvalue0;
+            break;
+            
+        case OP_SET_ADDITIVE_HOM:
+            motor->setAdditiveHoming(in->ivalue);
+            ACDBG<<"Set additive for homing to:"<<in->ivalue;
+            break;
+        
+        case OP_SET_REFERENCE_HOM:
+            out->result= motor->setReferenceBaseHoming(in->ivalue);
+            ACDBG<<"Set referenceBase for homing to:"<<in->ivalue;
+            break;
+            
+        case OP_SET_MOVEMENT_HOM:
+            out->result= motor->setMovementHoming(in->ivalue);
+            ACDBG<<"Set Movement for homing to:"<<in->ivalue;
+            break;    
+            
         case OP_GET_POSITION:
             out->result=motor->getPosition((::common::actuators::AbstractActuator::readingTypes)in->ivalue,&out->fvalue0);
             ACDBG<<"Got Position :"<< out->fvalue0;

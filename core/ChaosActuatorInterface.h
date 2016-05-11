@@ -26,14 +26,21 @@ namespace chaos {
                 OP_DEINIT, // deinit low level driver
                 OP_SET_TIMEOUT,
                 OP_GET_TIMEOUT,
+
                 OP_SET_SPEED, // set speed
                 OP_SET_ACCELERATION, // set acceleration
-                
                 OP_SET_ADDITIVE, //
                 OP_SET_REFERENCE, //
                 OP_SET_MOVEMENT, //
+
+                OP_SET_HSPEED_HOM, // set speed
+                OP_SET_LSPEED_HOM, // set speed
+                OP_SET_ACCELERATION_HOM, // set acceleration
+                OP_SET_ADDITIVE_HOM, //
+                OP_SET_REFERENCE_HOM, //
+                OP_SET_MOVEMENT_HOM, //
+
                 OP_GET_POSITION,
-                
                 OP_RESET_ALARMS,
                 OP_GET_ALARMS,
                 OP_MOVE_RELATIVE_MM,
@@ -96,6 +103,12 @@ namespace chaos {
                 int setAdditive(bool isAdditive);
                 int setReferenceBase(int32_t referenceBase);
                 int setMovement(int32_t movement);
+                int sethighSpeedHoming(double speed_mm_per_sec);
+                int setlowSpeedHoming(double speed_mm_per_sec);
+                int setAccelerationHoming(double acceleration_mm_per_sec2);
+                int setAdditiveHoming(bool isAdditive);
+                int setReferenceBaseHoming(int32_t referenceBase);
+                int setMovementHoming(int32_t movement);
                  /**
                  @brief return the position of the step motor in mm starting from the
                   * home position)

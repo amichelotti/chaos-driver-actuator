@@ -28,6 +28,7 @@
 #include "CmdACTMoveRelative.h"
 #include "CmdACTMoveAbsolute.h"
 #include "CmdACTStopMotion.h"
+#include "CmdACTHoming.h"
 
 using namespace chaos;
 
@@ -67,6 +68,21 @@ PUBLISHABLE_CONTROL_UNIT_IMPLEMENTATION(::driver::actuator::SCActuatorControlUni
   }
 }
 
+bool ::driver::actuator::SCActuatorControlUnit::Homing(const std::string &name,int32_t homTyp ,size_t size) {
+
+  uint64_t cmd_id;
+  bool result = true;
+  std::auto_ptr<CDataWrapper> cmd_pack(new CDataWrapper());
+  cmd_pack->addInt32Value(CMD_ACT_HOMINGTYPE,homTyp );
+  //send command
+  submitBatchCommand( CMD_ACT_HOMING_ALIAS,
+                     cmd_pack.release(),
+                     cmd_id,
+                     0,
+                     50,
+                     SubmissionRuleType::SUBMIT_AND_Stack);
+  return true;
+}
 bool ::driver::actuator::SCActuatorControlUnit::MoveRelative(const std::string &name,double offset,size_t size) {
   uint64_t cmd_id;
   bool result = true;
@@ -138,9 +154,7 @@ void ::driver::actuator::SCActuatorControlUnit::unitDefineActionAndDataset() thr
   installCommand(BATCH_COMMAND_GET_DESCRIPTION(CmdACTMoveRelative));
   installCommand(BATCH_COMMAND_GET_DESCRIPTION(CmdACTMoveAbsolute));
   installCommand(BATCH_COMMAND_GET_DESCRIPTION(CmdACTStopMotion));
-/*  installCommand(BATCH_COMMAND_GET_DESCRIPTION(CmdPSSetSlope));
-  installCommand(BATCH_COMMAND_GET_DESCRIPTION(CmdSetPolarity));
-*/
+  installCommand(BATCH_COMMAND_GET_DESCRIPTION(CmdACTHoming));
   //setup the dataset
   addAttributeToDataSet("range_mm",
                         "range_mm",
@@ -244,6 +258,9 @@ addAttributeToDataSet("InitString",
  addHandlerOnInputAttributeName< ::driver::actuator::SCActuatorControlUnit, int32_t >(this,
                                                             &::driver::actuator::SCActuatorControlUnit::setMovement,
                                                               "movement");
+ addHandlerOnInputAttributeName< ::driver::actuator::SCActuatorControlUnit, int32_t >(this,
+                                                            &::driver::actuator::SCActuatorControlUnit::Homing,
+                                                              CMD_ACT_HOMING_ALIAS);
  addHandlerOnInputAttributeName< ::driver::actuator::SCActuatorControlUnit, double >(this,
                                                             &::driver::actuator::SCActuatorControlUnit::MoveRelative,
                                                               "mov_rel");
