@@ -1,5 +1,5 @@
 /*
-CmdACTHoming.h
+CmdACTPoweron.h
 !CHAOS
 Created by CUGenerator
 
@@ -17,20 +17,15 @@ See the License for the specific language governing permissions and
 limitations under the License.
 
 */
-#ifndef __Actuator__CmdACTHoming__
-#define __Actuator__CmdACTHoming__
+#ifndef __Actuator__CmdACTPoweron__
+#define __Actuator__CmdACTPoweron__
 #include "AbstractActuatorCommand.h"
 #include <bitset>
 namespace c_data = chaos::common::data;
 namespace ccc_slow_command = chaos::cu::control_manager::slow_command;
 namespace driver {
 	namespace actuator {
-		 DEFINE_BATCH_COMMAND_CLASS(CmdACTHoming,AbstractActuatorCommand) {
-			int  homResult;
-			int32_t homingTypeVar;
-			::common::actuators::AbstractActuator::readingTypes readTyp;
-			double	*o_position;
-
+		 DEFINE_BATCH_COMMAND_CLASS(CmdACTPoweron,AbstractActuatorCommand) {
 			//implemented handler
 			uint8_t implementedHandler();
 			//initial set handler
