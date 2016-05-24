@@ -139,7 +139,6 @@ namespace chaos {
                 
                 /**
                  @brief put back the step motor to the home position)
-                 @return 0 if success or an error code
                  */
                 int homing(homingType mode);
                 int setTrapezoidalProfile(double, double, int, short int, short int);

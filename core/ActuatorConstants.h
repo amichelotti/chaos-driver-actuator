@@ -32,8 +32,8 @@ namespace driver {
 		//! The alias of the default command of the type
 		const char * const CMD_ACT_DEFAULT_ALIAS = "default";
 		
-		//! The alias of the "mode" command of the type
-		const char * const CMD_ACT_MODE_ALIAS = "mode";
+		//! The alias of the "poweron" command of the type
+		const char * const CMD_ACT_POWERON_ALIAS = "poweron";
 		//! The alias of the parameter of the type {0-to stadby, 1-to operational}
 		const char * const CMD_ACT_MOVE_RELATIVE = "move_rela";
 		

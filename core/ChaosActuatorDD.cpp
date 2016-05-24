@@ -155,7 +155,7 @@ cu_driver::MsgManagmentResultType::MsgManagmentResult ChaosActuatorDD::execOpcod
         
         case OP_HOMING:
             out->result = motor->homing( (::common::actuators::AbstractActuator::homingType)in->ivalue );
-            ACDBG<<"Set homing, homing type:"<< in->ivalue;
+            ACDBG<<"Set homing, homing type: "<< in->ivalue << "result is " << out->result;
             break;
             
             

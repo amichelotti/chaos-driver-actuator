@@ -67,7 +67,7 @@ void own::CmdACTHoming::setHandler(c_data::CDataWrapper *data)
     {
 		LOG_AND_TROW(SCLERR_, 1, boost::str(boost::format("Error %1% while homing") % err));
     }
-	//setWorkState(false);
+	setWorkState(false);
 	BC_EXEC_RUNNIG_PROPERTY;
 }
 
@@ -91,6 +91,7 @@ void own::CmdACTHoming::acquireHandler() {
 	}
 
 		SCLDBG_ << "Homing acquire before sending homing again" ;
+		setWorkState(true);
 	if(err = actuator_drv->homing((::common::actuators::AbstractActuator::homingType) homingTypeVar) < 0)
     	{
                 LOG_AND_TROW(SCLERR_, 1, boost::str(boost::format("Error %1% while homing") % err));
