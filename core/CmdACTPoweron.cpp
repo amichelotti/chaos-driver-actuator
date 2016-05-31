@@ -41,14 +41,60 @@ uint8_t own::CmdACTPoweron::implementedHandler(){
 }
 // empty set handler
 void own::CmdACTPoweron::setHandler(c_data::CDataWrapper *data) {
+	int err;
 	AbstractActuatorCommand::setHandler(data);
+	if((err = actuator_drv->poweron()) != 0) {
+		LOG_AND_TROW(SCLERR_, 1, boost::str(boost::format("Error %1% while power on the actuator") % err));
+	}
+	setWorkState(true);
+	BC_EXEC_RUNNIG_PROPERTY;
 }
 // empty acquire handler
 void own::CmdACTPoweron::acquireHandler() {
 }
 // empty correlation handler
 void own::CmdACTPoweron::ccHandler() {
+	int err,state;
+	std::string state_str;
+	if((err = actuator_drv->getState(&state, state_str))) 
+	{
+		LOG_AND_TROW(SCLERR_, 1, boost::str(boost::format("Error fetching state readout with code %1%") % err));
+	} 
+	else 
+ 	{
+		*o_status_id = state;
+		//copy up to 255 and put the termination character
+		strncpy(o_status, state_str.c_str(), 256);
+		if(((*o_status_id)&::common::actuators::ACTUATOR_POWER_SUPPLIED)!=0)
+		{
+			BC_END_RUNNIG_PROPERTY;
+			setWorkState(false);
+		}
+	}
 }
 // empty timeout handler
 bool own::CmdACTPoweron::timeoutHandler() {
+	int err,state;
+	std::string state_str;
+	setWorkState(false);
+ 	if((err = actuator_drv->getState(&state, state_str)))
+        {
+                LOG_AND_TROW(SCLERR_, 1, boost::str(boost::format("Error fetching state readout with code %1%") % err));
+        }
+        else
+        {
+                *o_status_id = state;
+                //copy up to 255 and put the termination character
+                strncpy(o_status, state_str.c_str(), 256);
+                if(((*o_status_id)&::common::actuators::ACTUATOR_POWER_SUPPLIED)!=0)
+                {
+                        BC_END_RUNNIG_PROPERTY;
+                }
+		else
+		{
+ 			SCLERR_ << "[metric] Power on not achieved before timeout " ;
+			BC_FAULT_RUNNIG_PROPERTY;
+		}
+        }
+
 }

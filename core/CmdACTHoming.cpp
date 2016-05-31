@@ -38,7 +38,7 @@ BATCH_COMMAND_CLOSE_DESCRIPTION()
 
 // return the implemented handler
 uint8_t own::CmdACTHoming::implementedHandler(){
-	return      AbstractActuatorCommand::implementedHandler()|chaos_batch::HandlerType::HT_Acquisition;
+  return      AbstractActuatorCommand::implementedHandler()|chaos_batch::HandlerType::HT_Acquisition;
 }
 // empty set handler
 void own::CmdACTHoming::setHandler(c_data::CDataWrapper *data) 
@@ -52,6 +52,9 @@ void own::CmdACTHoming::setHandler(c_data::CDataWrapper *data)
 	SCLDBG_ << "fetch state readout";
 	tmpInt =  (int*) getAttributeCache()->getROPtr<int32_t>(DOMAIN_INPUT, "readingType") ;
         readTyp=(::common::actuators::AbstractActuator::readingTypes) *tmpInt;
+        o_position = getAttributeCache()->getRWPtr<double>(DOMAIN_OUTPUT, "position");
+        //scheduleTime= getFeatures(chaos_batch::features::FeaturesFlagTypes::FF_SET_SCHEDULER_DELAY);
+
 	 //check mode parameter
     if(!data->hasKey(CMD_ACT_HOMINGTYPE)) 
     {
@@ -63,6 +66,7 @@ void own::CmdACTHoming::setHandler(c_data::CDataWrapper *data)
 	actuator_drv->accessor->base_opcode_priority=100;
 	setWorkState(true);
 	//actuator_drv->setTimeoutHoming(30000);
+    setFeatures(chaos_batch::features::FeaturesFlagTypes::FF_SET_SCHEDULER_DELAY, (uint64_t)100000);
     if(err = actuator_drv->homing((::common::actuators::AbstractActuator::homingType) homType) < 0) 
     {
 		LOG_AND_TROW(SCLERR_, 1, boost::str(boost::format("Error %1% while homing") % err));
@@ -77,6 +81,8 @@ void own::CmdACTHoming::setHandler(c_data::CDataWrapper *data)
 //  acquire handler
 void own::CmdACTHoming::acquireHandler() {
 	int err;
+	int state;
+	std::string state_str;
 	double position;
 	SCLDBG_ << "Start Acquire Handler " ;
 
@@ -87,17 +93,25 @@ void own::CmdACTHoming::acquireHandler() {
 	else 
         {
 		SCLDBG_ << "Homing acquire after getPosition "<<err ;
-                // *o_position = position;
+                 *o_position = position;
+	}
+	SCLDBG_ << "fetch state readout";
+	if((err = actuator_drv->getState(&state, state_str))) {
+		LOG_AND_TROW(SCLERR_, 1, boost::str(boost::format("Error fetching state readout with code %1%") % err));
+	} else {
+		*o_status_id = state;
+		//copy up to 255 and put the termination character
+		strncpy(o_status, state_str.c_str(), 256);
 	}
 
 		SCLDBG_ << "Homing acquire before sending homing again" ;
 		setWorkState(true);
-	if(err = actuator_drv->homing((::common::actuators::AbstractActuator::homingType) homingTypeVar) < 0)
+		if((err = actuator_drv->homing((::common::actuators::AbstractActuator::homingType) homingTypeVar)) < 0)
     	{
                 LOG_AND_TROW(SCLERR_, 1, boost::str(boost::format("Error %1% while homing") % err));
     	}
     	homResult=err;
-
+	SCLDBG_ <<" HOMERESULT " << homResult ;
     	//force output dataset as changed
     	getAttributeCache()->setOutputDomainAsChanged();
 
@@ -110,6 +124,7 @@ void own::CmdACTHoming::ccHandler() {
         {
 		BC_END_RUNNIG_PROPERTY;
 		setWorkState(false);
+                setFeatures(chaos_batch::features::FeaturesFlagTypes::FF_SET_SCHEDULER_DELAY, (uint64_t)1000000);
 	}
 }
 // empty timeout handler

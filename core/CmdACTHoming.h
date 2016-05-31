@@ -28,6 +28,7 @@ namespace driver {
 		 DEFINE_BATCH_COMMAND_CLASS(CmdACTHoming,AbstractActuatorCommand) {
 			int  homResult;
 			int32_t homingTypeVar;
+		 	uint64_t scheduleTime;	
 			::common::actuators::AbstractActuator::readingTypes readTyp;
 			double	*o_position;
 

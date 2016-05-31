@@ -54,8 +54,7 @@ void AbstractActuatorCommand::setHandler(c_data::CDataWrapper *data) {
 
 // return the implemented handler
 uint8_t AbstractActuatorCommand::implementedHandler() {
-	return  chaos_batch::HandlerType::HT_Set |
-			chaos_batch::HandlerType::HT_Correlation;
+	return  chaos_batch::HandlerType::HT_Set |chaos_batch::HandlerType::HT_Correlation;
 }
 
 void AbstractActuatorCommand::ccHandler() {
