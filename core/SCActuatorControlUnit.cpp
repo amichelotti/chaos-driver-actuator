@@ -29,7 +29,8 @@
 #include "CmdACTMoveAbsolute.h"
 #include "CmdACTStopMotion.h"
 #include "CmdACTHoming.h"
-
+#include "CmdACTPoweron.h"
+#include "CmdACTresetAlarms.h"
 using namespace chaos;
 
 using namespace chaos::common::data;
@@ -68,6 +69,21 @@ PUBLISHABLE_CONTROL_UNIT_IMPLEMENTATION(::driver::actuator::SCActuatorControlUni
   }
 }
 
+bool ::driver::actuator::SCActuatorControlUnit::resetAlarms(const std::string &name,int64_t alarmMask ,size_t size) {
+
+  uint64_t cmd_id;
+  bool result = true;
+  std::auto_ptr<CDataWrapper> cmd_pack(new CDataWrapper());
+  cmd_pack->addInt64Value(CMD_ACT_ALRM,alarmMask );
+  //send command
+  submitBatchCommand( CMD_ACT_HOMING_ALIAS,
+                     cmd_pack.release(),
+                     cmd_id,
+                     0,
+                     50,
+                     SubmissionRuleType::SUBMIT_AND_Stack);
+  return true;
+}
 bool ::driver::actuator::SCActuatorControlUnit::Homing(const std::string &name,int32_t homTyp ,size_t size) {
 
   uint64_t cmd_id;
@@ -103,7 +119,7 @@ bool ::driver::actuator::SCActuatorControlUnit::MoveAbsolute(const std::string &
   std::auto_ptr<CDataWrapper> cmd_pack(new CDataWrapper());
   cmd_pack->addDoubleValue(CMD_ACT_MOVE_ABSOLUTE_ALIAS,position );
   //send command
-                    SCCUAPP << "ALEDEBUG: move absolute handler:"<<position;
+                    SCCUAPP << " move absolute handler:"<<position;
   submitBatchCommand( CMD_ACT_MOVE_ABSOLUTE_ALIAS,
                      cmd_pack.release(),
                      cmd_id,
@@ -125,7 +141,7 @@ bool ::driver::actuator::SCActuatorControlUnit::setSpeed(const std::string &name
 bool ::driver::actuator::SCActuatorControlUnit::setAcceleration(const std::string &name,double value,size_t size){
           int err= -1;
           const double *acc = getAttributeCache()->getROPtr<double>(DOMAIN_INPUT, "acceleration");
-	  SCCUAPP << "ALEDEBUG HANDLER setAcceleration" ;
+	  SCCUAPP << "HANDLER setAcceleration" ;
           if(value>=0){
                   SCCUAPP << "set acceleration:"<<value<< "::" << acc;
                   err = actuator_drv->setAcceleration(value);
@@ -155,6 +171,8 @@ void ::driver::actuator::SCActuatorControlUnit::unitDefineActionAndDataset() thr
   installCommand(BATCH_COMMAND_GET_DESCRIPTION(CmdACTMoveAbsolute));
   installCommand(BATCH_COMMAND_GET_DESCRIPTION(CmdACTStopMotion));
   installCommand(BATCH_COMMAND_GET_DESCRIPTION(CmdACTHoming));
+  installCommand(BATCH_COMMAND_GET_DESCRIPTION(CmdACTPoweron));
+  installCommand(BATCH_COMMAND_GET_DESCRIPTION(CmdACTresetAlarms));
   //setup the dataset
   addAttributeToDataSet("range_mm",
                         "range_mm",
@@ -217,11 +235,11 @@ addAttributeToDataSet("dev_state",
                         DataType::TYPE_INT32,
                         DataType::Output);
 
-  addAttributeToDataSet("status",
+ /* addAttributeToDataSet("status",
                         "status",
                         DataType::TYPE_STRING,
                         DataType::Output, 256);
-
+*/
 addAttributeToDataSet("InitString",
                         "InitString",
                         DataType::TYPE_STRING,
@@ -267,6 +285,10 @@ addAttributeToDataSet("InitString",
  addHandlerOnInputAttributeName< ::driver::actuator::SCActuatorControlUnit, double >(this,
                                                             &::driver::actuator::SCActuatorControlUnit::MoveAbsolute,
                                                               "mov_abs");
+/* addHandlerOnInputAttributeName< ::driver::actuator::SCActuatorControlUnit, int64_t >(this,
+                                                            &::driver::actuator::SCActuatorControlUnit::resetAlarms,
+                                                              "reset_alarms");
+*/
 }
 
 void ::driver::actuator::SCActuatorControlUnit::unitDefineCustomAttribute() {
@@ -310,25 +332,8 @@ void ::driver::actuator::SCActuatorControlUnit::unitInit() throw(CException) {
     throw chaos::CException(-3, "Cannot initialize actuator " + control_unit_instance, __FUNCTION__);
 
   }
-  //actuator_drv->moveRelativeMillimeters(-2.45);
-  
-  //check mandatory default values
-  /*
-   */
-  /*SCCUAPP << "check mandatory default values";
-  getAttributeRangeValueInfo(std::string("currentSP"), attr_info);*/
 
-  // REQUIRE MIN MAX SET IN THE MDS
-  /*if (attr_info.maxRange.size()) {
-    SCCUAPP << "max_current max=" << (max_range = attr_info.maxRange);
-        SCCUAPP << "min_current min=" << (min_range = attr_info.minRange);
 
-  }*/
-
-    // retrive the attribute description from the device database
-  /*
-   * current_sp_attr_info.reset();
-   */
  
   //actuator_drv->moveRelativeMillimeters(3.3);
 
