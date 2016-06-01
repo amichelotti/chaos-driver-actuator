@@ -235,11 +235,11 @@ addAttributeToDataSet("dev_state",
                         DataType::TYPE_INT32,
                         DataType::Output);
 
- /* addAttributeToDataSet("status",
+  addAttributeToDataSet("status",
                         "status",
                         DataType::TYPE_STRING,
                         DataType::Output, 256);
-*/
+
 addAttributeToDataSet("InitString",
                         "InitString",
                         DataType::TYPE_STRING,
@@ -285,10 +285,10 @@ addAttributeToDataSet("InitString",
  addHandlerOnInputAttributeName< ::driver::actuator::SCActuatorControlUnit, double >(this,
                                                             &::driver::actuator::SCActuatorControlUnit::MoveAbsolute,
                                                               "mov_abs");
-/* addHandlerOnInputAttributeName< ::driver::actuator::SCActuatorControlUnit, int64_t >(this,
+ addHandlerOnInputAttributeName< ::driver::actuator::SCActuatorControlUnit, int64_t >(this,
                                                             &::driver::actuator::SCActuatorControlUnit::resetAlarms,
                                                               "reset_alarms");
-*/
+
 }
 
 void ::driver::actuator::SCActuatorControlUnit::unitDefineCustomAttribute() {
