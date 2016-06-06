@@ -81,6 +81,11 @@ cu_driver::MsgManagmentResultType::MsgManagmentResult ChaosActuatorDD::execOpcod
             ACDBG<<"Set speed to:"<<in->fvalue0;
             break;
             
+         case OP_SET_MAX_SPEED:
+            out->result= motor->setMaxSpeed(in->fvalue0);
+            ACDBG<<"Set max speed to:"<<in->fvalue0;
+            break;
+
         case OP_SET_ACCELERATION:
             out->result= motor->setAcceleration(in->fvalue0);
             ACDBG<<"Set acceleration to:"<<in->fvalue0;

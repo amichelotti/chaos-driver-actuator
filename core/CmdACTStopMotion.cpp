@@ -44,7 +44,7 @@ void own::CmdACTStopMotion::setHandler(c_data::CDataWrapper *data) {
 	int err=0;
 AbstractActuatorCommand::setHandler(data);
 	SCLDBG_ << "Stop Motion " ;
-	if(err = actuator_drv->stopMotion() != 0) {
+	if((err = actuator_drv->stopMotion()) != 0) {
 		LOG_AND_TROW(SCLERR_, 1, boost::str(boost::format("Error %1% stopping motor") % err));
 	}
 actuator_drv->accessor->base_opcode_priority=100;

@@ -40,16 +40,39 @@ BATCH_COMMAND_CLOSE_DESCRIPTION()
 uint8_t own::CmdACTresetAlarms::implementedHandler(){
 	return      AbstractActuatorCommand::implementedHandler()|chaos_batch::HandlerType::HT_Acquisition;
 }
-// empty set handler
+// set handler
 void own::CmdACTresetAlarms::setHandler(c_data::CDataWrapper *data) {
+	int err;
 	AbstractActuatorCommand::setHandler(data);
+	int64_t alarmMask = data->getInt64Value(CMD_ACT_ALRM);
+	SCLDBG_ << "ALEDEBUG Reset Alarms set handler "<< alarmMask ;
+
+        if((err = actuator_drv->resetAlarms(alarmMask)) != 0) {
+                LOG_AND_TROW(SCLERR_, 1, boost::str(boost::format("Error %1% resetting alarms") % err));
+	}	
+	actuator_drv->accessor->base_opcode_priority=100;
+        setWorkState(true);
+        BC_EXEC_RUNNIG_PROPERTY;
+	return;
+
+
 }
 // empty acquire handler
 void own::CmdACTresetAlarms::acquireHandler() {
+ //force output dataset as changed
+	SCLDBG_ << "ALEDEBUG Reset Alarms acquire handler ";
+        getAttributeCache()->setOutputDomainAsChanged();
+
 }
 // empty correlation handler
 void own::CmdACTresetAlarms::ccHandler() {
+	SCLDBG_ << "ALEDEBUG Reset Alarms CC handler ";
+        setWorkState(false);
+        BC_END_RUNNIG_PROPERTY;
+	return;
 }
 // empty timeout handler
 bool own::CmdACTresetAlarms::timeoutHandler() {
+	SCLDBG_ << "ALEDEBUG Reset Alarms timeout handler ";
+	return false;
 }

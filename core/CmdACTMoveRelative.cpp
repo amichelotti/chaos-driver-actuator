@@ -201,7 +201,7 @@ void own::CmdACTMoveRelative::acquireHandler() {
 	std::string desc;
         
 	std::string state_str;
-	SCLDBG_ << "Start Acquire Handler " ;
+	SCLDBG_ << "MoveRelative Start Acquire Handler " ;
 	//acquire the current readout
 	SCLDBG_ << "fetch current readout";
         

@@ -32,6 +32,9 @@ namespace driver {
 		//! The alias of the default command of the type
 		const char * const CMD_ACT_DEFAULT_ALIAS = "default";
 		
+		const char * const CMD_ACT_SETPARAMETER_ALIAS = "set_parameter";
+		const char * const CMD_ACT_PARNAME = "parameter_name";
+		const char * const CMD_ACT_VALUE = "parameter_value";
 		//! The alias of the "poweron" command of the type
 		const char * const CMD_ACT_POWERON_ALIAS = "poweron";
 		//! The alias of the parameter of the type {0-to stadby, 1-to operational}

@@ -61,7 +61,7 @@ void CmdACTDefault::setHandler(c_data::CDataWrapper *data) {
 	CMDCU_ << "After parental Set Handler";
 
 	//set the default scheduling to one seconds
-	//setFeatures(features::FeaturesFlagTypes::FF_SET_SCHEDULER_DELAY, (uint64_t)1000000);
+	setFeatures(features::FeaturesFlagTypes::FF_SET_SCHEDULER_DELAY, (uint64_t)1000000);
 
 	//get channel pointer
 	tmpInt =  getAttributeCache()->getROPtr<int32_t>(DOMAIN_INPUT, "readingType") ;

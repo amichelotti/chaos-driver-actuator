@@ -52,6 +52,7 @@ namespace chaos {
                 OP_GET_SWVERSION,
                 OP_GET_HWVERSION,
                 OP_GET_ALARM_DESC,
+		OP_SET_MAX_SPEED,
                 OP_GET_FEATURE
             } ChaosActuatorOpcode;
             
@@ -176,6 +177,7 @@ namespace chaos {
                  */
                 uint64_t getFeatures() ;
 		int setTrapezoidalProfile(double, double, bool, int32_t, int32_t) ;              
+		int setMaxSpeed(double);
                 
                 
                 

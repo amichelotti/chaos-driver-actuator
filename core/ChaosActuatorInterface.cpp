@@ -143,6 +143,10 @@ int ChaosActuatorInterface::setSpeed(double speed_mm_per_sec) {
         float param=(float) speed_mm_per_sec;
     WRITE_OP_FLOAT_TIM(OP_SET_SPEED,param,0);
 }
+int ChaosActuatorInterface::setMaxSpeed(double speed_mm_per_sec) {
+        float param=(float) speed_mm_per_sec;
+    WRITE_OP_FLOAT_TIM(OP_SET_MAX_SPEED,param,0);
+}
 
 int ChaosActuatorInterface::setAcceleration(double acceleration_mm_per_sec2) {
        float param=(float) acceleration_mm_per_sec2;
