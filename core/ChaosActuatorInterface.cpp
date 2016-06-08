@@ -85,6 +85,12 @@ strncpy(idata.str,(char*)pstring,MAX_STR_SIZE); \
 accessor->send(&message);\
 return ret.result;
 
+#define WRITE_OP_STRING_STRING_TIM(op,pstring,pstring2,timeout) \
+PREPARE_OP_RET_INT_TIMEOUT(op,timeout); \
+strncpy(idata.str,(char*)pstring,MAX_STR_SIZE); \
+strncpy(idata.str2,(char*)pstring2,MAX_STR_SIZE); \
+accessor->send(&message);\
+return ret.result;
 
 #define READ_OP_INT_TIM(op,pival,timeout) \
 PREPARE_OP_RET_INT_TIMEOUT(op,timeout); \
@@ -228,8 +234,8 @@ int ChaosActuatorInterface::homing(homingType mode){
 }
 
 
-int ChaosActuatorInterface::poweron(uint32_t timeo_ms){
-    WRITE_OP_TIM(OP_POWERON,timeo_ms);
+int ChaosActuatorInterface::poweron(int on,uint32_t timeo_ms){
+    WRITE_OP_INT_TIM(OP_POWERON,on,timeo_ms);
 
 }
 
@@ -257,6 +263,10 @@ uint64_t ChaosActuatorInterface::getFeatures() {
     READ_OP_64INT_TIM_NORET(OP_GET_FEATURE,&feats,0);
     return feats;
 }
+int ChaosActuatorInterface::setParameter(const std::string parName,const std::string value) {
+	WRITE_OP_STRING_STRING_TIM(OP_SETPARAMETER,parName.c_str(),value.c_str(),0);
+}
+
 
 int ChaosActuatorInterface::setTrapezoidalProfile(double, double, bool, int32_t, int32_t) {
 return 0;

@@ -40,6 +40,7 @@ namespace chaos {
                 OP_SET_REFERENCE_HOM, //
                 OP_SET_MOVEMENT_HOM, //
 
+                OP_SETPARAMETER, //
                 OP_GET_POSITION,
                 OP_RESET_ALARMS,
                 OP_GET_ALARMS,
@@ -60,6 +61,7 @@ namespace chaos {
                 double fvalue0;
                 double fvalue1;
 		char str[MAX_STR_SIZE];
+                char str2[MAX_STR_SIZE];
 
                 int32_t ivalue;
                 uint32_t timeout;
@@ -110,6 +112,7 @@ namespace chaos {
                 int setAdditiveHoming(bool isAdditive);
                 int setReferenceBaseHoming(int32_t referenceBase);
                 int setMovementHoming(int32_t movement);
+		int setParameter(std::string parName, std::string value);
                  /**
                  @brief return the position of the step motor in mm starting from the
                   * home position)
@@ -142,11 +145,11 @@ namespace chaos {
                  @brief put back the step motor to the home position)
                  */
                 int homing(homingType mode);
-                int setTrapezoidalProfile(double, double, int, short int, short int);
+                //int setTrapezoidalProfile(double, double, int, short int, short int);
 
                 
 
-                int poweron(uint32_t timeo_ms=ACTUATORS_DEFAULT_TIMEOUT);
+                int poweron(int on,uint32_t timeo_ms=ACTUATORS_DEFAULT_TIMEOUT);
                 /**
                  @brief gets the power supply state
                  @param state returns a bit field of PowerSupplyStates

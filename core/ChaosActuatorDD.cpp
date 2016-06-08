@@ -165,7 +165,7 @@ cu_driver::MsgManagmentResultType::MsgManagmentResult ChaosActuatorDD::execOpcod
             
             
         case OP_POWERON:
-            out->result = motor->poweron();
+            out->result = motor->poweron(in->ivalue);
             ACDBG<<"Set Power on, result:"<< out->result;
             break;
             
@@ -193,6 +193,11 @@ cu_driver::MsgManagmentResultType::MsgManagmentResult ChaosActuatorDD::execOpcod
 
             break;
         }            
+        case OP_SETPARAMETER:{
+	out->result=0;
+	ACDBG << "ALEDEBUG: Sending Set Parameter";
+	break;
+	}
        
             
         case OP_GET_FEATURE:{

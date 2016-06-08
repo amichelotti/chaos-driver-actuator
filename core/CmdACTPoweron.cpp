@@ -32,6 +32,8 @@ namespace chaos_batch = chaos::common::batch_command;
 BATCH_COMMAND_OPEN_DESCRIPTION_ALIAS(driver::actuator::,CmdACTPoweron,CMD_ACT_POWERON_ALIAS,
 			"Turn on the power of the actuator",
 			"29d39d4f-0311-4774-b0b3-8caa7862193c")
+BATCH_COMMAND_ADD_INT32_PARAM(CMD_ACT_POWERON_VALUE,"on state",chaos::common::batch_command::BatchCommandAndParameterDescriptionkey::BC_PARAMETER_FLAG_MANDATORY)
+
 BATCH_COMMAND_CLOSE_DESCRIPTION()
 
 
@@ -42,8 +44,10 @@ uint8_t own::CmdACTPoweron::implementedHandler(){
 // empty set handler
 void own::CmdACTPoweron::setHandler(c_data::CDataWrapper *data) {
 	int err;
+	int32_t onState = data->getInt32Value(CMD_ACT_POWERON_VALUE);
+
 	AbstractActuatorCommand::setHandler(data);
-	if((err = actuator_drv->poweron()) != 0) {
+	if((err = actuator_drv->poweron(onState)) != 0) {
 		LOG_AND_TROW(SCLERR_, 1, boost::str(boost::format("Error %1% while power on the actuator") % err));
 	}
 	setWorkState(true);

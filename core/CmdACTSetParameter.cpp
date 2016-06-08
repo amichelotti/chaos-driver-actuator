@@ -33,7 +33,7 @@ BATCH_COMMAND_OPEN_DESCRIPTION_ALIAS(driver::actuator::,CmdACTSetParameter,CMD_A
 			"Set a inner parameter of the actuator",
 			"0f5cf957-e671-4ccc-8f02-c27d87a82f0a")
 BATCH_COMMAND_ADD_STRING_PARAM(CMD_ACT_PARNAME,"name of parameter to be set",chaos::common::batch_command::BatchCommandAndParameterDescriptionkey::BC_PARAMETER_FLAG_MANDATORY)
-BATCH_COMMAND_ADD_STRING_PARAM(CMD_ACT_VALUE,"value of the parameter",chaos::common::batch_command::BatchCommandAndParameterDescriptionkey::BC_PARAMETER_FLAG_MANDATORY)
+BATCH_COMMAND_ADD_STRING_PARAM(CMD_ACT_SETPAR_VALUE,"value of the parameter",chaos::common::batch_command::BatchCommandAndParameterDescriptionkey::BC_PARAMETER_FLAG_MANDATORY)
 BATCH_COMMAND_CLOSE_DESCRIPTION()
 
 
@@ -43,7 +43,27 @@ uint8_t own::CmdACTSetParameter::implementedHandler(){
 }
 // empty set handler
 void own::CmdACTSetParameter::setHandler(c_data::CDataWrapper *data) {
+	std::string parName,value;
+	int err;
 	AbstractActuatorCommand::setHandler(data);
+	SCLDBG_ << "check data";
+	if(!data ||
+	   !data->hasKey(CMD_ACT_PARNAME)) {
+		SCLERR_ << "parameter name  not present";
+		BC_END_RUNNIG_PROPERTY;
+		return;
+	}
+	if(!data ||
+	   !data->hasKey(CMD_ACT_SETPAR_VALUE)) {
+		SCLERR_ << "parameter value  not present";
+		BC_END_RUNNIG_PROPERTY;
+		return;
+	}
+	parName= static_cast<std::string>(data->getStringValue(CMD_ACT_PARNAME));
+	value= static_cast<std::string>(data->getStringValue(CMD_ACT_SETPAR_VALUE));
+	if((err = actuator_drv->setParameter(parName,value)) != 0) {
+		LOG_AND_TROW(SCLERR_, 1, boost::str(boost::format("Error %1% setting parameter %2") % err % parName));
+	}
 }
 // empty acquire handler
 void own::CmdACTSetParameter::acquireHandler() {
