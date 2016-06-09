@@ -70,80 +70,6 @@ PUBLISHABLE_CONTROL_UNIT_IMPLEMENTATION(::driver::actuator::SCActuatorControlUni
   }
 }
 
-bool ::driver::actuator::SCActuatorControlUnit::resetAlarms(const std::string &name,int64_t alarmMask ,size_t size) {
-
-  uint64_t cmd_id;
-  bool result = true;
-  std::auto_ptr<CDataWrapper> cmd_pack(new CDataWrapper());
-  cmd_pack->addInt64Value(CMD_ACT_ALRM,alarmMask );
-  //send command
-  submitBatchCommand( CMD_ACT_HOMING_ALIAS,
-                     cmd_pack.release(),
-                     cmd_id,
-                     0,
-                     50,
-                     SubmissionRuleType::SUBMIT_AND_Stack);
-  return true;
-}
-bool ::driver::actuator::SCActuatorControlUnit::PowerOn(const std::string &name,int32_t onState ,size_t size) {
-
-  uint64_t cmd_id;
-  bool result = true;
-  std::auto_ptr<CDataWrapper> cmd_pack(new CDataWrapper());
-  cmd_pack->addInt32Value(CMD_ACT_POWERON_VALUE,onState );
-  //send command
-  submitBatchCommand( CMD_ACT_POWERON_ALIAS,
-                     cmd_pack.release(),
-                     cmd_id,
-                     0,
-                     50,
-                     SubmissionRuleType::SUBMIT_AND_Stack);
-  return true;
-}
-bool ::driver::actuator::SCActuatorControlUnit::Homing(const std::string &name,int32_t homTyp ,size_t size) {
-
-  uint64_t cmd_id;
-  bool result = true;
-  std::auto_ptr<CDataWrapper> cmd_pack(new CDataWrapper());
-  cmd_pack->addInt32Value(CMD_ACT_HOMINGTYPE,homTyp );
-  //send command
-  submitBatchCommand( CMD_ACT_HOMING_ALIAS,
-                     cmd_pack.release(),
-                     cmd_id,
-                     0,
-                     50,
-                     SubmissionRuleType::SUBMIT_AND_Stack);
-  return true;
-}
-bool ::driver::actuator::SCActuatorControlUnit::MoveRelative(const std::string &name,double offset,size_t size) {
-  uint64_t cmd_id;
-  bool result = true;
-  std::auto_ptr<CDataWrapper> cmd_pack(new CDataWrapper());
-  cmd_pack->addDoubleValue(CMD_ACT_MOVE_RELATIVE,offset );
-  //send command
-  submitBatchCommand( CMD_ACT_MOVE_RELATIVE_ALIAS,
-                     cmd_pack.release(),
-                     cmd_id,
-                     0,
-                     50,
-                     SubmissionRuleType::SUBMIT_AND_Stack);
-  return true;
-}
-bool ::driver::actuator::SCActuatorControlUnit::MoveAbsolute(const std::string &name,double position,size_t size) {
-  uint64_t cmd_id;
-  bool result = true;
-  std::auto_ptr<CDataWrapper> cmd_pack(new CDataWrapper());
-  cmd_pack->addDoubleValue(CMD_ACT_MOVE_ABSOLUTE_ALIAS,position );
-  //send command
-                    SCCUAPP << " move absolute handler:"<<position;
-  submitBatchCommand( CMD_ACT_MOVE_ABSOLUTE_ALIAS,
-                     cmd_pack.release(),
-                     cmd_id,
-                     0,
-                     50,
-                     SubmissionRuleType::SUBMIT_AND_Stack);
-  return true;
-}
 bool ::driver::actuator::SCActuatorControlUnit::setSpeed(const std::string &name,double value,size_t size){
         int err= -1;
           const double *speed = getAttributeCache()->getROPtr<double>(DOMAIN_INPUT, "speed");
@@ -289,21 +215,6 @@ addAttributeToDataSet("InitString",
  addHandlerOnInputAttributeName< ::driver::actuator::SCActuatorControlUnit, int32_t >(this,
                                                             &::driver::actuator::SCActuatorControlUnit::setMovement,
                                                               "movement");
- addHandlerOnInputAttributeName< ::driver::actuator::SCActuatorControlUnit, int32_t >(this,
-                                                            &::driver::actuator::SCActuatorControlUnit::Homing,
-                                                              CMD_ACT_HOMING_ALIAS);
- addHandlerOnInputAttributeName< ::driver::actuator::SCActuatorControlUnit, int32_t >(this,
-                                                            &::driver::actuator::SCActuatorControlUnit::PowerOn,
-                                                              CMD_ACT_POWERON_ALIAS);
- addHandlerOnInputAttributeName< ::driver::actuator::SCActuatorControlUnit, double >(this,
-                                                            &::driver::actuator::SCActuatorControlUnit::MoveRelative,
-                                                              "mov_rel");
- addHandlerOnInputAttributeName< ::driver::actuator::SCActuatorControlUnit, double >(this,
-                                                            &::driver::actuator::SCActuatorControlUnit::MoveAbsolute,
-                                                              "mov_abs");
- addHandlerOnInputAttributeName< ::driver::actuator::SCActuatorControlUnit, int64_t >(this,
-                                                            &::driver::actuator::SCActuatorControlUnit::resetAlarms,
-                                                              "reset_alarms");
 
 }
 

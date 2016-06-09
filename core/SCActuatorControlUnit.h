@@ -83,11 +83,6 @@ namespace driver {
 			bool setSpeed(const std::string &name ,double value,size_t size);
 			bool setAcceleration(const std::string &name ,double value,size_t size);
 			bool setMovement(const std::string &name ,int32_t value,size_t size);
-			bool MoveRelative(const std::string &name,double offset,size_t size);
-			bool MoveAbsolute(const std::string &name,double position,size_t size);
-			bool Homing(const std::string &name,int32_t homTyp ,size_t size);
-			bool PowerOn(const std::string &name,int32_t onState ,size_t size);
-			bool resetAlarms(const std::string &name,int64_t alarmMask ,size_t size);
 		};
 	}
 }
