@@ -67,6 +67,7 @@ void own::CmdACTPoweron::ccHandler() {
 	else 
  	{
 		*o_status_id = state;
+ 			SCLERR_ << "ALEDEBUG poweron CC got state "<<state_str ;
 		//copy up to 255 and put the termination character
 		strncpy(o_status, state_str.c_str(), 256);
 		if(((*o_status_id)&::common::actuators::ACTUATOR_POWER_SUPPLIED)!=0)
@@ -74,6 +75,8 @@ void own::CmdACTPoweron::ccHandler() {
 			BC_END_RUNNIG_PROPERTY;
 			setWorkState(false);
 		}
+			BC_END_RUNNIG_PROPERTY;
+			setWorkState(false);
 	}
 }
 // empty timeout handler

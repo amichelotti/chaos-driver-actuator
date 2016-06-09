@@ -149,7 +149,7 @@ namespace chaos {
 
                 
 
-                int poweron(int on,uint32_t timeo_ms=ACTUATORS_DEFAULT_TIMEOUT);
+                int poweron(int on);
                 /**
                  @brief gets the power supply state
                  @param state returns a bit field of PowerSupplyStates

@@ -234,8 +234,8 @@ int ChaosActuatorInterface::homing(homingType mode){
 }
 
 
-int ChaosActuatorInterface::poweron(int on,uint32_t timeo_ms){
-    WRITE_OP_INT_TIM(OP_POWERON,on,timeo_ms);
+int ChaosActuatorInterface::poweron(int on){
+    WRITE_OP_INT_TIM(OP_POWERON,on,0);
 
 }
 

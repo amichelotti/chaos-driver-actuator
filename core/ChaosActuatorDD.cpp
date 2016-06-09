@@ -82,7 +82,7 @@ cu_driver::MsgManagmentResultType::MsgManagmentResult ChaosActuatorDD::execOpcod
             break;
             
          case OP_SET_MAX_SPEED:
-            out->result= motor->setMaxSpeed(in->fvalue0);
+            //out->result= motor->setMaxSpeed(in->fvalue0);
             ACDBG<<"Set max speed to:"<<in->fvalue0;
             break;
 
@@ -194,8 +194,9 @@ cu_driver::MsgManagmentResultType::MsgManagmentResult ChaosActuatorDD::execOpcod
             break;
         }            
         case OP_SETPARAMETER:{
-	out->result=0;
-	ACDBG << "ALEDEBUG: Sending Set Parameter";
+	out->result=motor->setParameter(in->str,in->str2);
+	ACDBG << "ALEDEBUG: Sending Set on Parameter" ;
+	//ACDBG << "ALEDEBUG: Sending Set on Parameter "<<in->str.c_str() << "value: "<in->str2.c_str();
 	break;
 	}
        

@@ -191,10 +191,6 @@ void ::driver::actuator::SCActuatorControlUnit::unitDefineActionAndDataset() thr
   installCommand(BATCH_COMMAND_GET_DESCRIPTION(CmdACTresetAlarms));
   installCommand(BATCH_COMMAND_GET_DESCRIPTION(CmdACTSetParameter));
   //setup the dataset
-  addAttributeToDataSet("power",
-                        "power status",
-                        DataType::TYPE_INT32,
-                        DataType::Input);
 
   addAttributeToDataSet("speed",
                         "speed",
