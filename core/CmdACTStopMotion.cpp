@@ -81,16 +81,18 @@ void own::CmdACTStopMotion::ccHandler() {
 	double position;
         uint64_t elapsed_msec = chaos::common::utility::TimingUtil::getTimeStamp() - getSetTime();
 	//the command is endedn because we have reached the affinitut delta set
-	if ((o_status && ::common::actuators::ACTUATOR_INMOTION)==0)
+	SCLDBG_ << "cc handler Stop motion " << ((*o_status_id) & ::common::actuators::ACTUATOR_INMOTION) ;
+        DPRINT(" :   %x %x",*o_status_id, ::common::actuators::ACTUATOR_INMOTION);
+	if (((*o_status_id) & ::common::actuators::ACTUATOR_INMOTION)==0)
 	{
 	     SCLDBG_ << "[metric ]:Motor Stopped  in " << elapsed_msec << " milliseconds";
-	     BC_END_RUNNIG_PROPERTY;
 	     setWorkState(false);
+	     BC_END_RUNNIG_PROPERTY;
 	}
 	if (*o_alarms) {
 		SCLERR_ << "We got alarms on actuator so we end the command";
-		BC_END_RUNNIG_PROPERTY;
 		setWorkState(false);
+		BC_END_RUNNIG_PROPERTY;
 	}
 }
 // empty timeout handler

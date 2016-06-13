@@ -44,6 +44,7 @@ BATCH_COMMAND_CLOSE_DESCRIPTION()
 uint8_t own::CmdACTMoveAbsolute::implementedHandler(){
     return	AbstractActuatorCommand::implementedHandler()|chaos_batch::HandlerType::HT_Acquisition;
 }
+uint64_t computed_timeout;
 
 void own::CmdACTMoveAbsolute::setHandler(c_data::CDataWrapper *data) {
     chaos::common::data::RangeValueInfo position_sp_attr_info;
@@ -146,9 +147,13 @@ void own::CmdACTMoveAbsolute::setHandler(c_data::CDataWrapper *data) {
     SCLDBG_ << "compute timeout for moving Absolute = " << offset_mm;
 	
   	
-		
-	uint64_t computed_timeout = offset_mm / *i_speed;
-	SCLDBG_ << "Calculated timeout is = " << computed_timeout;
+	//numero di secondi, dopo lo moltiplichiamo per 1 milione (volendo da micro)	
+	double ccTim  = offset_mm / *i_speed;
+        ccTim*=100;
+        ccTim*=10000000;
+	computed_timeout = (uint64_t)ccTim;
+	SCLDBG_ << "Calculated timeout is = " << "ccTim" << ccTim <<"(" << computed_timeout  << ") i_speed " << *i_speed << " i_setpoint_affinity " << *i_setpoint_affinity;
+	//setFeatures(chaos_batch::features::FeaturesFlagTypes::FF_SET_COMMAND_TIMEOUT, computed_timeout);
 	setFeatures(chaos_batch::features::FeaturesFlagTypes::FF_SET_COMMAND_TIMEOUT, computed_timeout);
 	
         
@@ -156,11 +161,12 @@ void own::CmdACTMoveAbsolute::setHandler(c_data::CDataWrapper *data) {
 	if(*i_setpoint_affinity) {
 		affinity_set_delta = *i_setpoint_affinity;
 	} else {
-		affinity_set_delta = 1;
+		affinity_set_delta = 2;
 	}
 	SCLDBG_ << "The setpoint affinity value is of +-" << affinity_set_delta << " of millimeters";
 
-	SCLDBG_ << "Move to position " << offset_mm;
+	SCLDBG_ << "Move to position " << offset_mm << "reading type " << readTyp;
+        launched=time(NULL);
 	if((err = actuator_drv->moveAbsoluteMillimeters(offset_mm)) != 0) {
 		LOG_AND_TROW(SCLERR_, 1, boost::str(boost::format("Error %1% setting current") % err));
 	}
@@ -212,7 +218,7 @@ void own::CmdACTMoveAbsolute::acquireHandler() {
 void own::CmdACTMoveAbsolute::ccHandler() {
 	//check if we are int the delta of the setpoit to end the command
 	double delta_position_reached = std::abs(*o_position_sp - *o_position);
-	SCLDBG_ << "Readout: "<< *o_position <<" SetPoint: "<< *o_position_sp <<" Delta to reach: " << delta_position_reached;
+	SCLDBG_ << "ccH MoveABsolute Readout: "<< *o_position <<" SetPoint: "<< *o_position_sp <<" Delta to reach: " << delta_position_reached << " computed Timeout " << computed_timeout ;
 	if(delta_position_reached <= affinity_set_delta) 
         {
 		uint64_t elapsed_msec = chaos::common::utility::TimingUtil::getTimeStamp() - getSetTime();
@@ -235,6 +241,8 @@ bool own::CmdACTMoveAbsolute::timeoutHandler() {
 	//move the state machine on fault
 	setWorkState(false);
 	actuator_drv->accessor->base_opcode_priority=50;
+	SCLDBG_ << "ALEDEBUG ALEDEBUT TIM MoveABsolute Readout: "<< *o_position <<" SetPoint: "<< *o_position_sp <<" Delta to reach: " << delta_position_reached;
+	SCLDBG_ << "ALEDEBUG ALEDEBUT TIM MoveABsolute  affinity_set_delta: " << affinity_set_delta;
 	if(delta_position_reached <= affinity_set_delta) {
 		uint64_t elapsed_msec = chaos::common::utility::TimingUtil::getTimeStamp() - getSetTime();
 		SCLDBG_ << "[metric] Setpoint reached on timeout with readout position " << *o_position << " in " << elapsed_msec << " milliseconds";

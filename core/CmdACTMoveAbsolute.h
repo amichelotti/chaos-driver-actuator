@@ -45,6 +45,7 @@ namespace driver {
 ::common::actuators::AbstractActuator::readingTypes readTyp;
 
 			//is the delta to the setpoint that notify the end of command
+			time_t launched;
 			double affinity_set_delta;
                          bool slow_acquisition_index;
 		protected:

@@ -157,9 +157,13 @@ void own::CmdACTMoveRelative::setHandler(c_data::CDataWrapper *data) {
 
     SCLDBG_ << "compute timeout for moving relative = " << offset_mm;
 	
+        double ccTim  = offset_mm / *i_speed;
+        ccTim*=100;
+        ccTim*=10000000;
+	uint64_t computed_timeout = (uint64_t)ccTim;
+
   	
 		
-	uint64_t computed_timeout = offset_mm / *i_speed;
 	SCLDBG_ << "Calculated timeout is = " << computed_timeout;
 	SCLDBG_ << "o_position_sp is = " << *o_position_sp;
 	setFeatures(chaos_batch::features::FeaturesFlagTypes::FF_SET_COMMAND_TIMEOUT, computed_timeout);

@@ -22,6 +22,8 @@
 #include <boost/format.hpp>
 #include <boost/lexical_cast.hpp>
 #include <common/debug/core/debug.h>
+#include <json/json.h>
+
 //---commands----
 
 #include "CmdACTDefault.h"
@@ -219,6 +221,7 @@ addAttributeToDataSet("InitString",
 }
 
 void ::driver::actuator::SCActuatorControlUnit::unitDefineCustomAttribute() {
+  addAttributeToDataSet("maxSpeedCustom", "max Speed in mm/s", DataType::TYPE_DOUBLE, DataType::Input);
 
 }
 
@@ -257,12 +260,27 @@ void ::driver::actuator::SCActuatorControlUnit::unitInit() throw(CException) {
     // perfomed in driver initialization
   if (actuator_drv->init((void*)initString->c_str()) != 0) {
     throw chaos::CException(-3, "Cannot initialize actuator " + control_unit_instance, __FUNCTION__);
-
   }
+  double *MDSSpeed=(double*)getAttributeCache()->getROPtr<std::string>(DOMAIN_INPUT, "speed") ;
+  SCCUAPP <<"ALEDEBUG ALEDEBUG AFTER INIT READ MDS SPEED "<< *MDSSpeed ;
+  
+  addAttributeToDataSet("maxSpeed", "max Speed in mm/s", DataType::TYPE_DOUBLE, DataType::Input);
+  Json::Value                                         json_parameter;
+  Json::StyledWriter                          json_writer;
+  Json::Reader                                        json_reader;
 
+    //parse json string
+    if(!json_reader.parse(getCUParam(), json_parameter)) {
+    SCCUAPP << "Bad Json parameter " << json_parameter;
+    }
 
- 
-  //actuator_drv->moveRelativeMillimeters(3.3);
+  SCCUAPP <<"ALEDEBUG ALEDEBUG getCUParam" << getCUParam();
+// performing power on
+  if (actuator_drv->poweron(1) != 0) {
+    throw chaos::CException(-3, "Cannot poweron actuator " + control_unit_instance, __FUNCTION__);
+  }
+  
+
 
   if (actuator_drv->getState(&state_id, state_str) != 0) {
     throw chaos::CException(-6, "Error getting the state of the actuator, possibily off", __FUNCTION__);
@@ -290,6 +308,10 @@ void ::driver::actuator::SCActuatorControlUnit::unitStop() throw(CException) {
 
 // Abstract method for the deinit of the control unit
 void ::driver::actuator::SCActuatorControlUnit::unitDeinit() throw(CException) {
+    SCCUAPP << "Stop Motion ";
+    actuator_drv->stopMotion();
+    SCCUAPP << "Power off ";
+    actuator_drv->poweron(0);
     SCCUAPP << "deinitializing ";
     actuator_drv->deinit();
     
