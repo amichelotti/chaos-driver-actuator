@@ -40,6 +40,7 @@ namespace driver {
 			/*
 			 Define the Control Unit Dataset and Actions
 			 */
+			int  decodeType(const std::string& str_type, DataType::DataType& attribute_type) ;
 			void unitDefineActionAndDataset()throw(chaos::CException);
 
 			void unitDefineCustomAttribute();

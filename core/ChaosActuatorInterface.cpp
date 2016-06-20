@@ -246,6 +246,11 @@ int ChaosActuatorInterface::getState(int* state,std::string& desc){
 }
 
 
+int ChaosActuatorInterface::sendDataset(std::string& dataset){
+    int state;
+    READ_OP_INT_STRING_TIM(OP_SENDDATASET, &state, dataset,0);
+}
+
 int ChaosActuatorInterface::getSWVersion(std::string& ver){
     int state;
     READ_OP_INT_STRING_TIM(OP_GET_SWVERSION, &state, ver,0);

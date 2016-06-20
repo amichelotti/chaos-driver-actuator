@@ -71,6 +71,31 @@ PUBLISHABLE_CONTROL_UNIT_IMPLEMENTATION(::driver::actuator::SCActuatorControlUni
     delete (actuator_drv);
   }
 }
+int ::driver::actuator::SCActuatorControlUnit::decodeType(const std::string& str_type, DataType::DataType& attribute_type) {
+    int err = 0;
+    if(str_type.compare("int32")==0) {
+        attribute_type = DataType::TYPE_INT32;
+    } else if(str_type.compare("uint32")==0) {
+        attribute_type = DataType::TYPE_INT64;
+    } else if(str_type.compare("int64")==0) {
+        attribute_type = DataType::TYPE_INT64;
+    } else if(str_type.compare("uint64")==0) {
+        attribute_type = DataType::TYPE_INT64;
+    } else if(str_type.compare("double")==0) {
+        attribute_type = DataType::TYPE_DOUBLE;
+    } else if(str_type.compare("string")==0) {
+        attribute_type = DataType::TYPE_STRING;
+    } else if(str_type.compare("binary")==0) {
+        attribute_type = DataType::TYPE_BYTEARRAY;
+    } else if(str_type.compare("boolean")==0 ) {
+        attribute_type = DataType::TYPE_BOOLEAN;
+    } else {
+        err = -1;
+    }
+
+    return err;
+}
+
 
 bool ::driver::actuator::SCActuatorControlUnit::setSpeed(const std::string &name,double value,size_t size){
         int err= -1;
@@ -95,7 +120,7 @@ bool ::driver::actuator::SCActuatorControlUnit::setAcceleration(const std::strin
 bool ::driver::actuator::SCActuatorControlUnit::setMovement(const std::string &name,int32_t value,size_t size){
           int err= -1;
           const int32_t *mov = getAttributeCache()->getROPtr<int32_t>(DOMAIN_INPUT, "movement");
-	  SCCUAPP << "ALEDEBUG HANDLER setMovement" ;
+	  SCCUAPP << "HANDLER setMovement" ;
           if(value>=0){
                   SCCUAPP << "set movement:"<<value<< "::" << mov;
                   err = actuator_drv->setMovement(value);
@@ -119,6 +144,88 @@ void ::driver::actuator::SCActuatorControlUnit::unitDefineActionAndDataset() thr
   installCommand(BATCH_COMMAND_GET_DESCRIPTION(CmdACTresetAlarms));
   installCommand(BATCH_COMMAND_GET_DESCRIPTION(CmdACTSetParameter));
   //setup the dataset
+  SCCUAPP <<"ALEDEBUG ALEDEBUG REQUESTING ACCESSOR AND DRIVER ON PREINIT " ;
+  chaos::cu::driver_manager::driver::DriverAccessor *actuator_accessor = getAccessoInstanceByIndex(0);
+  if (actuator_accessor == NULL) {
+    throw chaos::CException(-1, "Cannot retrieve the requested driver", __FUNCTION__);
+  }
+
+
+  actuator_drv = new chaos::driver::actuator::ChaosActuatorInterface(actuator_accessor);
+  if (actuator_drv == NULL) {
+    throw chaos::CException(-2, "Cannot allocate driver resources", __FUNCTION__);
+  }
+  std::string dataset;
+  actuator_drv->sendDataset(dataset) ;
+  SCCUAPP << "ALEDEBUG getting dataset from driver " << dataset;
+  Json::Value                                 json_parameter;
+  Json::Reader                                json_reader;
+
+
+  //parse json string
+  if(!json_reader.parse(dataset, json_parameter)) {
+  SCCUAPP << "Bad Json parameter " << json_parameter;
+  }
+  else {
+    const Json::Value& dataset_description = json_parameter["attributes"];
+    for (Json::ValueConstIterator it = dataset_description.begin(); it != dataset_description.end();it++)
+    {
+ 	const Json::Value& json_attribute_name = (*it)["name"];
+
+        if(json_attribute_name.isNull()) {
+            SCCUAPP << "WARNING attribute name is null " ;
+            continue; 
+        }
+        if(!json_attribute_name.isString()) {
+            SCCUAPP << "WARNING attribute name is not a string " ;
+            continue; 
+        }
+ 	const Json::Value& json_attribute_description = (*it)["description"];
+        if(json_attribute_description.isNull()) {
+            SCCUAPP << "WARNING attribute description is null " ;
+            continue; 
+        }
+        if(!json_attribute_description.isString()) {
+            SCCUAPP << "WARNING attribute description is not a string " ;
+            continue; 
+	}
+ 	const Json::Value& json_attribute_type = (*it)["datatype"];
+        if(json_attribute_type.isNull()) {
+            SCCUAPP << "WARNING attribute datatype is null " ;
+            continue; 
+        }
+        if(!json_attribute_type.isString()) {
+            SCCUAPP << "WARNING attribute datatype is not a string " ;
+            continue; 
+	}
+ 	const Json::Value& json_attribute_dir = (*it)["direction"];
+        if(json_attribute_dir.isNull()) {
+            SCCUAPP << "WARNING attribute direction is null " ;
+            continue; 
+        }
+        if(!json_attribute_dir.isString()) {
+            SCCUAPP << "WARNING attribute direction is not a string " ;
+            continue; 
+	}
+        DataType::DataType dtt;
+	if (decodeType(json_attribute_type.asString(),dtt) == -1) {
+            SCCUAPP << "WARNING attribute type  is unknown " ;
+            continue; 
+	}
+
+	std::string attrName=json_attribute_name.asString();
+	std::string attrDesc=json_attribute_description.asString();
+	std::string datatype=json_attribute_type.asString();
+	std::string datadirection=json_attribute_dir.asString();
+	SCCUAPP << attrName <<" " <<  attrDesc <<" " << datatype << "("<<dtt<<")" << " " << datadirection;
+	
+	addAttributeToDataSet(attrName,attrDesc,dtt,DataType::Input);
+	SCCUAPP << (*it)["name"] ;
+    }
+
+  }
+
+
 
   addAttributeToDataSet("speed",
                         "speed",
@@ -221,7 +328,7 @@ addAttributeToDataSet("InitString",
 }
 
 void ::driver::actuator::SCActuatorControlUnit::unitDefineCustomAttribute() {
-  addAttributeToDataSet("maxSpeedCustom", "max Speed in mm/s", DataType::TYPE_DOUBLE, DataType::Input);
+  //addAttributeToDataSet("maxSpeedCustom", "max Speed in mm/s", DataType::TYPE_DOUBLE, DataType::Input);
 
 }
 
@@ -239,6 +346,7 @@ void ::driver::actuator::SCActuatorControlUnit::unitInit() throw(CException) {
    int32_t *status_id = getAttributeCache()->getRWPtr<int32_t>(DOMAIN_OUTPUT, "status_id");
 
 
+  SCCUAPP <<"ALEDEBUG ALEDEBUG REQUESTING ACCESSOR  AND DRIVER   AFTER INIT " ;
   chaos::cu::driver_manager::driver::DriverAccessor *actuator_accessor = getAccessoInstanceByIndex(0);
   if (actuator_accessor == NULL) {
     throw chaos::CException(-1, "Cannot retrieve the requested driver", __FUNCTION__);
@@ -247,11 +355,11 @@ void ::driver::actuator::SCActuatorControlUnit::unitInit() throw(CException) {
   if (actuator_drv == NULL) {
     throw chaos::CException(-2, "Cannot allocate driver resources", __FUNCTION__);
   }
-  std::string *initString=(std::string*)getAttributeCache()->getROPtr<std::string>(DOMAIN_INPUT, "InitString") ;
-  if (initString->c_str() == NULL)
+  std::string *initString;//=(std::string*)getAttributeCache()->getROPtr<std::string>(DOMAIN_INPUT, "InitString") ;
+  //if (initString->c_str() == NULL)
   {
 	initString=new std::string();
-	initString->assign("/dev/ttyr1c,myslit,/home/chaos/chaos-distrib/etc/common_actuators_technosoft/1setup001.t.zip,14");
+	initString->assign("/dev/ttyr1c,myslit,/home/chaos/chaos-distrib/etc/common_actuators_technosoft/1setup001.t.zip,14,14");
 	DPRINT("assigned by default");
   }
 
@@ -264,18 +372,9 @@ void ::driver::actuator::SCActuatorControlUnit::unitInit() throw(CException) {
   double *MDSSpeed=(double*)getAttributeCache()->getROPtr<std::string>(DOMAIN_INPUT, "speed") ;
   SCCUAPP <<"ALEDEBUG ALEDEBUG AFTER INIT READ MDS SPEED "<< *MDSSpeed ;
   
-  addAttributeToDataSet("maxSpeed", "max Speed in mm/s", DataType::TYPE_DOUBLE, DataType::Input);
-  Json::Value                                         json_parameter;
-  Json::StyledWriter                          json_writer;
-  Json::Reader                                        json_reader;
+  //addAttributeToDataSet("maxSpeed", "max Speed in mm/s", DataType::TYPE_DOUBLE, DataType::Input);
 
-    //parse json string
-    if(!json_reader.parse(getCUParam(), json_parameter)) {
-    SCCUAPP << "Bad Json parameter " << json_parameter;
-    }
-
-  SCCUAPP <<"ALEDEBUG ALEDEBUG getCUParam" << getCUParam();
-// performing power on
+  // performing power on
   if (actuator_drv->poweron(1) != 0) {
     throw chaos::CException(-3, "Cannot poweron actuator " + control_unit_instance, __FUNCTION__);
   }

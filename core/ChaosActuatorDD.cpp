@@ -193,12 +193,18 @@ cu_driver::MsgManagmentResultType::MsgManagmentResult ChaosActuatorDD::execOpcod
 
             break;
         }            
+        case OP_SENDDATASET:{
+        std::string dataset;
+	out->result=motor->sendDataset(dataset);
+	ACDBG << "ALEDEBUG: Received dataset " <<  dataset;
+        strncpy(out->str,dataset.c_str(),JSON_MAX_SIZE);;
+	break;
+	}
         case OP_SETPARAMETER:{
 	out->result=motor->setParameter(in->str,in->str2);
 	char* SS0=strdup(in->str);
 	ACDBG << "ALEDEBUG: Sending Set on Parameter " << SS0 ;
 	free(SS0);
-	//ACDBG << "ALEDEBUG: Sending Set on Parameter "<<in->str.c_str() << "value: "<in->str2.c_str();
 	break;
 	}
        

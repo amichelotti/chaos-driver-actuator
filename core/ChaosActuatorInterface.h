@@ -20,6 +20,7 @@ namespace chaos_driver=::chaos::cu::driver_manager::driver;
 namespace chaos {
     namespace driver {
 #define MAX_STR_SIZE 256
+#define JSON_MAX_SIZE 4096 
         namespace actuator {
             typedef enum {
                 OP_INIT = chaos_driver::OpcodeType::OP_USER, // init low level driver
@@ -41,6 +42,7 @@ namespace chaos {
                 OP_SET_MOVEMENT_HOM, //
 
                 OP_SETPARAMETER, //
+                OP_SENDDATASET, //
                 OP_GET_POSITION,
                 OP_RESET_ALARMS,
                 OP_GET_ALARMS,
@@ -75,7 +77,7 @@ namespace chaos {
                 int32_t ivalue;
                 int32_t result;
                 uint64_t alarm_mask;
-                char str[MAX_STR_SIZE];
+                char str[JSON_MAX_SIZE];
             } actuator_oparams_t;
             
             // wrapper interface
@@ -173,6 +175,8 @@ namespace chaos {
                  @return 0 if success or an error code
                  */
                 int getHWVersion(std::string& version);
+                int sendDataset(std::string& dataset);
+
             
                 /**
                  @brief return a bitfield of capabilities of the actuator
