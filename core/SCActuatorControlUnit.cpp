@@ -227,42 +227,18 @@ void ::driver::actuator::SCActuatorControlUnit::unitDefineActionAndDataset() thr
 
 
 
-  addAttributeToDataSet("speed",
-                        "speed",
-                        DataType::TYPE_DOUBLE,
-                        DataType::Input);
-
-  addAttributeToDataSet("acceleration",
-                        "acceleration",
-                        DataType::TYPE_DOUBLE,
-                        DataType::Input);
-
-  addAttributeToDataSet("movement",
-                        "movement",
-                        DataType::TYPE_INT32,
-                        DataType::Input);
-  
    addAttributeToDataSet("readingType",
                         "readingType",
                         DataType::TYPE_INT32,
                         DataType::Input);
  
-  addAttributeToDataSet("referenceBase",
-                        "reference base",
-                        DataType::TYPE_INT32,
-                        DataType::Input);
 
-addAttributeToDataSet("dev_state",
+   addAttributeToDataSet("dev_state",
                         "Bit field device state",
                         DataType::TYPE_INT64,
                         DataType::Output);
 
           
-  addAttributeToDataSet("additive",
-                        "additive",
-                        DataType::TYPE_BOOLEAN,
-                        DataType::Input);
-  
   addAttributeToDataSet("position",
                         "position",
                         DataType::TYPE_DOUBLE,
@@ -313,17 +289,6 @@ addAttributeToDataSet("InitString",
                         "Delta of the setpoint",
                         DataType::TYPE_INT32,
                         DataType::Input);
-
- addHandlerOnInputAttributeName< ::driver::actuator::SCActuatorControlUnit, double >(this,
-                                                                 &::driver::actuator::SCActuatorControlUnit::setSpeed,
-                                                                      "speed");
-
- addHandlerOnInputAttributeName< ::driver::actuator::SCActuatorControlUnit, double >(this,
-                                                            &::driver::actuator::SCActuatorControlUnit::setAcceleration,
-                                                              "acceleration");
- addHandlerOnInputAttributeName< ::driver::actuator::SCActuatorControlUnit, int32_t >(this,
-                                                            &::driver::actuator::SCActuatorControlUnit::setMovement,
-                                                              "movement");
 
 }
 
