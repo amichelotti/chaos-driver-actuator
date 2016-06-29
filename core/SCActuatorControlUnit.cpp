@@ -34,6 +34,9 @@
 #include "CmdACTPoweron.h"
 #include "CmdACTresetAlarms.h"
 #include "CmdACTSetParameter.h"
+
+
+#define INITDRIVER_DEF
 using namespace chaos;
 
 using namespace chaos::common::data;
@@ -217,10 +220,10 @@ void ::driver::actuator::SCActuatorControlUnit::unitDefineActionAndDataset() thr
 	std::string attrDesc=json_attribute_description.asString();
 	std::string datatype=json_attribute_type.asString();
 	std::string datadirection=json_attribute_dir.asString();
-	SCCUAPP << attrName <<" " <<  attrDesc <<" " << datatype << "("<<dtt<<")" << " " << datadirection;
+	//SCCUAPP << attrName <<" " <<  attrDesc <<" " << datatype << "("<<dtt<<")" << " " << datadirection;
 	
 	addAttributeToDataSet(attrName,attrDesc,dtt,DataType::Input);
-	SCCUAPP << (*it)["name"] ;
+	//SCCUAPP << (*it)["name"] ;
     }
 
   }
@@ -264,11 +267,12 @@ void ::driver::actuator::SCActuatorControlUnit::unitDefineActionAndDataset() thr
                         DataType::TYPE_STRING,
                         DataType::Output, 256);
 
+#ifndef INITDRIVER_DEF
 addAttributeToDataSet("InitString",
                         "InitString",
                         DataType::TYPE_STRING,
                         DataType::Input, 256);
-  
+#endif
   
   addAttributeToDataSet("driver_timeout",
                         "Driver timeout in milliseconds",
@@ -289,6 +293,7 @@ addAttributeToDataSet("InitString",
                         "Delta of the setpoint",
                         DataType::TYPE_INT32,
                         DataType::Input);
+
 
 }
 
@@ -325,20 +330,17 @@ void ::driver::actuator::SCActuatorControlUnit::unitInit() throw(CException) {
   {
 	initString=new std::string();
 	initString->assign("/dev/ttyr1c,myslit,/home/chaos/chaos-distrib/etc/common_actuators_technosoft/1setup001.t.zip,14,14");
-	DPRINT("assigned by default");
+	//DPRINT("assigned by default");
   }
-
   
 
+#ifndef INITDRIVER_DEF
+    DPRINT("inizializing driver from Control Unit");
     // perfomed in driver initialization
   if (actuator_drv->init((void*)initString->c_str()) != 0) {
     throw chaos::CException(-3, "Cannot initialize actuator " + control_unit_instance, __FUNCTION__);
   }
-  double *MDSSpeed=(double*)getAttributeCache()->getROPtr<std::string>(DOMAIN_INPUT, "speed") ;
-  SCCUAPP <<"ALEDEBUG ALEDEBUG AFTER INIT READ MDS SPEED "<< *MDSSpeed ;
-  
-  //addAttributeToDataSet("maxSpeed", "max Speed in mm/s", DataType::TYPE_DOUBLE, DataType::Input);
-
+#endif
   // performing power on
   if (actuator_drv->poweron(1) != 0) {
     throw chaos::CException(-3, "Cannot poweron actuator " + control_unit_instance, __FUNCTION__);

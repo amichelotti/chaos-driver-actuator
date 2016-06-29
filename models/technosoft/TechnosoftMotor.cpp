@@ -23,7 +23,7 @@
 #include <boost/regex.hpp>
 #include <chaos/cu_toolkit/driver_manager/driver/AbstractDriverPlugin.h>
 
-
+#define  INITDRIVER_DEF
 //GET_PLUGIN_CLASS_DEFINITION
 //we need only to define the driver because we don't are makeing a plugin
 
@@ -62,14 +62,16 @@ void chaos::driver::actuator::TechnosoftMotor::driverInit(const char *initParame
     if(motor==NULL){
       throw chaos::CException(1, "Cannot allocate resources for TechnosoftMotor", "TechnosoftMotor::driverInit");
     } else {
-   /*   int ret;
+#ifdef INITDRIVER_DEF
+      int ret;
       if (  (ret=motor->init((void*)initParameter)) < 0) {
 	PSLAPP<<"Init Failed of:" <<initParameter<<" ret:"<<ret<<std::endl;
 	throw chaos::CException(1, "Bad parameters for TechnosoftMotor","TechnosoftMotor::driverInit");
       } else {
 	PSLAPP<<"Init Done" <<std::endl;
       }
-    */
+    
+#endif
     }
     
     //rett= motor->getPosition((::common::actuators::AbstractActuator::readingTypes)1,&mmpos);
