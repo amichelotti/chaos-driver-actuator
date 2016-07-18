@@ -48,6 +48,8 @@ void own::CmdACTHoming::setHandler(c_data::CDataWrapper *data)
 	std::string state_str;
 	AbstractActuatorCommand::setHandler(data);
     	int32_t homType = data->getInt32Value(CMD_ACT_HOMINGTYPE);
+        axID=getAttributeCache()->getROPtr<uint32_t>(DOMAIN_INPUT, "axisID");
+
 	homingTypeVar=homType;
 	SCLDBG_ << "fetch state readout";
 	tmpInt =  (int*) getAttributeCache()->getROPtr<int32_t>(DOMAIN_INPUT, "readingType") ;
@@ -67,7 +69,7 @@ void own::CmdACTHoming::setHandler(c_data::CDataWrapper *data)
 	setWorkState(true);
 	//actuator_drv->setTimeoutHoming(30000);
     setFeatures(chaos_batch::features::FeaturesFlagTypes::FF_SET_SCHEDULER_DELAY, (uint64_t)100000);
-    if(err = actuator_drv->homing((::common::actuators::AbstractActuator::homingType) homType) < 0) 
+    if(err = actuator_drv->homing(*axID,(::common::actuators::AbstractActuator::homingType) homType) < 0) 
     {
 		LOG_AND_TROW(SCLERR_, 1, boost::str(boost::format("Error %1% while homing") % err));
     }
@@ -86,7 +88,7 @@ void own::CmdACTHoming::acquireHandler() {
 	double position;
 	SCLDBG_ << "Start Acquire Handler " ;
 
-	if ((err = actuator_drv->getPosition(readTyp,&position)) !=0) 
+	if ((err = actuator_drv->getPosition(*axID,readTyp,&position)) !=0) 
 	{
 		LOG_AND_TROW(SCLERR_, 1, boost::str(boost::format("Error fetching position with code %1%") % err));
 	} 
@@ -96,7 +98,7 @@ void own::CmdACTHoming::acquireHandler() {
                  *o_position = position;
 	}
 	SCLDBG_ << "fetch state readout";
-	if((err = actuator_drv->getState(&state, state_str))) {
+	if((err = actuator_drv->getState(*axID,&state, state_str))) {
 		LOG_AND_TROW(SCLERR_, 1, boost::str(boost::format("Error fetching state readout with code %1%") % err));
 	} else {
 		*o_status_id = state;
@@ -106,7 +108,7 @@ void own::CmdACTHoming::acquireHandler() {
 
 		SCLDBG_ << "Homing acquire before sending homing again" ;
 		setWorkState(true);
-		if((err = actuator_drv->homing((::common::actuators::AbstractActuator::homingType) homingTypeVar)) < 0)
+		if((err = actuator_drv->homing(*axID,(::common::actuators::AbstractActuator::homingType) homingTypeVar)) < 0)
     	{
                 LOG_AND_TROW(SCLERR_, 1, boost::str(boost::format("Error %1% while homing") % err));
     	}

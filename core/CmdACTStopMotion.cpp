@@ -43,8 +43,10 @@ uint8_t own::CmdACTStopMotion::implementedHandler(){
 void own::CmdACTStopMotion::setHandler(c_data::CDataWrapper *data) {
 	int err=0;
 AbstractActuatorCommand::setHandler(data);
+	axID = getAttributeCache()->getROPtr<uint32_t>(DOMAIN_INPUT, "axisID");
+
 	SCLDBG_ << "Stop Motion " ;
-	if((err = actuator_drv->stopMotion()) != 0) {
+	if((err = actuator_drv->stopMotion(*axID)) != 0) {
 		LOG_AND_TROW(SCLERR_, 1, boost::str(boost::format("Error %1% stopping motor") % err));
 	}
 actuator_drv->accessor->base_opcode_priority=100;
@@ -56,7 +58,7 @@ void own::CmdACTStopMotion::acquireHandler() {
 	int err = 0;
 	int state = 0;
 	std::string desc;
-	if((err = actuator_drv->getState(&state, desc))) {
+	if((err = actuator_drv->getState(*axID,&state, desc))) {
 		LOG_AND_TROW(SCLERR_, 1, boost::str(boost::format("Error fetching state readout with code %1%") % err));
 	} else {
 		*o_status_id = state;
@@ -68,7 +70,7 @@ void own::CmdACTStopMotion::acquireHandler() {
 	
 	} else {
 	    SCLDBG_ << "fetch alarms readout";
-		if((err = actuator_drv->getAlarms(o_alarms,desc))){
+		if((err = actuator_drv->getAlarms(*axID,o_alarms,desc))){
 			LOG_AND_TROW(SCLERR_, 2, boost::str(boost::format("Error fetching alarms readout with code %1%") % err));
 		}
 	//force output dataset as changed

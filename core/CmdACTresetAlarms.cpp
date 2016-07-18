@@ -44,10 +44,12 @@ uint8_t own::CmdACTresetAlarms::implementedHandler(){
 void own::CmdACTresetAlarms::setHandler(c_data::CDataWrapper *data) {
 	int err;
 	AbstractActuatorCommand::setHandler(data);
+ 	const uint32_t *axID=getAttributeCache()->getROPtr<uint32_t>(DOMAIN_INPUT, "axisID");
+
 	int64_t alarmMask = data->getInt64Value(CMD_ACT_ALRM);
 	SCLDBG_ << "ALEDEBUG Reset Alarms set handler "<< alarmMask ;
 
-        if((err = actuator_drv->resetAlarms(alarmMask)) != 0) {
+        if((err = actuator_drv->resetAlarms(*axID,alarmMask)) != 0) {
                 LOG_AND_TROW(SCLERR_, 1, boost::str(boost::format("Error %1% resetting alarms") % err));
 	}	
 	actuator_drv->accessor->base_opcode_priority=100;

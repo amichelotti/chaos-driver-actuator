@@ -45,9 +45,11 @@ uint8_t own::CmdACTPoweron::implementedHandler(){
 void own::CmdACTPoweron::setHandler(c_data::CDataWrapper *data) {
 	int err;
 	int32_t onState = data->getInt32Value(CMD_ACT_POWERON_VALUE);
+	axID=getAttributeCache()->getROPtr<uint32_t>(DOMAIN_INPUT, "axisID");
+
 
 	AbstractActuatorCommand::setHandler(data);
-	if((err = actuator_drv->poweron(onState)) != 0) {
+	if((err = actuator_drv->poweron(*axID,onState)) != 0) {
 		LOG_AND_TROW(SCLERR_, 1, boost::str(boost::format("Error %1% while power on the actuator") % err));
 	}
 	setWorkState(true);
@@ -60,7 +62,7 @@ void own::CmdACTPoweron::acquireHandler() {
 void own::CmdACTPoweron::ccHandler() {
 	int err,state;
 	std::string state_str;
-	if((err = actuator_drv->getState(&state, state_str))) 
+	if((err = actuator_drv->getState(*axID,&state, state_str))) 
 	{
 		LOG_AND_TROW(SCLERR_, 1, boost::str(boost::format("Error fetching state readout with code %1%") % err));
 	} 
@@ -84,7 +86,7 @@ bool own::CmdACTPoweron::timeoutHandler() {
 	int err,state;
 	std::string state_str;
 	setWorkState(false);
- 	if((err = actuator_drv->getState(&state, state_str)))
+ 	if((err = actuator_drv->getState(*axID,&state, state_str)))
         {
                 LOG_AND_TROW(SCLERR_, 1, boost::str(boost::format("Error fetching state readout with code %1%") % err));
         }

@@ -34,7 +34,7 @@ namespace driver {
 			uint64_t		sequence_number;
             uint64_t		last_slow_acq_time;
 			unsigned int	slow_acquisition_idx;
-			
+			const uint32_t *axID;
 			uint64_t	*o_dev_state;
                       ::common::actuators::AbstractActuator::readingTypes   readTyp;
                         double          *o_position;

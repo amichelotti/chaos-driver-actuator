@@ -43,6 +43,7 @@ namespace chaos {
 
                 OP_SETPARAMETER, //
                 OP_SENDDATASET, //
+                OP_CONFIGAXIS, //
                 OP_GET_POSITION,
                 OP_RESET_ALARMS,
                 OP_GET_ALARMS,
@@ -64,6 +65,7 @@ namespace chaos {
                 double fvalue1;
 		char str[MAX_STR_SIZE];
                 char str2[MAX_STR_SIZE];
+		int32_t axis;
 
                 int32_t ivalue;
                 uint32_t timeout;
@@ -74,6 +76,7 @@ namespace chaos {
             typedef struct {
                 double fvalue0;
                 double fvalue1;
+		int32_t axis;
                 int32_t ivalue;
                 int32_t result;
                 uint64_t alarm_mask;
@@ -99,31 +102,32 @@ namespace chaos {
                  @brief de-initialize the power supply and close the communication
                  @return 0 if success
                  */
-                int  deinit();
-                int setTimeout(uint64_t timeo_ms);   
-                int getTimeout(uint64_t* timeo_ms);  
+                int configAxis(void*);
+                int  deinit(int32_t axisID);
+                int setTimeout(int32_t axisID,uint64_t timeo_ms);   
+                int getTimeout(int32_t axisID,uint64_t* timeo_ms);  
                 
-                int setSpeed(double speed_mm_per_sec);
-                int setAcceleration(double acceleration_mm_per_sec2);
+                //int setSpeed(double speed_mm_per_sec);
+                //int setAcceleration(double acceleration_mm_per_sec2);
                 int setAdditive(bool isAdditive);
                 int setReferenceBase(int32_t referenceBase);
-                int setMovement(int32_t movement);
+                //int setMovement(int32_t movement);
                 int sethighSpeedHoming(double speed_mm_per_sec);
                 int setlowSpeedHoming(double speed_mm_per_sec);
                 int setAccelerationHoming(double acceleration_mm_per_sec2);
                 int setAdditiveHoming(bool isAdditive);
                 int setReferenceBaseHoming(int32_t referenceBase);
                 int setMovementHoming(int32_t movement);
-		int setParameter(std::string parName, std::string value);
+		int setParameter(int32_t axisID,std::string parName, std::string value);
                  /**
                  @brief return the position of the step motor in mm starting from the
                   * home position)
                  @param readingType the position reading method to be used to
                  @return 0 if success or an error code
                  */
-                int getPosition(readingTypes readingType,double *deltaPosition_mm);
+                int getPosition(int32_t axisID,readingTypes readingType,double *deltaPosition_mm);
                 
-                int resetAlarms(uint64_t alrm);
+                int resetAlarms(int32_t axisID,uint64_t alrm);
                 
                 
                 /**
@@ -132,26 +136,26 @@ namespace chaos {
                  @return 0 if success or an error code
                  */
                 
-                int getAlarms(uint64_t*alrm, std::string& desc);
+                int getAlarms(int32_t axisID,uint64_t*alrm, std::string& desc);
                 
                 
-                int moveRelativeMillimeters(double mm);
-                int moveAbsoluteMillimeters(double mm);
+                int moveRelativeMillimeters(int32_t axisID,double mm);
+                int moveAbsoluteMillimeters(int32_t axisID,double mm);
                   /**
                  @brief stop the motion of the actuator (if is in movement)
                  @return 0 if success or an error code
                  */
-                int stopMotion();
+                int stopMotion(int32_t axisID);
                 
                 /**
                  @brief put back the step motor to the home position)
                  */
-                int homing(homingType mode);
+                int homing(int32_t axisID,homingType mode);
                 //int setTrapezoidalProfile(double, double, int, short int, short int);
 
                 
 
-                int poweron(int on);
+                int poweron(int32_t axisID,int on);
                 /**
                  @brief gets the power supply state
                  @param state returns a bit field of PowerSupplyStates
@@ -160,7 +164,7 @@ namespace chaos {
                  @return 0 if success or an error code
                  */
                 
-                int getState(int* state,std::string& desc);
+                int getState(int32_t axisID,int* state,std::string& desc);
            
                 /**
                  @brief returns the SW/FW version of the driver/FW

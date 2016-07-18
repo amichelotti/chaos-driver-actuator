@@ -36,7 +36,6 @@
 #include "CmdACTSetParameter.h"
 
 
-#define INITDRIVER_DEF
 using namespace chaos;
 
 using namespace chaos::common::data;
@@ -99,7 +98,7 @@ int ::driver::actuator::SCActuatorControlUnit::decodeType(const std::string& str
     return err;
 }
 
-
+/*
 bool ::driver::actuator::SCActuatorControlUnit::setSpeed(const std::string &name,double value,size_t size){
         int err= -1;
           const double *speed = getAttributeCache()->getROPtr<double>(DOMAIN_INPUT, "speed");
@@ -130,7 +129,7 @@ bool ::driver::actuator::SCActuatorControlUnit::setMovement(const std::string &n
           }
          return (err==chaos::ErrorCode::EC_NO_ERROR);
 }
-
+*/
 /*
  Return the default configuration
  */
@@ -212,7 +211,7 @@ void ::driver::actuator::SCActuatorControlUnit::unitDefineActionAndDataset() thr
 	}
         DataType::DataType dtt;
 	if (decodeType(json_attribute_type.asString(),dtt) == -1) {
-            SCCUAPP << "WARNING attribute type  is unknown " ;
+            SCCUAPP << "WARNING attribute type " <<json_attribute_type.asString()<< "  is unknown " ;
             continue; 
 	}
 
@@ -229,6 +228,10 @@ void ::driver::actuator::SCActuatorControlUnit::unitDefineActionAndDataset() thr
   }
 
 
+   addAttributeToDataSet("axisID",
+                        "axis ID for the motor",
+                        DataType::TYPE_INT32,
+                        DataType::Input);
 
    addAttributeToDataSet("readingType",
                         "readingType",
@@ -267,12 +270,10 @@ void ::driver::actuator::SCActuatorControlUnit::unitDefineActionAndDataset() thr
                         DataType::TYPE_STRING,
                         DataType::Output, 256);
 
-#ifndef INITDRIVER_DEF
-addAttributeToDataSet("InitString",
-                        "InitString",
+addAttributeToDataSet("ConfigString",
+                        "ConfigString",
                         DataType::TYPE_STRING,
                         DataType::Input, 256);
-#endif
   
   addAttributeToDataSet("driver_timeout",
                         "Driver timeout in milliseconds",
@@ -325,30 +326,33 @@ void ::driver::actuator::SCActuatorControlUnit::unitInit() throw(CException) {
   if (actuator_drv == NULL) {
     throw chaos::CException(-2, "Cannot allocate driver resources", __FUNCTION__);
   }
-  std::string *initString;//=(std::string*)getAttributeCache()->getROPtr<std::string>(DOMAIN_INPUT, "InitString") ;
-  //if (initString->c_str() == NULL)
+  std::string *initString =new std::string();
+  char* ptStr=NULL;
+  const uint32_t *axID=getAttributeCache()->getROPtr<uint32_t>(DOMAIN_INPUT, "axisID");
+  ptStr=(char*)getAttributeCache()->getROPtr<char*>(DOMAIN_INPUT, "ConfigString");
+  initString->assign(ptStr);
+  if (initString->c_str() == NULL)
   {
-	initString=new std::string();
-	initString->assign("/dev/ttyr1c,myslit,/home/chaos/chaos-distrib/etc/common_actuators_technosoft/1setup001.t.zip,14,14");
-	//DPRINT("assigned by default");
+	initString->assign("14,/home/chaos/chaos-distrib/etc/common_actuators_technosoft/1setup001.t.zip");
+	DPRINT("assigned by default");
   }
   
 
-#ifndef INITDRIVER_DEF
-    DPRINT("inizializing driver from Control Unit");
+    DPRINT("configuring driver from Control Unit ");
+    DPRINT("config string is %s",initString->c_str() );
     // perfomed in driver initialization
-  if (actuator_drv->init((void*)initString->c_str()) != 0) {
+  if (actuator_drv->configAxis((void*)initString->c_str()) != 0) {
     throw chaos::CException(-3, "Cannot initialize actuator " + control_unit_instance, __FUNCTION__);
   }
-#endif
   // performing power on
-  if (actuator_drv->poweron(1) != 0) {
+    DPRINT("power on to Control Unit");
+  if (actuator_drv->poweron(*axID,1) != 0) {
     throw chaos::CException(-3, "Cannot poweron actuator " + control_unit_instance, __FUNCTION__);
   }
   
 
 
-  if (actuator_drv->getState(&state_id, state_str) != 0) {
+  if (actuator_drv->getState(*axID,&state_id, state_str) != 0) {
     throw chaos::CException(-6, "Error getting the state of the actuator, possibily off", __FUNCTION__);
   }
   
@@ -374,12 +378,13 @@ void ::driver::actuator::SCActuatorControlUnit::unitStop() throw(CException) {
 
 // Abstract method for the deinit of the control unit
 void ::driver::actuator::SCActuatorControlUnit::unitDeinit() throw(CException) {
+  const uint32_t *axID=getAttributeCache()->getROPtr<uint32_t>(DOMAIN_INPUT, "axisID");
     SCCUAPP << "Stop Motion ";
-    actuator_drv->stopMotion();
+    actuator_drv->stopMotion(*axID);
     SCCUAPP << "Power off ";
-    actuator_drv->poweron(0);
+    actuator_drv->poweron(*axID,0);
     SCCUAPP << "deinitializing ";
-    actuator_drv->deinit();
+    actuator_drv->deinit(*axID);
     
 }
 

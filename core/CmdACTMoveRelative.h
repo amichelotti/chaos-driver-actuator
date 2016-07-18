@@ -37,6 +37,7 @@ namespace driver {
 			double	*o_position_sp;
 			double	*o_position;
 			double *i_speed;
+			const uint32_t *axID;
 			
 			const uint32_t	*i_command_timeout;
 			const uint32_t	*i_delta_setpoint;

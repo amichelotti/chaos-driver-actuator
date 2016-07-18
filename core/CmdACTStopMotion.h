@@ -29,6 +29,8 @@ namespace driver {
 			//reading type
 			::common::actuators::AbstractActuator::readingTypes readTyp;
 			bool slow_acquisition_index;
+			const uint32_t *axID;
+
 			//implemented handler
 			uint8_t implementedHandler();
 			//initial set handler

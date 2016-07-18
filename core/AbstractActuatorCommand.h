@@ -54,7 +54,7 @@ namespace driver {
 			// set the data fr the command
 			void setHandler(c_data::CDataWrapper *data);
 
-			void getState(int& current_state, std::string& current_state_str);
+			void getState(int32_t axisID,int& current_state, std::string& current_state_str);
 			
 			void setWorkState(bool working);
 		};

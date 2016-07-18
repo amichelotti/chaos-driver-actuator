@@ -58,6 +58,8 @@ void CmdACTDefault::setHandler(c_data::CDataWrapper *data) {
         const int *tmpInt;
 	CMDCU_ << "Set Handler";
 	AbstractActuatorCommand::setHandler(data);
+ 	axID = getAttributeCache()->getROPtr<uint32_t>(DOMAIN_INPUT, "axisID");
+
 	CMDCU_ << "After parental Set Handler";
 
 	//set the default scheduling to one seconds
@@ -99,7 +101,7 @@ void CmdACTDefault::acquireHandler() {
         readTyp=(::common::actuators::AbstractActuator::readingTypes) *tmpInt;
 	
 	pos_sp = getAttributeCache()->getRWPtr<double>(DOMAIN_OUTPUT, "position_sp");
-    if((err = actuator_drv->getPosition(readTyp,&tmp_float))==0){
+    if((err = actuator_drv->getPosition(*axID,readTyp,&tmp_float))==0){
 		*o_position = tmp_float;
     } else {
 		LOG_AND_TROW(CMDCUERR_, 1, boost::str( boost::format("Error calling driver on get position readout with code %1%") % err));
@@ -112,17 +114,16 @@ void CmdACTDefault::acquireHandler() {
       */  
         
 	tmp_uint64=0;		
-	if((err = actuator_drv->getAlarms(&tmp_uint64,desc)) == 0){
+	if((err = actuator_drv->getAlarms(*axID,&tmp_uint64,desc)) == 0){
 		*o_alarms = tmp_uint64;
 	} else {
 		LOG_AND_TROW(CMDCUERR_, 2, boost::str( boost::format("Error calling driver on get alarms readout with code %1%") % err));
 	}
 
-	if((err = actuator_drv->getState(&stato, desc)) == 0){
+	if((err = actuator_drv->getState(*axID,&stato, desc)) == 0){
 		*o_status_id = stato;
-		//update the value and dimension of status channel
-		//getAttributeCache()->setOutputAttributeValue("status", (void*)desc.c_str(), (uint32_t)desc.size());
 		//the new pointer need to be got (set new size can reallocate the pointer)
+		//could it be avoided?????
 		o_status = getAttributeCache()->getRWPtr<char>(DOMAIN_OUTPUT, "status");
 		//copy up to 255 and put the termination character
 		strncpy(o_status, desc.c_str(), 256);

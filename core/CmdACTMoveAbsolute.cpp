@@ -49,7 +49,8 @@ uint64_t computed_timeout;
 void own::CmdACTMoveAbsolute::setHandler(c_data::CDataWrapper *data) {
     chaos::common::data::RangeValueInfo position_sp_attr_info;
     chaos::common::data::RangeValueInfo attributeInfo;
-	AbstractActuatorCommand::setHandler(data);
+    AbstractActuatorCommand::setHandler(data);
+
 
 	double max_position=0,min_position=0;
 	int err = 0;
@@ -59,6 +60,7 @@ void own::CmdACTMoveAbsolute::setHandler(c_data::CDataWrapper *data) {
 	std::string state_str;
 	float offset_mm = 0.f;
 	chaos::common::data::RangeValueInfo attr_info;
+        axID = getAttributeCache()->getROPtr<uint32_t>(DOMAIN_INPUT, "axisID");
 	o_position = getAttributeCache()->getRWPtr<double>(DOMAIN_OUTPUT, "position");
         o_position_sp = getAttributeCache()->getRWPtr<double>(DOMAIN_OUTPUT, "position_sp");
 
@@ -100,7 +102,7 @@ void own::CmdACTMoveAbsolute::setHandler(c_data::CDataWrapper *data) {
 
 	//acquire the state readout
 	SCLDBG_ << "fetch state readout";
-	if((err = actuator_drv->getState(&state, state_str))) {
+	if((err = actuator_drv->getState(*axID,&state, state_str))) {
 		LOG_AND_TROW(SCLERR_, 1, boost::str(boost::format("Error fetching state readout with code %1%") % err));
 	} else {
 		*o_status_id = state;
@@ -115,7 +117,7 @@ void own::CmdACTMoveAbsolute::setHandler(c_data::CDataWrapper *data) {
 	    return;
         }
 	
-        if ((err = actuator_drv->getPosition(readTyp,&position)) !=0) {
+        if ((err = actuator_drv->getPosition(*axID,readTyp,&position)) !=0) {
 		LOG_AND_TROW(SCLERR_, 1, boost::str(boost::format("Error fetching position with code %1%") % err));
 	} else {
                  *o_position = position;
@@ -167,7 +169,7 @@ void own::CmdACTMoveAbsolute::setHandler(c_data::CDataWrapper *data) {
 
 	SCLDBG_ << "Move to position " << offset_mm << "reading type " << readTyp;
         launched=time(NULL);
-	if((err = actuator_drv->moveAbsoluteMillimeters(offset_mm)) != 0) {
+	if((err = actuator_drv->moveAbsoluteMillimeters(*axID,offset_mm)) != 0) {
 		LOG_AND_TROW(SCLERR_, 1, boost::str(boost::format("Error %1% setting current") % err));
 	}
 	
@@ -190,7 +192,7 @@ void own::CmdACTMoveAbsolute::acquireHandler() {
 	//acquire the current readout
 	SCLDBG_ << "fetch current readout";
         
-        if((err = actuator_drv->getState(&state, state_str))) {
+        if((err = actuator_drv->getState(*axID,&state, state_str))) {
 		LOG_AND_TROW(SCLERR_, 1, boost::str(boost::format("Error fetching state readout with code %1%") % err));
 	} else {
 		*o_status_id = state;
@@ -198,7 +200,7 @@ void own::CmdACTMoveAbsolute::acquireHandler() {
 		strncpy(o_status, state_str.c_str(), 256);
 	}
         
-	if ((err = actuator_drv->getPosition(readTyp,&position)) !=0) {
+	if ((err = actuator_drv->getPosition(*axID,readTyp,&position)) !=0) {
 		LOG_AND_TROW(SCLERR_, 1, boost::str(boost::format("Error fetching position with code %1%") % err));
 	} else {
                  *o_position = position;
@@ -207,7 +209,7 @@ void own::CmdACTMoveAbsolute::acquireHandler() {
 	
 	} else {
 	    SCLDBG_ << "fetch alarms readout";
-		if((err = actuator_drv->getAlarms(o_alarms,desc))){
+		if((err = actuator_drv->getAlarms(*axID,o_alarms,desc))){
 			LOG_AND_TROW(SCLERR_, 2, boost::str(boost::format("Error fetching alarms readout with code %1%") % err));
 		}
 	}

@@ -66,6 +66,7 @@ void own::CmdACTMoveRelative::setHandler(c_data::CDataWrapper *data) {
 	i_command_timeout = getAttributeCache()->getROPtr<uint32_t>(DOMAIN_INPUT, "command_timeout");
 	i_delta_setpoint = getAttributeCache()->getROPtr<uint32_t>(DOMAIN_INPUT, "delta_setpoint");
 	i_setpoint_affinity = getAttributeCache()->getROPtr<uint32_t>(DOMAIN_INPUT, "setpoint_affinity");
+	axID = getAttributeCache()->getROPtr<uint32_t>(DOMAIN_INPUT, "axisID");
         tmpInt =  (int*) getAttributeCache()->getROPtr<int32_t>(DOMAIN_INPUT, "readingType") ;
         readTyp=(::common::actuators::AbstractActuator::readingTypes) *tmpInt;
         
@@ -100,7 +101,7 @@ void own::CmdACTMoveRelative::setHandler(c_data::CDataWrapper *data) {
 
 	//acquire the state readout
 	SCLDBG_ << "fetch state readout";
-	if((err = actuator_drv->getState(&state, state_str))) {
+	if((err = actuator_drv->getState(*axID,&state, state_str))) {
 		LOG_AND_TROW(SCLERR_, 1, boost::str(boost::format("Error fetching state readout with code %1%") % err));
 	} else {
 		*o_status_id = state;
@@ -116,7 +117,7 @@ void own::CmdACTMoveRelative::setHandler(c_data::CDataWrapper *data) {
         }
 	
 	SCLDBG_ << "fetch position readout";
-        if ((err = actuator_drv->getPosition(readTyp,&position)) !=0) {
+        if ((err = actuator_drv->getPosition(*axID,readTyp,&position)) !=0) {
 		LOG_AND_TROW(SCLERR_, 1, boost::str(boost::format("Error fetching position with code %1%") % err));
 	} else {
                  *o_position = position;
@@ -184,7 +185,7 @@ void own::CmdACTMoveRelative::setHandler(c_data::CDataWrapper *data) {
 	SCLDBG_ << "The setpoint affinity value is of +-" << affinity_set_delta << " of millimeters";
 
 	SCLDBG_ << "Move of offset " << offset_mm;
-	if((err = actuator_drv->moveRelativeMillimeters(offset_mm)) != 0) {
+	if((err = actuator_drv->moveRelativeMillimeters(*axID,offset_mm)) != 0) {
 		LOG_AND_TROW(SCLERR_, 1, boost::str(boost::format("Error %1% setting current") % err));
 	}
 	
@@ -209,7 +210,7 @@ void own::CmdACTMoveRelative::acquireHandler() {
 	//acquire the current readout
 	SCLDBG_ << "fetch current readout";
         
-        if((err = actuator_drv->getState(&state, state_str))) {
+        if((err = actuator_drv->getState(*axID,&state, state_str))) {
 		LOG_AND_TROW(SCLERR_, 1, boost::str(boost::format("Error fetching state readout with code %1%") % err));
 	} else {
 		*o_status_id = state;
@@ -217,7 +218,7 @@ void own::CmdACTMoveRelative::acquireHandler() {
 		strncpy(o_status, state_str.c_str(), 256);
 	}
         
-	if ((err = actuator_drv->getPosition(readTyp,&position)) !=0) {
+	if ((err = actuator_drv->getPosition(*axID,readTyp,&position)) !=0) {
 		LOG_AND_TROW(SCLERR_, 1, boost::str(boost::format("Error fetching position with code %1%") % err));
 	} else {
                  *o_position = position;
@@ -226,7 +227,7 @@ void own::CmdACTMoveRelative::acquireHandler() {
 	
 	} else {
 	    SCLDBG_ << "fetch alarms readout";
-		if((err = actuator_drv->getAlarms(o_alarms,desc))){
+		if((err = actuator_drv->getAlarms(*axID,o_alarms,desc))){
 			LOG_AND_TROW(SCLERR_, 2, boost::str(boost::format("Error fetching alarms readout with code %1%") % err));
 		}
 	}

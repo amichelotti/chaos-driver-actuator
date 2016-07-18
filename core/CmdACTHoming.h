@@ -31,6 +31,7 @@ namespace driver {
 		 	uint64_t scheduleTime;	
 			::common::actuators::AbstractActuator::readingTypes readTyp;
 			double	*o_position;
+			const uint32_t *axID;
 
 			//implemented handler
 			uint8_t implementedHandler();

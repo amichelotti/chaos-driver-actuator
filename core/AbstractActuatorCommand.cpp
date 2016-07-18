@@ -61,12 +61,12 @@ void AbstractActuatorCommand::ccHandler() {
 	
 }
 
-void AbstractActuatorCommand::getState(int& current_state, std::string& current_state_str) {
+void AbstractActuatorCommand::getState(int32_t axisID,int& current_state, std::string& current_state_str) {
 	CHAOS_ASSERT(actuator_drv)
 	int err = 0;
 	std::string state_str;
 	int32_t i_driver_timeout = getAttributeCache()->getValue<int32_t>(DOMAIN_INPUT, "driver_timeout");
-	if((err=actuator_drv->getState(&current_state, state_str)) != 0) {
+	if((err=actuator_drv->getState(axisID,&current_state, state_str)) != 0) {
 		setWorkState(false);
 		CMDCUERR_ << boost::str( boost::format("Error getting the actuator state = %1% ") % err);
 	}

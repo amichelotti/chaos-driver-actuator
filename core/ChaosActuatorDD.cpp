@@ -62,17 +62,21 @@ cu_driver::MsgManagmentResultType::MsgManagmentResult ChaosActuatorDD::execOpcod
              out->result = motor->init(in->str);
             break;
             
+        case OP_CONFIGAXIS:
+             ACDBG<< "Configuring";
+             out->result = motor->configAxis(in->str);
+            break;
         case OP_DEINIT:
              ACDBG<< "Deinitializing";
-             out->result = motor->deinit();
+             out->result = motor->deinit(in->axis);
             break;
-        case OP_SET_TIMEOUT:
-            out->result= motor->setTimeout(in->timeout);
+   /*     case OP_SET_TIMEOUT:
+            out->result= motor->setTimeout(in->axis,in->timeout);
             ACDBG<<"Set timeout to:"<<in->timeout;
             break;
         
         case OP_GET_TIMEOUT:
-            out->result= motor->getTimeout(&out->alarm_mask);
+            out->result= motor->getTimeout(in->axis,&out->alarm_mask);
             ACDBG<<"Got timeout to: "<<out->alarm_mask;
             break;
             
@@ -125,53 +129,53 @@ cu_driver::MsgManagmentResultType::MsgManagmentResult ChaosActuatorDD::execOpcod
             out->result= motor->setMovementHoming(in->ivalue);
             ACDBG<<"Set Movement for homing to:"<<in->ivalue;
             break;    
-            
+     */       
         case OP_GET_POSITION:
-            out->result=motor->getPosition((::common::actuators::AbstractActuator::readingTypes)in->ivalue,&out->fvalue0);
+            out->result=motor->getPosition(in->axis,(::common::actuators::AbstractActuator::readingTypes)in->ivalue,&out->fvalue0);
             ACDBG<<"Got Position :"<< out->fvalue0;
             break; 
             
         case OP_RESET_ALARMS:
             ACDBG<<"Reset alarms to:"<<in->alarm_mask;
-            out->result = motor->resetAlarms(in->alarm_mask);
+            out->result = motor->resetAlarms(in->axis,in->alarm_mask);
             break;
         case OP_GET_ALARMS: {
 	    std::string desc;
-            out->result = motor->getAlarms(&out->alarm_mask,desc);
+            out->result = motor->getAlarms(in->axis,&out->alarm_mask,desc);
             strncpy(out->str,desc.c_str(),MAX_STR_SIZE);
             ACDBG<<"Got alarms to:"<<out->alarm_mask << desc;
             break;
            }
             
          case OP_MOVE_RELATIVE_MM:
-            out->result = motor->moveRelativeMillimeters(in->fvalue0);
+            out->result = motor->moveRelativeMillimeters(in->axis,in->fvalue0);
             ACDBG<<"Move relative result:"<<out->result;
             break;
         
         case OP_MOVE_ABSOLUTE_MM:
-            out->result = motor->moveAbsoluteMillimeters(in->fvalue0);
+            out->result = motor->moveAbsoluteMillimeters(in->axis,in->fvalue0);
             ACDBG<<"Moved Absolute result:"<<out->result;
             break;
        
         case OP_STOP_MOTION:
-            out->result = motor->stopMotion();
+            out->result = motor->stopMotion(in->axis);
             ACDBG<<"Stop Motion, result:"<< out->result;
             break;
         
         case OP_HOMING:
-            out->result = motor->homing( (::common::actuators::AbstractActuator::homingType)in->ivalue );
+            out->result = motor->homing(in->axis, (::common::actuators::AbstractActuator::homingType)in->ivalue );
             ACDBG<<"Set homing, homing type: "<< in->ivalue << "result is " << out->result;
             break;
             
             
         case OP_POWERON:
-            out->result = motor->poweron(in->ivalue);
-            ACDBG<<"Set Power on, result:"<< out->result;
+            out->result = motor->poweron(in->axis,in->ivalue);
+            ACDBG<<"Set Power" << in->ivalue <<" , result:"<< out->result;
             break;
             
          case OP_GET_STATE:{
             std::string desc;
-            out->result = motor->getState(&out->ivalue,desc);
+            out->result = motor->getState(in->axis,&out->ivalue,desc);
             strncpy(out->str,desc.c_str(),MAX_STR_SIZE);
             ACDBG<<"Got State: "<<out->ivalue<<" \""<<desc;
             break;
@@ -201,7 +205,7 @@ cu_driver::MsgManagmentResultType::MsgManagmentResult ChaosActuatorDD::execOpcod
 	break;
 	}
         case OP_SETPARAMETER:{
-	out->result=motor->setParameter(in->str,in->str2);
+	out->result=motor->setParameter(in->axis,in->str,in->str2);
 	char* SS0=strdup(in->str);
 	ACDBG << "ALEDEBUG: Sending Set on Parameter " << SS0 ;
 	free(SS0);

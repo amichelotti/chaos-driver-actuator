@@ -45,6 +45,8 @@ uint8_t own::CmdACTSetParameter::implementedHandler(){
 void own::CmdACTSetParameter::setHandler(c_data::CDataWrapper *data) {
 	std::string parName,value;
 	int err;
+	const uint32_t *axID=getAttributeCache()->getROPtr<uint32_t>(DOMAIN_INPUT, "axisID");
+
 	AbstractActuatorCommand::setHandler(data);
 	SCLDBG_ << "check data";
 	if(!data ||
@@ -61,7 +63,7 @@ void own::CmdACTSetParameter::setHandler(c_data::CDataWrapper *data) {
 	}
 	parName= static_cast<std::string>(data->getStringValue(CMD_ACT_PARNAME));
 	value= static_cast<std::string>(data->getStringValue(CMD_ACT_SETPAR_VALUE));
-	if((err = actuator_drv->setParameter(parName,value)) != 0) {
+	if((err = actuator_drv->setParameter(*axID,parName,value)) != 0) {
 		LOG_AND_TROW(SCLERR_, 1, boost::str(boost::format("Error %1% setting parameter %2") % err % parName));
 	}
 }
