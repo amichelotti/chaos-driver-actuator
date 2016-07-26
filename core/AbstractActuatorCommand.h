@@ -41,6 +41,7 @@ namespace driver {
 		  ~AbstractActuatorCommand();
 		protected:
 			char		*o_status;
+			char		*o_alarm_str;
 			int32_t		*o_status_id;
 			uint64_t	*o_alarms;
 			//reference of the chaos bastraction ofactuator driver

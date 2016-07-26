@@ -260,6 +260,11 @@ void ::driver::actuator::SCActuatorControlUnit::unitDefineActionAndDataset() thr
                         DataType::TYPE_INT64,
                         DataType::Output);
 
+  addAttributeToDataSet("alarmStr",
+                        "alarm description string",
+                        DataType::TYPE_STRING,
+                        DataType::Output, 256);
+
   addAttributeToDataSet("status_id",
                         "status_id",
                         DataType::TYPE_INT32,
@@ -360,7 +365,7 @@ void ::driver::actuator::SCActuatorControlUnit::unitInit() throw(CException) {
   //notify change on status_id cached attribute
   getAttributeCache()->setOutputDomainAsChanged();
 
-  if (actuator_drv->getHWVersion(device_hw) == 0) {
+  if (actuator_drv->getHWVersion(*axID,device_hw) == 0) {
     SCCUAPP << "hardware found: \"" << device_hw << "\"";
   }
 

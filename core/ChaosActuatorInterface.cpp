@@ -135,6 +135,14 @@ accessor->send(&message);\
 return ret.result;
 
 /***************************/
+#define READ_OP_AX_INT64_STRING_TIM(op,ax,pival,pstring,timeout) \
+PREPARE_OP_RET_INT_TIMEOUT(op,timeout); \
+idata.axis=ax;\
+accessor->send(&message);\
+*pival = ret.alarm_mask;\
+pstring = ret.str;\
+return ret.result;
+/***************************/
 #define READ_OP_AX_INT_STRING_TIM(op,ax,pival,pstring,timeout) \
 PREPARE_OP_RET_INT_TIMEOUT(op,timeout); \
 idata.axis=ax;\
@@ -285,7 +293,7 @@ int ChaosActuatorInterface::resetAlarms(int32_t axisID,uint64_t alrm){
 }
 
 int ChaosActuatorInterface::getAlarms(int32_t axisID,uint64_t*alrm,std::string& desc){
-    READ_OP_AX_64INT_TIM(OP_GET_ALARMS,axisID,alrm,0);
+    READ_OP_AX_INT64_STRING_TIM(OP_GET_ALARMS,axisID,alrm,desc,0);
 }
 
 int ChaosActuatorInterface::moveRelativeMillimeters(int32_t axisID,double mm) {
@@ -325,14 +333,14 @@ int ChaosActuatorInterface::sendDataset(std::string& dataset){
     READ_OP_INT_STRING_TIM(OP_SENDDATASET, &state, dataset,0);
 }
 
-int ChaosActuatorInterface::getSWVersion(std::string& ver){
+int ChaosActuatorInterface::getSWVersion(int32_t axisID,std::string& ver){
     int state;
-    READ_OP_INT_STRING_TIM(OP_GET_SWVERSION, &state, ver,0);
+    READ_OP_AX_INT_STRING_TIM(OP_GET_SWVERSION,axisID, &state, ver,0);
 }
 
-int ChaosActuatorInterface::getHWVersion(std::string&ver){
+int ChaosActuatorInterface::getHWVersion(int32_t axisID,std::string&ver){
     int state;
-    READ_OP_INT_STRING_TIM(OP_GET_HWVERSION, &state, ver,0);
+    READ_OP_AX_INT_STRING_TIM(OP_GET_HWVERSION,axisID, &state, ver,0);
 
 }
 

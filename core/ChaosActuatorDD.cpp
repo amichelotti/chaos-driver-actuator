@@ -143,7 +143,7 @@ cu_driver::MsgManagmentResultType::MsgManagmentResult ChaosActuatorDD::execOpcod
 	    std::string desc;
             out->result = motor->getAlarms(in->axis,&out->alarm_mask,desc);
             strncpy(out->str,desc.c_str(),MAX_STR_SIZE);
-            ACDBG<<"Got alarms to:"<<out->alarm_mask << desc;
+            ACDBG<<"Got alarms to: "<<out->alarm_mask << desc;
             break;
            }
             
@@ -183,7 +183,7 @@ cu_driver::MsgManagmentResultType::MsgManagmentResult ChaosActuatorDD::execOpcod
             
         case OP_GET_SWVERSION:{
             std::string ver;
-            out->result = motor->getSWVersion(ver);
+            out->result = motor->getSWVersion(in->axis,ver);
             ACDBG<<"Got HW Version:\""<<ver;
             strncpy(out->str,ver.c_str(),MAX_STR_SIZE);;
 
@@ -191,7 +191,7 @@ cu_driver::MsgManagmentResultType::MsgManagmentResult ChaosActuatorDD::execOpcod
         }
         case OP_GET_HWVERSION:{
             std::string ver;
-            out->result = motor->getHWVersion(ver);
+            out->result = motor->getHWVersion(in->axis,ver);
             ACDBG<<"Got SW Version:\""<<ver;
             strncpy(out->str,ver.c_str(),MAX_STR_SIZE);;
 

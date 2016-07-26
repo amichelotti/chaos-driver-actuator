@@ -261,6 +261,8 @@ bool own::CmdACTMoveRelative::timeoutHandler() {
 	//move the state machine on fault
 	setWorkState(false);
 	actuator_drv->accessor->base_opcode_priority=50;
+        SCLDBG_ << "ALEDEBUG delta position reached " << delta_position_reached << " affinity_set_delta " << affinity_set_delta ;
+        SCLDBG_ << "ALEDEBUG speed is" << *i_speed ;
 	if(delta_position_reached <= affinity_set_delta) {
 		uint64_t elapsed_msec = chaos::common::utility::TimingUtil::getTimeStamp() - getSetTime();
 		SCLDBG_ << "[metric] Setpoint reached on timeout with readout position " << *o_position << " in " << elapsed_msec << " milliseconds";
@@ -268,7 +270,8 @@ bool own::CmdACTMoveRelative::timeoutHandler() {
 		BC_END_RUNNIG_PROPERTY;
 	}else {
 		SCLERR_ << "[metric] Setpoint not reached on timeout with readout position " << *o_position << " in " << elapsed_msec << " milliseconds";
-		BC_FAULT_RUNNIG_PROPERTY;
+		BC_END_RUNNIG_PROPERTY;
+		//BC_FAULT_RUNNIG_PROPERTY;
 	}
 	return false;
 }

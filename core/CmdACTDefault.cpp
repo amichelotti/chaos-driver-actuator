@@ -116,6 +116,9 @@ void CmdACTDefault::acquireHandler() {
 	tmp_uint64=0;		
 	if((err = actuator_drv->getAlarms(*axID,&tmp_uint64,desc)) == 0){
 		*o_alarms = tmp_uint64;
+		DPRINT("alarm description is %s",desc.c_str() );
+		o_alarm_str = getAttributeCache()->getRWPtr<char>(DOMAIN_OUTPUT, "alarmStr");
+		strncpy(o_alarm_str, desc.c_str(), 256);
 	} else {
 		LOG_AND_TROW(CMDCUERR_, 2, boost::str( boost::format("Error calling driver on get alarms readout with code %1%") % err));
 	}
@@ -131,11 +134,13 @@ void CmdACTDefault::acquireHandler() {
 		LOG_AND_TROW(CMDCUERR_, 3, boost::str( boost::format("Error calling driver on get state readout with code %1%") % err));
 	}
 
+    CMDCU_ << "Axis ID ->" << (int) *axID;
     CMDCU_ << "Reading Type ->" << (int) readTyp;
     CMDCU_ << "position_sp ->" << *pos_sp;
     CMDCU_ << "position ->" << *o_position;
     //CMDCU_ << "position by encoder ->" << EncRead;
     CMDCU_ << "alarms ->" << *o_alarms;
+    CMDCU_ << "alarm desc -> " << o_alarm_str;
     CMDCU_ << "status_id -> " << *o_status_id;
     CMDCU_ << "status desc -> " << o_status;
 	

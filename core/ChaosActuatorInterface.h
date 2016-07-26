@@ -171,14 +171,14 @@ namespace chaos {
                  @param version returning string
                  @return 0 if success or an error code
                  */
-                int getSWVersion(std::string& version);
+                int getSWVersion(int32_t axisID,std::string& version);
                 
                 /**
                  @brief returns the HW version of the powersupply
                  @param version returning string
                  @return 0 if success or an error code
                  */
-                int getHWVersion(std::string& version);
+                int getHWVersion(int32_t axisID,std::string& version);
                 int sendDataset(std::string& dataset);
 
             
