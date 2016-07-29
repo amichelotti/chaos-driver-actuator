@@ -1,7 +1,6 @@
-cmake_minimum_required(VERSION 2.6)
+cmake_minimum_required(VERSION 2.8)
 project(chaos_driver_actuator)
 SET(CHAOS_CUS core/SCActuatorControlUnit.cpp)
-include($ENV{CHAOS_BUNDLE}/tools/project_template/CMakeChaos.txt)
 
 add_definitions(-DCHAOS -DDEBUG)
 FILE(GLOB core_src core/*.cpp)
