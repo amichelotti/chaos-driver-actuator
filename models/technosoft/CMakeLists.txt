@@ -1,4 +1,4 @@
-cmake_minimum_required(VERSION 2.6)
+cmake_minimum_required(VERSION 2.8)
 project(chaos_driver_actuator_technosoft)
 SET(DRIVERS_LIB ${DRIVERS_LIB} ${PROJECT_NAME} common_actuators PARENT_SCOPE)
 
