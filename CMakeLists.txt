@@ -1,19 +1,16 @@
 cmake_minimum_required(VERSION 2.8)
 project(chaos_driver_actuator)
-SET(CHAOS_CUS core/SCActuatorControlUnit.cpp)
-
 FILE(GLOB core_src core/*.cpp)
 SET(DRIVERS_LIB )
 add_subdirectory(models)
 
 IF(BUILD_FORCE_STATIC)
 ADD_LIBRARY(${PROJECT_NAME} STATIC ${core_src})
-SET(CMAKE_EXE_LINKER_FLAGS "-static -Wl,--whole-archive -lchaos_common -Wl,--no-whole-archive")
 ELSE()
-ADD_LIBRARY(${PROJECT_NAME}  SHARED ${core_src})
+ADD_LIBRARY(${PROJECT_NAME} SHARED ${core_src})
 ENDIF()
 
-TARGET_LINK_LIBRARIES(${PROJECT_NAME} ${DRIVERS_LIB} ${PROJECT_NAME} chaos_cutoolkit chaos_common common_debug common_modbus modbus chaos_cutoolkit chaos_uitoolkit ${FrameworkLib})
+TARGET_LINK_LIBRARIES(${PROJECT_NAME} ${DRIVERS_LIB} chaos_cutoolkit chaos_common common_debug common_modbus modbus chaos_cutoolkit chaos_uitoolkit ${FrameworkLib})
 installHeaders(core)
 INSTALL_TARGETS(/lib ${PROJECT_NAME})
 
