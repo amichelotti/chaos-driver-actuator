@@ -66,22 +66,24 @@ void own::CmdACTMoveAbsolute::setHandler(c_data::CDataWrapper *data) {
 
 	i_speed = (double*) getAttributeCache()->getROPtr<double>(DOMAIN_INPUT, "speed");		
 	i_command_timeout = getAttributeCache()->getROPtr<uint32_t>(DOMAIN_INPUT, "command_timeout");
-	i_delta_setpoint = getAttributeCache()->getROPtr<uint32_t>(DOMAIN_INPUT, "delta_setpoint");
-	i_setpoint_affinity = getAttributeCache()->getROPtr<uint32_t>(DOMAIN_INPUT, "setpoint_affinity");
+	__i_delta_setpoint = getAttributeCache()->getROPtr<double>(DOMAIN_INPUT, "__delta_setpoint");
+	__i_setpoint_affinity = getAttributeCache()->getROPtr<double>(DOMAIN_INPUT, "__setpoint_affinity");
         tmpInt = (int*) getAttributeCache()->getROPtr<int32_t>(DOMAIN_INPUT, "readingType") ;
         readTyp=(::common::actuators::AbstractActuator::readingTypes) *tmpInt;
         
+        
         getDeviceDatabase()->getAttributeRangeValueInfo("position_sp", attr_info);
-/*
+
  // REQUIRE MIN MAX SET IN THE MDS
   if (attr_info.maxRange.size()) {
       max_position = atof(attr_info.maxRange.c_str());
     SCLDBG_ << "max_position max=" << max_position;
 
   } else {
-           SCLERR_ << "not defined maximum 'position_sp' attribute, quitting command";
-                   BC_END_RUNNIG_PROPERTY;
-	    return;
+           SCLERR_ << "WARNING not defined maximum 'position_sp' attribute, command not executed";
+          // BC_END_RUNNIG_PROPERTY;
+          // return;
+                   
   }
 
   // REQUIRE MIN MAX POSITION IN THE MDS
@@ -90,13 +92,12 @@ void own::CmdACTMoveAbsolute::setHandler(c_data::CDataWrapper *data) {
 
         SCLDBG_ << "min_position min=" << min_position;
   } else {
-                  SCLERR_ << "not defined minimum 'position_sp' attribute, quitting command";
-                   BC_END_RUNNIG_PROPERTY;
-	    return;
-
-  }
+                  SCLERR_ << "WARNING not defined minimum 'position_sp' attribute, command not executed";
+            //       BC_END_RUNNIG_PROPERTY;
+            //       return;
+         }
         
-  */      
+        
   
  
 
@@ -154,14 +155,26 @@ void own::CmdACTMoveAbsolute::setHandler(c_data::CDataWrapper *data) {
         ccTim*=100;
         ccTim*=10000000;
 	computed_timeout = (uint64_t)ccTim;
-	SCLDBG_ << "Calculated timeout is = " << "ccTim" << ccTim <<"(" << computed_timeout  << ") i_speed " << *i_speed << " i_setpoint_affinity " << *i_setpoint_affinity;
+	SCLDBG_ << "Calculated timeout is = " << "ccTim" << ccTim <<"(" << computed_timeout  << ") i_speed " << *i_speed << " __i_setpoint_affinity " << *__i_setpoint_affinity;
 	//setFeatures(chaos_batch::features::FeaturesFlagTypes::FF_SET_COMMAND_TIMEOUT, computed_timeout);
 	setFeatures(chaos_batch::features::FeaturesFlagTypes::FF_SET_COMMAND_TIMEOUT, computed_timeout);
 	
+        if(*__i_delta_setpoint && (abs(position-offset_mm) < *__i_delta_setpoint)) {
+		SCLERR_ << "The offset don't pass delta check of = " << *__i_delta_setpoint << " setpoint point = "<<offset_mm <<" actual position" << *o_position_sp;
+		BC_END_RUNNIG_PROPERTY;
+		return;
+	}
         
+        if ((offset_mm > max_position) ||(offset_mm < min_position) )
+        {
+          SCLERR_ << "position "<<offset_mm << " out of range ( " << min_position << ","<< max_position <<") the command won't be executed";
+	  //BC_END_RUNNIG_PROPERTY;
+	  //return;
+        
+        }
 
-	if(*i_setpoint_affinity) {
-		affinity_set_delta = *i_setpoint_affinity;
+	if(*__i_setpoint_affinity) {
+		affinity_set_delta = *__i_setpoint_affinity;
 	} else {
 		affinity_set_delta = 2;
 	}
@@ -243,8 +256,8 @@ bool own::CmdACTMoveAbsolute::timeoutHandler() {
 	//move the state machine on fault
 	setWorkState(false);
 	actuator_drv->accessor->base_opcode_priority=50;
-	SCLDBG_ << "ALEDEBUG ALEDEBUT TIM MoveABsolute Readout: "<< *o_position <<" SetPoint: "<< *o_position_sp <<" Delta to reach: " << delta_position_reached;
-	SCLDBG_ << "ALEDEBUG ALEDEBUT TIM MoveABsolute  affinity_set_delta: " << affinity_set_delta;
+	SCLDBG_ << "  TIM MoveABsolute Readout: "<< *o_position <<" SetPoint: "<< *o_position_sp <<" Delta to reach: " << delta_position_reached;
+	SCLDBG_ << "  TIM MoveABsolute  affinity_set_delta: " << affinity_set_delta;
 	if(delta_position_reached <= affinity_set_delta) {
 		uint64_t elapsed_msec = chaos::common::utility::TimingUtil::getTimeStamp() - getSetTime();
 		SCLDBG_ << "[metric] Setpoint reached on timeout with readout position " << *o_position << " in " << elapsed_msec << " milliseconds";

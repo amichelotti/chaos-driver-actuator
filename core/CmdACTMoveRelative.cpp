@@ -64,23 +64,24 @@ void own::CmdACTMoveRelative::setHandler(c_data::CDataWrapper *data) {
 	o_position_sp = getAttributeCache()->getRWPtr<double>(DOMAIN_OUTPUT, "position_sp");
 	i_speed = ( double*) getAttributeCache()->getROPtr<double>(DOMAIN_INPUT, "speed");		
 	i_command_timeout = getAttributeCache()->getROPtr<uint32_t>(DOMAIN_INPUT, "command_timeout");
-	i_delta_setpoint = getAttributeCache()->getROPtr<uint32_t>(DOMAIN_INPUT, "delta_setpoint");
-	i_setpoint_affinity = getAttributeCache()->getROPtr<uint32_t>(DOMAIN_INPUT, "setpoint_affinity");
+	__i_delta_setpoint = getAttributeCache()->getROPtr<double>(DOMAIN_INPUT, "__delta_setpoint");
+	__i_setpoint_affinity = getAttributeCache()->getROPtr<double>(DOMAIN_INPUT, "__setpoint_affinity");
 	axID = getAttributeCache()->getROPtr<uint32_t>(DOMAIN_INPUT, "axisID");
         tmpInt =  (int*) getAttributeCache()->getROPtr<int32_t>(DOMAIN_INPUT, "readingType") ;
         readTyp=(::common::actuators::AbstractActuator::readingTypes) *tmpInt;
         
         getDeviceDatabase()->getAttributeRangeValueInfo("position_sp", attr_info);
  // REQUIRE MIN MAX SET IN THE MDS
-/*
+
   if (attr_info.maxRange.size()) {
       max_position = atof(attr_info.maxRange.c_str());
     SCLDBG_ << "max_position max=" << max_position;
 
   } else {
+      SCLERR_<< attr_info.name <<":"<< attr_info.maxSize <<";"<<attr_info.maxRange <<":";
            SCLERR_ << "not defined maximum 'position_sp' attribute, quitting command";
-                   BC_END_RUNNIG_PROPERTY;
-	    return;
+          //         BC_END_RUNNIG_PROPERTY;
+	  //  return;
   }
 
   // REQUIRE MIN MAX POSITION IN THE MDS
@@ -90,12 +91,12 @@ void own::CmdACTMoveRelative::setHandler(c_data::CDataWrapper *data) {
         SCLDBG_ << "min_position min=" << min_position;
   } else {
                   SCLERR_ << "not defined minimum 'position_sp' attribute, quitting command";
-                   BC_END_RUNNIG_PROPERTY;
-	    return;
+            //       BC_END_RUNNIG_PROPERTY;
+	    //return;
 
   }
         
-  */      
+        
   
  
 
@@ -146,15 +147,13 @@ void own::CmdACTMoveRelative::setHandler(c_data::CDataWrapper *data) {
         return;
     }
     
-/*
+
     if((position + offset_mm) > max_position || (position + offset_mm)<min_position){
-          std::stringstream ss;
-        ss<<"ALEDEBUG final position:"<<position+ offset_mm <<" out of bounds ";
-	//	SCLERR_ << boost::str( boost::format("position %1 'currentSP' \"max_position\":%2% \"min_position\":%3%" ) % (position + offset_mm) % max_position % min_position);
-		BC_END_RUNNIG_PROPERTY;
-		return;
+        	//SCLERR_ << boost::str( boost::format("position %1 'currentSP' \"max_position\":%2% \"min_position\":%3%" ) % (position + offset_mm) % max_position % min_position);
+		//BC_END_RUNNIG_PROPERTY;
+		//return;
     }
-  */  
+    
 
     SCLDBG_ << "compute timeout for moving relative = " << offset_mm;
 	
@@ -171,14 +170,14 @@ void own::CmdACTMoveRelative::setHandler(c_data::CDataWrapper *data) {
 	
         
         //set current set poi into the output channel
-	if(*i_delta_setpoint && (offset_mm < *i_delta_setpoint)) {
-		SCLERR_ << "The offset don't pass delta check of = " << *i_delta_setpoint << " setpoint point = "<<offset_mm <<" actual position" << *o_position_sp;
+	if(*__i_delta_setpoint && (offset_mm < *__i_delta_setpoint)) {
+		SCLERR_ << "The offset don't pass delta check of = " << *__i_delta_setpoint << " setpoint point = "<<offset_mm <<" actual position" << *o_position_sp;
 		BC_END_RUNNIG_PROPERTY;
 		return;
 	}
 
-	if(*i_setpoint_affinity) {
-		affinity_set_delta = *i_setpoint_affinity;
+	if(*__i_setpoint_affinity) {
+		affinity_set_delta = *__i_setpoint_affinity;
 	} else {
 		affinity_set_delta = 1;
 	}

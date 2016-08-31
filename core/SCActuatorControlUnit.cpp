@@ -99,26 +99,6 @@ int ::driver::actuator::SCActuatorControlUnit::decodeType(const std::string& str
 }
 
 /*
-bool ::driver::actuator::SCActuatorControlUnit::setSpeed(const std::string &name,double value,size_t size){
-        int err= -1;
-          const double *speed = getAttributeCache()->getROPtr<double>(DOMAIN_INPUT, "speed");
-          if(value>=0){
-                    SCCUAPP << "set speed:"<<value<< "::" << speed;
-
-                  err = actuator_drv->setSpeed(value);
-          }
-         return (err==chaos::ErrorCode::EC_NO_ERROR);
-}
-bool ::driver::actuator::SCActuatorControlUnit::setAcceleration(const std::string &name,double value,size_t size){
-          int err= -1;
-          const double *acc = getAttributeCache()->getROPtr<double>(DOMAIN_INPUT, "acceleration");
-	  SCCUAPP << "HANDLER setAcceleration" ;
-          if(value>=0){
-                  SCCUAPP << "set acceleration:"<<value<< "::" << acc;
-                  err = actuator_drv->setAcceleration(value);
-          }
-         return (err==chaos::ErrorCode::EC_NO_ERROR);
-}
 bool ::driver::actuator::SCActuatorControlUnit::setMovement(const std::string &name,int32_t value,size_t size){
           int err= -1;
           const int32_t *mov = getAttributeCache()->getROPtr<int32_t>(DOMAIN_INPUT, "movement");
@@ -245,6 +225,7 @@ void ::driver::actuator::SCActuatorControlUnit::unitDefineActionAndDataset() thr
                         DataType::Output);
 
           
+
   addAttributeToDataSet("position",
                         "position",
                         DataType::TYPE_DOUBLE,
@@ -290,16 +271,25 @@ addAttributeToDataSet("ConfigString",
                         DataType::TYPE_INT32,
                         DataType::Input);
  
-  addAttributeToDataSet("delta_setpoint",
+  addAttributeToDataSet("__delta_setpoint",
                         "Delta of the setpoint",
-                        DataType::TYPE_INT32,
+                        DataType::TYPE_DOUBLE,
                         DataType::Input);
 
-  addAttributeToDataSet("setpoint_affinity",
+  addAttributeToDataSet("__setpoint_affinity",
                         "Delta of the setpoint",
-                        DataType::TYPE_INT32,
+                        DataType::TYPE_DOUBLE,
                         DataType::Input);
-
+  
+  addAttributeToDataSet("__positionWarningTHR",
+                        "Threshold for warning on Position",
+                        DataType::TYPE_DOUBLE,
+                        DataType::Input);
+  
+  addAttributeToDataSet("__positionWarningTHR_Timeout",
+                        "Tolerance time for Threshold warning on Position",
+                        DataType::TYPE_DOUBLE,
+                        DataType::Input);
 
 }
 

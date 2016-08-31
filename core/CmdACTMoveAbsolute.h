@@ -40,9 +40,9 @@ namespace driver {
 			const uint32_t *axID;
 			
 			const uint32_t	*i_command_timeout;
-			const uint32_t	*i_delta_setpoint;
-			
-			const uint32_t	*i_setpoint_affinity;
+			const double	*__i_delta_setpoint;
+			const double	*__i_setpoint_affinity;
+                        
 ::common::actuators::AbstractActuator::readingTypes readTyp;
 
 			//is the delta to the setpoint that notify the end of command
