@@ -31,8 +31,8 @@ namespace driver {
 	namespace actuator {
 		
 		DEFINE_BATCH_COMMAND_CLASS(CmdACTDefault,AbstractActuatorCommand) {
-			uint64_t		sequence_number;
-            uint64_t		last_slow_acq_time;
+			uint64_t                OutOfSetWarningTimestamp;
+                        bool                    OutOfSetWarningStatus;
 			unsigned int	slow_acquisition_idx;
 			const uint32_t *axID;
 			uint64_t	*o_dev_state;
@@ -40,7 +40,9 @@ namespace driver {
                         double          *o_position;
                         double          *o_positionEnc;
 			double		*o_acceleration;
-			
+                        const double          *positionTHR;
+                        const double          *positionTHR_TIM;
+			int32_t         *o_warning;
 			int32_t		*o_on;
 			
 			int32_t		*o_alarm;

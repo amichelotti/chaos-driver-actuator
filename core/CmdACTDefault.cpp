@@ -68,16 +68,18 @@ void CmdACTDefault::setHandler(c_data::CDataWrapper *data) {
 	//get channel pointer
 	tmpInt =  getAttributeCache()->getROPtr<int32_t>(DOMAIN_INPUT, "readingType") ;
 	CMDCU_ << "Set Handler readingType is " << *tmpInt;
-                
+        positionTHR= getAttributeCache()->getROPtr<double>(DOMAIN_INPUT, "__positionWarningTHR");
+        positionTHR_TIM=getAttributeCache()->getROPtr<double>(DOMAIN_INPUT, "__positionWarningTHR_Timeout");
         readTyp=(::common::actuators::AbstractActuator::readingTypes) *tmpInt;
 	o_position = getAttributeCache()->getRWPtr<double>(DOMAIN_OUTPUT, "position");
+        o_warning = getAttributeCache()->getRWPtr<int32_t>(DOMAIN_OUTPUT, "__outputWarning");
 		
 	
 	o_alarm = getAttributeCache()->getRWPtr<int32_t>(DOMAIN_OUTPUT, "alarms");
-
+        OutOfSetWarningStatus=false;
 	BC_NORMAL_RUNNIG_PROPERTY
-        sequence_number = 0;
-	slow_acquisition_idx = 0;
+       
+        
 }
 
     // Aquire the necessary data for the command
@@ -116,7 +118,8 @@ void CmdACTDefault::acquireHandler() {
 	tmp_uint64=0;		
 	if((err = actuator_drv->getAlarms(*axID,&tmp_uint64,desc)) == 0){
 		*o_alarms = tmp_uint64;
-		DPRINT("alarm description is %s",desc.c_str() );
+                if (tmp_uint64)
+                    DPRINT("alarm description is %s",desc.c_str() );
 		o_alarm_str = getAttributeCache()->getRWPtr<char>(DOMAIN_OUTPUT, "alarmStr");
 		strncpy(o_alarm_str, desc.c_str(), 256);
 	} else {
@@ -133,6 +136,33 @@ void CmdACTDefault::acquireHandler() {
 	} else {
 		LOG_AND_TROW(CMDCUERR_, 3, boost::str( boost::format("Error calling driver on get state readout with code %1%") % err));
 	}
+        //check out of set warning
+        if ((*positionTHR) && (*positionTHR_TIM))
+        {
+            if (abs(*pos_sp - *o_position) > *positionTHR)
+            {
+                time_t now=time(NULL);
+                if (!OutOfSetWarningStatus)
+                {
+                    OutOfSetWarningStatus=true;
+                    OutOfSetWarningTimestamp=now;
+                }
+                else
+                {
+                    if ((now-OutOfSetWarningTimestamp) > *positionTHR_TIM)
+                    {
+                        CMDCUERR_ << "WARNING OUT OF SET " << *o_position << " ";
+                        *o_warning=1;
+                    }
+                }
+                
+            }
+            else
+            {
+                OutOfSetWarningStatus=false;
+                *o_warning=0;
+            }
+        }
 
     CMDCU_ << "Axis ID ->" << (int) *axID;
     CMDCU_ << "Reading Type ->" << (int) readTyp;

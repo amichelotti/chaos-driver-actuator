@@ -290,7 +290,12 @@ addAttributeToDataSet("ConfigString",
                         "Tolerance time for Threshold warning on Position",
                         DataType::TYPE_DOUBLE,
                         DataType::Input);
-
+  
+   addAttributeToDataSet("__outputWarning",
+                        "Warning Status for out of pos",
+                        DataType::TYPE_INT32,
+                        DataType::Output);
+          
 }
 
 void ::driver::actuator::SCActuatorControlUnit::unitDefineCustomAttribute() {
@@ -310,7 +315,8 @@ void ::driver::actuator::SCActuatorControlUnit::unitInit() throw(CException) {
   RangeValueInfo attr_info;
 
    int32_t *status_id = getAttributeCache()->getRWPtr<int32_t>(DOMAIN_OUTPUT, "status_id");
-
+   double *o_position = getAttributeCache()->getRWPtr<double>(DOMAIN_OUTPUT, "position"); 
+   double *o_positionSP = getAttributeCache()->getRWPtr<double>(DOMAIN_OUTPUT, "position_sp"); 
 
   SCCUAPP <<"ALEDEBUG ALEDEBUG REQUESTING ACCESSOR  AND DRIVER   AFTER INIT " ;
   chaos::cu::driver_manager::driver::DriverAccessor *actuator_accessor = getAccessoInstanceByIndex(0);
@@ -358,12 +364,25 @@ void ::driver::actuator::SCActuatorControlUnit::unitInit() throw(CException) {
   if (actuator_drv->getHWVersion(*axID,device_hw) == 0) {
     SCCUAPP << "hardware found: \"" << device_hw << "\"";
   }
+  ::common::actuators::AbstractActuator::readingTypes readTyp;
+  double tmp_float = 0.0F;
+  const int32_t *tmpInt =  getAttributeCache()->getROPtr<int32_t>(DOMAIN_INPUT, "readingType") ;
+  readTyp=(::common::actuators::AbstractActuator::readingTypes) *tmpInt;
+   if((err = actuator_drv->getPosition(*axID,readTyp,&tmp_float))==0){
+		*o_position = tmp_float;
+                *o_positionSP=tmp_float;
+    } else {
+		throw chaos::CException(-9, "Error getting initial position of the actuator", __FUNCTION__);
+	}
+  
 
 }
 
 // Abstract method for the start of the control unit
 void ::driver::actuator::SCActuatorControlUnit::unitStart() throw(CException) {
-
+    
+    
+   
 }
 
 // Abstract method for the stop of the control unit
