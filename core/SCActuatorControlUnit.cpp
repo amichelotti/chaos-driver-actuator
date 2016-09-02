@@ -291,6 +291,12 @@ addAttributeToDataSet("ConfigString",
                         DataType::TYPE_DOUBLE,
                         DataType::Input);
   
+  addAttributeToDataSet("__positionResolution",
+                        "change in position less than that will not pushed",
+                        DataType::TYPE_DOUBLE,
+                        DataType::Input);
+  
+  
    addAttributeToDataSet("__outputWarning",
                         "Warning Status for out of pos",
                         DataType::TYPE_INT32,

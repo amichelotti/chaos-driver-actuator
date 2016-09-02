@@ -56,6 +56,14 @@ uint8_t CmdACTDefault::implementedHandler() {
 void CmdACTDefault::setHandler(c_data::CDataWrapper *data) {
 	
         const int *tmpInt;
+         
+        lastState=-1;
+        lastPosition=-1;
+        lastAlarms=0;
+        __lastWarning=-1;
+        
+        
+        
 	CMDCU_ << "Set Handler";
 	AbstractActuatorCommand::setHandler(data);
  	axID = getAttributeCache()->getROPtr<uint32_t>(DOMAIN_INPUT, "axisID");
@@ -70,6 +78,7 @@ void CmdACTDefault::setHandler(c_data::CDataWrapper *data) {
 	CMDCU_ << "Set Handler readingType is " << *tmpInt;
         positionTHR= getAttributeCache()->getROPtr<double>(DOMAIN_INPUT, "__positionWarningTHR");
         positionTHR_TIM=getAttributeCache()->getROPtr<double>(DOMAIN_INPUT, "__positionWarningTHR_Timeout");
+        posRes=getAttributeCache()->getROPtr<double>(DOMAIN_INPUT, "__positionResolution");
         readTyp=(::common::actuators::AbstractActuator::readingTypes) *tmpInt;
 	o_position = getAttributeCache()->getRWPtr<double>(DOMAIN_OUTPUT, "position");
         o_warning = getAttributeCache()->getRWPtr<int32_t>(DOMAIN_OUTPUT, "__outputWarning");
@@ -97,6 +106,9 @@ void CmdACTDefault::acquireHandler() {
 	uint64_t tmp_uint64 = -1;
         double EncRead;
         double *pos_sp;
+        
+      
+        
 	CMDCU_ << "Acquiring data";
 	
 	tmpInt =  getAttributeCache()->getROPtr<int32_t>(DOMAIN_INPUT, "readingType") ;
@@ -175,5 +187,16 @@ void CmdACTDefault::acquireHandler() {
     CMDCU_ << "status desc -> " << o_status;
 	
 	//force output dataset as changed
+    if (  (lastState!=*o_status_id) || 
+           (*posRes &&(abs(lastPosition - *o_position)> *posRes)) ||
+            (lastAlarms!=*o_alarms) ||
+             ( __lastWarning!=*o_warning)
+            )
+    {
 	getAttributeCache()->setOutputDomainAsChanged();
+        lastState=*o_status_id;
+        lastPosition=*o_position;
+        lastAlarms=*o_alarms;
+        __lastWarning=*o_warning;
+    }
 }

@@ -31,8 +31,8 @@ namespace driver {
 	namespace actuator {
 		
 		DEFINE_BATCH_COMMAND_CLASS(CmdACTDefault,AbstractActuatorCommand) {
-			uint64_t                OutOfSetWarningTimestamp;
-                        bool                    OutOfSetWarningStatus;
+			uint64_t        OutOfSetWarningTimestamp;
+                        bool            OutOfSetWarningStatus;
 			unsigned int	slow_acquisition_idx;
 			const uint32_t *axID;
 			uint64_t	*o_dev_state;
@@ -42,10 +42,16 @@ namespace driver {
 			double		*o_acceleration;
                         const double          *positionTHR;
                         const double          *positionTHR_TIM;
+                        const double          *posRes;
 			int32_t         *o_warning;
 			int32_t		*o_on;
-			
 			int32_t		*o_alarm;
+                        
+                            //Last values for choose to push or not
+                        int32_t lastState;
+                        double lastPosition;
+                        uint64_t lastAlarms;
+                        int32_t __lastWarning;
 
 		protected:
 			// return the implemented handler
