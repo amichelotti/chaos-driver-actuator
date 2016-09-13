@@ -252,11 +252,11 @@ void own::CmdACTMoveRelative::ccHandler() {
 		setWorkState(false);
         }
         
-	if(*o_alarms) {
-		SCLERR_ << "We got alarms on actuator so we end the command";
-		BC_END_RUNNIG_PROPERTY;
-		setWorkState(false);
-	}
+//	if(*o_alarms) {
+//		SCLERR_ << "We got alarms on actuator so we end the command";
+//		BC_END_RUNNIG_PROPERTY;
+//		setWorkState(false);
+//	}
 }
 
 bool own::CmdACTMoveRelative::timeoutHandler() {
