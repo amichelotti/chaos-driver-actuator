@@ -70,6 +70,7 @@ void own::CmdACTMoveRelative::setHandler(c_data::CDataWrapper *data) {
         tmpInt =  (int*) getAttributeCache()->getROPtr<int32_t>(DOMAIN_INPUT, "readingType") ;
         readTyp=(::common::actuators::AbstractActuator::readingTypes) *tmpInt;
         
+           
         getDeviceDatabase()->getAttributeRangeValueInfo("position_sp", attr_info);
  // REQUIRE MIN MAX SET IN THE MDS
 
@@ -156,11 +157,15 @@ void own::CmdACTMoveRelative::setHandler(c_data::CDataWrapper *data) {
     
 
     SCLDBG_ << "compute timeout for moving relative = " << offset_mm;
-	
-        double ccTim  = offset_mm / *i_speed;
-        ccTim*=100;
-        ccTim*=10000000;
-	uint64_t computed_timeout = (uint64_t)ccTim;
+    uint64_t computed_timeout;
+	if (*i_speed != 0)
+        {
+            double ccTim  = offset_mm / *i_speed;
+            ccTim*=100;
+            ccTim*=10000000;
+            computed_timeout = (uint64_t)ccTim;
+        }
+        else computed_timeout=20000000000;
 
   	
 		
@@ -261,7 +266,7 @@ bool own::CmdACTMoveRelative::timeoutHandler() {
 	setWorkState(false);
 	actuator_drv->accessor->base_opcode_priority=50;
         SCLDBG_ << "ALEDEBUG delta position reached " << delta_position_reached << " affinity_set_delta " << affinity_set_delta ;
-        SCLDBG_ << "ALEDEBUG speed is" << *i_speed ;
+        
 	if(delta_position_reached <= affinity_set_delta) {
 		uint64_t elapsed_msec = chaos::common::utility::TimingUtil::getTimeStamp() - getSetTime();
 		SCLDBG_ << "[metric] Setpoint reached on timeout with readout position " << *o_position << " in " << elapsed_msec << " milliseconds";

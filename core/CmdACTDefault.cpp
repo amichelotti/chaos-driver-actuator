@@ -188,7 +188,7 @@ void CmdACTDefault::acquireHandler() {
 	
 	//force output dataset as changed
     if (  (lastState!=*o_status_id) || 
-           (*posRes &&(abs(lastPosition - *o_position)> *posRes)) ||
+           ((abs(lastPosition - *o_position)> *posRes)) ||
             (lastAlarms!=*o_alarms) ||
              ( __lastWarning!=*o_warning)
             )

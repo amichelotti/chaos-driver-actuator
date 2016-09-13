@@ -151,11 +151,16 @@ void own::CmdACTMoveAbsolute::setHandler(c_data::CDataWrapper *data) {
 	
   	
 	//numero di secondi, dopo lo moltiplichiamo per 1 milione (volendo da micro)	
+    if (*i_speed)
+    {
 	double ccTim  = offset_mm / *i_speed;
         ccTim*=100;
         ccTim*=10000000;
 	computed_timeout = (uint64_t)ccTim;
-	SCLDBG_ << "Calculated timeout is = " << "ccTim" << ccTim <<"(" << computed_timeout  << ") i_speed " << *i_speed << " __i_setpoint_affinity " << *__i_setpoint_affinity;
+        SCLDBG_ << "Calculated timeout is = " << "ccTim" << ccTim <<"(" << computed_timeout  << ") i_speed " << *i_speed << " __i_setpoint_affinity " << *__i_setpoint_affinity;
+    
+    }   else computed_timeout=2000000000;
+	
 	//setFeatures(chaos_batch::features::FeaturesFlagTypes::FF_SET_COMMAND_TIMEOUT, computed_timeout);
 	setFeatures(chaos_batch::features::FeaturesFlagTypes::FF_SET_COMMAND_TIMEOUT, computed_timeout);
 	
