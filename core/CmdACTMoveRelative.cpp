@@ -240,7 +240,7 @@ void own::CmdACTMoveRelative::acquireHandler() {
 }
 
 void own::CmdACTMoveRelative::ccHandler() {
-	//check if we are int the delta of the setpoit to end the command
+	//check if we are in the delta of the setpoint to end the command
 	double delta_position_reached = std::abs(*o_position_sp - *o_position);
 	SCLDBG_ << "Readout: "<< *o_position <<" SetPoint: "<< *o_position_sp <<" Delta to reach: " << delta_position_reached;
 	if(delta_position_reached <= affinity_set_delta) 

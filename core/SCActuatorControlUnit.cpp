@@ -126,7 +126,7 @@ void ::driver::actuator::SCActuatorControlUnit::unitDefineActionAndDataset() thr
   installCommand(BATCH_COMMAND_GET_DESCRIPTION(CmdACTresetAlarms));
   installCommand(BATCH_COMMAND_GET_DESCRIPTION(CmdACTSetParameter));
   //setup the dataset
-  SCCUAPP <<"ALEDEBUG ALEDEBUG REQUESTING ACCESSOR AND DRIVER ON PREINIT " ;
+  
   chaos::cu::driver_manager::driver::DriverAccessor *actuator_accessor = getAccessoInstanceByIndex(0);
   if (actuator_accessor == NULL) {
     throw chaos::CException(-1, "Cannot retrieve the requested driver", __FUNCTION__);
@@ -260,6 +260,11 @@ addAttributeToDataSet("ConfigString",
                         "ConfigString",
                         DataType::TYPE_STRING,
                         DataType::Input, 256);
+
+addAttributeToDataSet("auxiliaryConfigParameters",
+                        "parameter:value;parameter:value;",
+                        DataType::TYPE_STRING,
+                        DataType::Input, 512);
   
   addAttributeToDataSet("driver_timeout",
                         "Driver timeout in milliseconds",
@@ -334,9 +339,10 @@ void ::driver::actuator::SCActuatorControlUnit::unitInit() throw(CException) {
     throw chaos::CException(-2, "Cannot allocate driver resources", __FUNCTION__);
   }
   std::string *initString =new std::string();
-  char* ptStr=NULL;
+  char* ptStr=NULL, *auxStr=NULL;
   const uint32_t *axID=getAttributeCache()->getROPtr<uint32_t>(DOMAIN_INPUT, "axisID");
   ptStr=(char*)getAttributeCache()->getROPtr<char*>(DOMAIN_INPUT, "ConfigString");
+  auxStr=(char*)getAttributeCache()->getROPtr<char*>(DOMAIN_INPUT, "auxiliaryConfigParameters");
   initString->assign(ptStr);
   if (initString->c_str() == NULL)
   {
@@ -356,8 +362,30 @@ void ::driver::actuator::SCActuatorControlUnit::unitInit() throw(CException) {
   if (actuator_drv->poweron(*axID,1) != 0) {
     throw chaos::CException(-3, "Cannot poweron actuator " + control_unit_instance, __FUNCTION__);
   }
-  
-
+  //parsing di auxiliary
+    {
+    char* param=NULL;
+    char* value;
+    param=strtok(auxStr,":");
+    while (param)
+    {
+        value=NULL;
+        value=strtok(NULL,";");
+        if (value)
+        {
+            std::string PAR(param);
+            std::string VAL(value);
+            int ret;
+            ret=actuator_drv->setParameter(*axID,PAR,VAL);
+            if (ret)
+                SCCUERR << "bad configuration for parameter " <<param << " value "<<value;
+            else
+                SCCUAPP << "Parameter "<<param<< "set to "<< value;
+        }
+        else break;
+        param=strtok(NULL,":");
+    }
+    }
 
   if (actuator_drv->getState(*axID,&state_id, state_str) != 0) {
     throw chaos::CException(-6, "Error getting the state of the actuator, possibily off", __FUNCTION__);

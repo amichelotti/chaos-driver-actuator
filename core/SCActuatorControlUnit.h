@@ -30,7 +30,7 @@ namespace driver {
 		class SCActuatorControlUnit : public chaos::cu::control_manager::SCAbstractControlUnit {
 			PUBLISHABLE_CONTROL_UNIT_INTERFACE(SCActuatorControlUnit)
 
-			// init paramter
+			// init parameter
 			  std::string device_hw;
 			
 			chaos::driver::actuator::ChaosActuatorInterface *actuator_drv;

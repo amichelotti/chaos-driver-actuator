@@ -236,7 +236,7 @@ void own::CmdACTMoveAbsolute::acquireHandler() {
 }
 
 void own::CmdACTMoveAbsolute::ccHandler() {
-	//check if we are int the delta of the setpoit to end the command
+	//check if we are in the delta of the setpoint to end the command
 	double delta_position_reached = std::abs(*o_position_sp - *o_position);
 	SCLDBG_ << "ccH MoveABsolute Readout: "<< *o_position <<" SetPoint: "<< *o_position_sp <<" Delta to reach: " << delta_position_reached << " computed Timeout " << computed_timeout ;
 	if(delta_position_reached <= affinity_set_delta) 
@@ -248,11 +248,11 @@ void own::CmdACTMoveAbsolute::ccHandler() {
 		setWorkState(false);
         }
         
-	if(*o_alarms) {
-		SCLERR_ << "We got alarms on actuator so we end the command";
-		BC_END_RUNNIG_PROPERTY;
-		setWorkState(false);
-	}
+//	if(*o_alarms) {
+//		SCLERR_ << "We got alarms on actuator so we end the command";
+//		BC_END_RUNNIG_PROPERTY;
+//		setWorkState(false);
+//	}
 }
 
 bool own::CmdACTMoveAbsolute::timeoutHandler() {
