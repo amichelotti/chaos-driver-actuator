@@ -159,7 +159,7 @@ void own::CmdACTMoveAbsolute::setHandler(c_data::CDataWrapper *data) {
 	computed_timeout = (uint64_t)ccTim;
         SCLDBG_ << "Calculated timeout is = " << "ccTim" << ccTim <<"(" << computed_timeout  << ") i_speed " << *i_speed << " __i_setpoint_affinity " << *__i_setpoint_affinity;
     
-    }   else computed_timeout=2000000000;
+    }   else computed_timeout=60;
 	
 	//setFeatures(chaos_batch::features::FeaturesFlagTypes::FF_SET_COMMAND_TIMEOUT, computed_timeout);
 	setFeatures(chaos_batch::features::FeaturesFlagTypes::FF_SET_COMMAND_TIMEOUT, computed_timeout);

@@ -165,7 +165,7 @@ void own::CmdACTMoveRelative::setHandler(c_data::CDataWrapper *data) {
             ccTim*=10000000;
             computed_timeout = (uint64_t)ccTim;
         }
-        else computed_timeout=20000000000;
+        else computed_timeout=60;
 
   	
 		
