@@ -230,6 +230,8 @@ void own::CmdACTMoveAbsolute::acquireHandler() {
 		if((err = actuator_drv->getAlarms(*axID,o_alarms,desc))){
 			LOG_AND_TROW(SCLERR_, 2, boost::str(boost::format("Error fetching alarms readout with code %1%") % err));
 		}
+                o_alarm_str = getAttributeCache()->getRWPtr<char>(DOMAIN_OUTPUT, "alarmStr");
+		strncpy(o_alarm_str, desc.c_str(), 256);
 	}
 	//force output dataset as changed
 	getAttributeCache()->setOutputDomainAsChanged();
