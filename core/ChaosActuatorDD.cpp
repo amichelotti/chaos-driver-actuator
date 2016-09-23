@@ -208,7 +208,7 @@ cu_driver::MsgManagmentResultType::MsgManagmentResult ChaosActuatorDD::execOpcod
 	out->result=motor->setParameter(in->axis,in->str,in->str2);
 	char* SS0=strdup(in->str);
 	char* SS1=strdup(in->str2);
-	ACDBG << "ALEDEBUG: Sending Set" << SS1 <<"  on Parameter " << SS0 ;
+	ACDBG << "ALEDEBUG: Sending Set " << SS1 <<"  on Parameter " << SS0 <<"axis " <<in->axis;
 	ACDBG << "result " << out->result ;
 	free(SS0);
 	free(SS1);

@@ -63,6 +63,7 @@ void own::CmdACTSetParameter::setHandler(c_data::CDataWrapper *data) {
 	}
 	parName= static_cast<std::string>(data->getStringValue(CMD_ACT_PARNAME));
 	value= static_cast<std::string>(data->getStringValue(CMD_ACT_SETPAR_VALUE));
+        //SCLDBG_ << "ALEDEBUG axisID to send " << *axID ;
 	if((err = actuator_drv->setParameter(*axID,parName,value)) != 0) {
 		LOG_AND_TROW(SCLERR_, 1, boost::str(boost::format("Error %1% setting parameter %2") % err % parName));
 	}

@@ -351,7 +351,7 @@ uint64_t ChaosActuatorInterface::getFeatures() {
     return feats;
 }
 int ChaosActuatorInterface::setParameter(int32_t axisID,const std::string parName,const std::string value) {
-	WRITE_OP_STRING_STRING_TIM(OP_SETPARAMETER,parName.c_str(),value.c_str(),0);
+	WRITE_OP_AX_STRING_STRING_TIM(OP_SETPARAMETER,axisID,parName.c_str(),value.c_str(),0);
 }
 
 
