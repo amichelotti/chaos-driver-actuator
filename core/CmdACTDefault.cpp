@@ -86,7 +86,7 @@ void CmdACTDefault::setHandler(c_data::CDataWrapper *data) {
 	
 	o_alarm = getAttributeCache()->getRWPtr<int32_t>(DOMAIN_OUTPUT, "alarms");
         OutOfSetWarningStatus=false;
-	BC_NORMAL_RUNNIG_PROPERTY
+	BC_NORMAL_RUNNING_PROPERTY
        
         
 }

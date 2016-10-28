@@ -51,7 +51,7 @@ AbstractActuatorCommand::setHandler(data);
 	}
 actuator_drv->accessor->base_opcode_priority=100;
 	setWorkState(true);
-	BC_EXEC_RUNNIG_PROPERTY;
+	BC_EXEC_RUNNING_PROPERTY;
 }
 // empty acquire handler
 void own::CmdACTStopMotion::acquireHandler() {
@@ -89,12 +89,12 @@ void own::CmdACTStopMotion::ccHandler() {
 	{
 	     SCLDBG_ << "[metric ]:Motor Stopped  in " << elapsed_msec << " milliseconds";
 	     setWorkState(false);
-	     BC_END_RUNNIG_PROPERTY;
+	     BC_END_RUNNING_PROPERTY;
 	}
 	if (*o_alarms) {
 		SCLERR_ << "We got alarms on actuator so we end the command";
 		setWorkState(false);
-		BC_END_RUNNIG_PROPERTY;
+		BC_END_RUNNING_PROPERTY;
 	}
 }
 // empty timeout handler
@@ -107,10 +107,10 @@ bool own::CmdACTStopMotion::timeoutHandler() {
 	   uint64_t elapsed_msec = chaos::common::utility::TimingUtil::getTimeStamp() - getSetTime();
 	   SCLDBG_ << "[metric] Motor Stopped on timeout in " << elapsed_msec << " milliseconds";
 	   //the command is endedn because we have reached the affinitut delta set
-	   BC_END_RUNNIG_PROPERTY;
+	   BC_END_RUNNING_PROPERTY;
 	}else {
            SCLERR_ << "[metric] Motor not stopped before timeout of " << elapsed_msec << " milliseconds";
-	   BC_FAULT_RUNNIG_PROPERTY;
+	   BC_FAULT_RUNNING_PROPERTY;
 	}
 	return false;
 	

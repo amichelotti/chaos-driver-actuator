@@ -53,7 +53,7 @@ void own::CmdACTPoweron::setHandler(c_data::CDataWrapper *data) {
 		LOG_AND_TROW(SCLERR_, 1, boost::str(boost::format("Error %1% while power on the actuator") % err));
 	}
 	setWorkState(true);
-	BC_EXEC_RUNNIG_PROPERTY;
+	BC_EXEC_RUNNING_PROPERTY;
 }
 // empty acquire handler
 void own::CmdACTPoweron::acquireHandler() {
@@ -74,10 +74,10 @@ void own::CmdACTPoweron::ccHandler() {
 		strncpy(o_status, state_str.c_str(), 256);
 		if(((*o_status_id)&::common::actuators::ACTUATOR_POWER_SUPPLIED)!=0)
 		{
-			BC_END_RUNNIG_PROPERTY;
+			BC_END_RUNNING_PROPERTY;
 			setWorkState(false);
 		}
-			BC_END_RUNNIG_PROPERTY;
+			BC_END_RUNNING_PROPERTY;
 			setWorkState(false);
 	}
 }
@@ -97,12 +97,12 @@ bool own::CmdACTPoweron::timeoutHandler() {
                 strncpy(o_status, state_str.c_str(), 256);
                 if(((*o_status_id)&::common::actuators::ACTUATOR_POWER_SUPPLIED)!=0)
                 {
-                        BC_END_RUNNIG_PROPERTY;
+                        BC_END_RUNNING_PROPERTY;
                 }
 		else
 		{
  			SCLERR_ << "[metric] Power on not achieved before timeout " ;
-			BC_FAULT_RUNNIG_PROPERTY;
+			BC_FAULT_RUNNING_PROPERTY;
 		}
         }
 

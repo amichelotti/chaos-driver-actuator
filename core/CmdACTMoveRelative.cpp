@@ -81,7 +81,7 @@ void own::CmdACTMoveRelative::setHandler(c_data::CDataWrapper *data) {
   } else {
       SCLERR_<< attr_info.name <<":"<< attr_info.maxSize <<";"<<attr_info.maxRange <<":";
            SCLERR_ << "not defined maximum 'position_sp' attribute, quitting command";
-          //         BC_END_RUNNIG_PROPERTY;
+          //         BC_END_RUNNING_PROPERTY;
 	  //  return;
   }
 
@@ -92,7 +92,7 @@ void own::CmdACTMoveRelative::setHandler(c_data::CDataWrapper *data) {
         SCLDBG_ << "min_position min=" << min_position;
   } else {
                   SCLERR_ << "not defined minimum 'position_sp' attribute, quitting command";
-            //       BC_END_RUNNIG_PROPERTY;
+            //       BC_END_RUNNING_PROPERTY;
 	    //return;
 
   }
@@ -114,7 +114,7 @@ void own::CmdACTMoveRelative::setHandler(c_data::CDataWrapper *data) {
 
         if(((*o_status_id)&::common::actuators::ACTUATOR_READY)==0){
             SCLERR_ << boost::str( boost::format("Bad state for moving actuator %1%[%2%]") % o_status % *o_status_id);
-	    BC_END_RUNNIG_PROPERTY;
+	    BC_END_RUNNING_PROPERTY;
 	    return;
         }
 	
@@ -132,26 +132,26 @@ void own::CmdACTMoveRelative::setHandler(c_data::CDataWrapper *data) {
 	if(!data ||
 	   !data->hasKey(CMD_ACT_MM_OFFSET)) {
 		SCLERR_ << "Offset millimeters parameter not present";
-		BC_END_RUNNIG_PROPERTY;
+		BC_END_RUNNING_PROPERTY;
 		return;
 	}
 	if(!data->isDoubleValue(CMD_ACT_MM_OFFSET)) {
 		SCLERR_ << "Offset millimeters parameter is not a Double data type";
-		BC_END_RUNNIG_PROPERTY;
+		BC_END_RUNNING_PROPERTY;
 		return;
 	}
     
     offset_mm = static_cast<float>(data->getDoubleValue(CMD_ACT_MM_OFFSET));
     if(isnan(offset_mm)==true){
         SCLERR_ << "Offset millimeters parameter is not a valid double number (nan?)";
-        BC_END_RUNNIG_PROPERTY;
+        BC_END_RUNNING_PROPERTY;
         return;
     }
     
 
     if((position + offset_mm) > max_position || (position + offset_mm)<min_position){
         	//SCLERR_ << boost::str( boost::format("position %1 'currentSP' \"max_position\":%2% \"min_position\":%3%" ) % (position + offset_mm) % max_position % min_position);
-		//BC_END_RUNNIG_PROPERTY;
+		//BC_END_RUNNING_PROPERTY;
 		//return;
     }
     
@@ -177,7 +177,7 @@ void own::CmdACTMoveRelative::setHandler(c_data::CDataWrapper *data) {
         //set current set poi into the output channel
 	if(*__i_delta_setpoint && (offset_mm < *__i_delta_setpoint)) {
 		SCLERR_ << "The offset don't pass delta check of = " << *__i_delta_setpoint << " setpoint point = "<<offset_mm <<" actual position" << *o_position_sp;
-		BC_END_RUNNIG_PROPERTY;
+		BC_END_RUNNING_PROPERTY;
 		return;
 	}
 
@@ -199,7 +199,7 @@ void own::CmdACTMoveRelative::setHandler(c_data::CDataWrapper *data) {
 	*o_position_sp =((double)  position+(double)offset_mm);
 	actuator_drv->accessor->base_opcode_priority=100;
 	setWorkState(true);
-	BC_EXEC_RUNNIG_PROPERTY;
+	BC_EXEC_RUNNING_PROPERTY;
 
 }
 
@@ -250,13 +250,13 @@ void own::CmdACTMoveRelative::ccHandler() {
 		uint64_t elapsed_msec = chaos::common::utility::TimingUtil::getTimeStamp() - getSetTime();
 		//the command is endedn because we have reached the affinitut delta set
 		SCLDBG_ << "[metric ]Set point reached with - delta: "<< delta_position_reached <<" sp: "<< *o_position_sp <<" affinity check " << affinity_set_delta << " mm in " << elapsed_msec << " milliseconds";
-		BC_END_RUNNIG_PROPERTY;
+		BC_END_RUNNING_PROPERTY;
 		setWorkState(false);
         }
         
 //	if(*o_alarms) {
 //		SCLERR_ << "We got alarms on actuator so we end the command";
-//		BC_END_RUNNIG_PROPERTY;
+//		BC_END_RUNNING_PROPERTY;
 //		setWorkState(false);
 //	}
 }
@@ -273,11 +273,12 @@ bool own::CmdACTMoveRelative::timeoutHandler() {
 		uint64_t elapsed_msec = chaos::common::utility::TimingUtil::getTimeStamp() - getSetTime();
 		SCLDBG_ << "[metric] Setpoint reached on timeout with readout position " << *o_position << " in " << elapsed_msec << " milliseconds";
 		//the command is endedn because we have reached the affinitut delta set
-		BC_END_RUNNIG_PROPERTY;
+		BC_END_RUNNING_PROPERTY;
 	}else {
 		SCLERR_ << "[metric] Setpoint not reached on timeout with readout position " << *o_position << " in " << elapsed_msec << " milliseconds";
-		BC_END_RUNNIG_PROPERTY;
-		//BC_FAULT_RUNNIG_PROPERTY;
+		//FIRE OUT OF SET
+		BC_END_RUNNING_PROPERTY;
+		//BC_FAULT_RUNNING_PROPERTY;
 	}
 	return false;
 }

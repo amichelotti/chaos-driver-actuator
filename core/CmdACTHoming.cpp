@@ -61,7 +61,7 @@ void own::CmdACTHoming::setHandler(c_data::CDataWrapper *data)
     if(!data->hasKey(CMD_ACT_HOMINGTYPE)) 
     {
             SCLERR_ << "Homing type not present";
-            BC_END_RUNNIG_PROPERTY;
+            BC_END_RUNNING_PROPERTY;
             return;
     }
 	SCLDBG_ << "Accessing accessor at " << actuator_drv;
@@ -74,7 +74,7 @@ void own::CmdACTHoming::setHandler(c_data::CDataWrapper *data)
 		LOG_AND_TROW(SCLERR_, 1, boost::str(boost::format("Error %1% while homing") % err));
     }
 	setWorkState(false);
-	BC_EXEC_RUNNIG_PROPERTY;
+	BC_EXEC_RUNNING_PROPERTY;
 }
 
 
@@ -124,7 +124,7 @@ void own::CmdACTHoming::ccHandler() {
 		SCLDBG_ <<" CC Handler homResults " << homResult ;
 	if (homResult == 0)
         {
-		BC_END_RUNNIG_PROPERTY;
+		BC_END_RUNNING_PROPERTY;
 		setWorkState(false);
                 setFeatures(chaos_batch::features::FeaturesFlagTypes::FF_SET_SCHEDULER_DELAY, (uint64_t)1000000);
 	}

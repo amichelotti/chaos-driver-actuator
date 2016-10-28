@@ -54,7 +54,7 @@ void own::CmdACTresetAlarms::setHandler(c_data::CDataWrapper *data) {
 	}	
 	actuator_drv->accessor->base_opcode_priority=100;
         setWorkState(true);
-        BC_EXEC_RUNNIG_PROPERTY;
+        BC_EXEC_RUNNING_PROPERTY;
 	return;
 
 
@@ -70,7 +70,7 @@ void own::CmdACTresetAlarms::acquireHandler() {
 void own::CmdACTresetAlarms::ccHandler() {
 	SCLDBG_ << "ALEDEBUG Reset Alarms CC handler ";
         setWorkState(false);
-        BC_END_RUNNIG_PROPERTY;
+        BC_END_RUNNING_PROPERTY;
 	return;
 }
 // empty timeout handler

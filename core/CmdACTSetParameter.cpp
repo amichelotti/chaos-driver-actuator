@@ -52,13 +52,13 @@ void own::CmdACTSetParameter::setHandler(c_data::CDataWrapper *data) {
 	if(!data ||
 	   !data->hasKey(CMD_ACT_PARNAME)) {
 		SCLERR_ << "parameter name  not present";
-		BC_END_RUNNIG_PROPERTY;
+		BC_END_RUNNING_PROPERTY;
 		return;
 	}
 	if(!data ||
 	   !data->hasKey(CMD_ACT_SETPAR_VALUE)) {
 		SCLERR_ << "parameter value  not present";
-		BC_END_RUNNIG_PROPERTY;
+		BC_END_RUNNING_PROPERTY;
 		return;
 	}
 	parName= static_cast<std::string>(data->getStringValue(CMD_ACT_PARNAME));
@@ -73,7 +73,7 @@ void own::CmdACTSetParameter::acquireHandler() {
 }
 // empty correlation handler
 void own::CmdACTSetParameter::ccHandler() {
-BC_END_RUNNIG_PROPERTY;
+BC_END_RUNNING_PROPERTY;
 }
 // empty timeout handler
 bool own::CmdACTSetParameter::timeoutHandler() {
