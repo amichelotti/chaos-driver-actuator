@@ -67,6 +67,7 @@ namespace driver {
 
 			//-----------utility methdo for the restore operation---------
 			bool powerON(bool sync = true);
+                        const uint32_t *axID;
 			
 		public:
 			/*

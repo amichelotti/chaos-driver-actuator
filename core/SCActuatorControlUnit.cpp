@@ -306,6 +306,11 @@ addAttributeToDataSet("auxiliaryConfigParameters",
                         "Warning Status for out of pos",
                         DataType::TYPE_INT32,
                         DataType::Output);
+   
+   addAttributeToDataSet("bypass",
+                          "exclude HW changes",
+                          DataType::TYPE_BOOLEAN,
+                          DataType::Input);
           
 }
 
@@ -330,7 +335,11 @@ void ::driver::actuator::SCActuatorControlUnit::unitInit() throw(CException) {
    double *o_positionSP = getAttributeCache()->getRWPtr<double>(DOMAIN_OUTPUT, "position_sp"); 
 
   SCCUAPP <<"ALEDEBUG ALEDEBUG REQUESTING ACCESSOR  AND DRIVER   AFTER INIT " ;
-  chaos::cu::driver_manager::driver::DriverAccessor *actuator_accessor = getAccessoInstanceByIndex(0);
+    const bool* s_bypass=getAttributeCache()->getROPtr<bool>(DOMAIN_INPUT, "bypass");
+
+      chaos::cu::driver_manager::driver::DriverAccessor *actuator_accessor = *s_bypass&&(getAccessoInstanceByIndex(1))?getAccessoInstanceByIndex(1):getAccessoInstanceByIndex(0);
+
+  //chaos::cu::driver_manager::driver::DriverAccessor *actuator_accessor = getAccessoInstanceByIndex(0);
   if (actuator_accessor == NULL) {
     throw chaos::CException(-1, "Cannot retrieve the requested driver", __FUNCTION__);
   }
@@ -340,7 +349,7 @@ void ::driver::actuator::SCActuatorControlUnit::unitInit() throw(CException) {
   }
   std::string *initString =new std::string();
   char* ptStr=NULL, *auxStr=NULL;
-  const uint32_t *axID=getAttributeCache()->getROPtr<uint32_t>(DOMAIN_INPUT, "axisID");
+  axID=getAttributeCache()->getROPtr<uint32_t>(DOMAIN_INPUT, "axisID");
   ptStr=(char*)getAttributeCache()->getROPtr<char*>(DOMAIN_INPUT, "ConfigString");
   auxStr=(char*)getAttributeCache()->getROPtr<char*>(DOMAIN_INPUT, "auxiliaryConfigParameters");
   initString->assign(ptStr);
@@ -426,7 +435,6 @@ void ::driver::actuator::SCActuatorControlUnit::unitStop() throw(CException) {
 
 // Abstract method for the deinit of the control unit
 void ::driver::actuator::SCActuatorControlUnit::unitDeinit() throw(CException) {
-  const uint32_t *axID=getAttributeCache()->getROPtr<uint32_t>(DOMAIN_INPUT, "axisID");
     SCCUAPP << "Stop Motion ";
     actuator_drv->stopMotion(*axID);
     SCCUAPP << "Power off ";

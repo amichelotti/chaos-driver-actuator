@@ -42,9 +42,11 @@ void AbstractActuatorCommand::setHandler(c_data::CDataWrapper *data) {
 	o_status_id = getAttributeCache()->getRWPtr<int32_t>(DOMAIN_OUTPUT, "status_id");
 	o_status = getAttributeCache()->getRWPtr<char>(DOMAIN_OUTPUT, "status");
     o_alarms = getAttributeCache()->getRWPtr<uint64_t>(DOMAIN_OUTPUT, "alarms");
-	
+	    i_bypass =getAttributeCache()->getROPtr<bool>(DOMAIN_INPUT, "bypass");
+
+                chaos::cu::driver_manager::driver::DriverAccessor *actuator_accessor = *i_bypass&&(driverAccessorsErogator->getAccessoInstanceByIndex(1))?driverAccessorsErogator->getAccessoInstanceByIndex(1):driverAccessorsErogator->getAccessoInstanceByIndex(0);
+
 	//get pointer to the output datase variable
-	chaos::cu::driver_manager::driver::DriverAccessor *actuator_accessor = driverAccessorsErogator->getAccessoInstanceByIndex(0);
 	if(actuator_accessor != NULL) {
 	  if(actuator_drv == NULL){
 	    actuator_drv = new chaos::driver::actuator::ChaosActuatorInterface(actuator_accessor);

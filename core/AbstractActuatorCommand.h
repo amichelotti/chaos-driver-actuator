@@ -44,6 +44,7 @@ namespace driver {
 			char		*o_alarm_str;
 			int32_t		*o_status_id;
 			uint64_t	*o_alarms;
+                        const bool            *i_bypass;
 			//reference of the chaos bastraction ofactuator driver
 			chaos::driver::actuator::ChaosActuatorInterface *actuator_drv;
 			
