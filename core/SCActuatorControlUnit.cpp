@@ -45,9 +45,9 @@ using namespace chaos::cu::control_manager::slow_command;
 using namespace chaos::cu::driver_manager::driver;
 
 
-#define SCCUAPP INFO_LOG(SCActuatorControlUnit)
-#define SCCUDBG DBG_LOG(SCActuatorControlUnit)
-#define SCCUERR ERR_LOG(SCActuatorControlUnit)
+#define SCCUAPP INFO_LOG(SCActuatorControlUnit) << "[" << getDeviceID() << "] "
+#define SCCUDBG DBG_LOG(SCActuatorControlUnit) << "[" << getDeviceID() << "] "
+#define SCCUERR ERR_LOG(SCActuatorControlUnit) << "[" << getDeviceID() << "] "
 
 PUBLISHABLE_CONTROL_UNIT_IMPLEMENTATION(::driver::actuator::SCActuatorControlUnit)
 
