@@ -565,7 +565,7 @@ bool ::driver::actuator::SCActuatorControlUnit::powerON(bool sync) {
                      cmd_id,
                      0,
                      50,
-                     SubmissionRuleType::SUBMIT_AND_Stack);
+                     SubmissionRuleType::SUBMIT_AND_STACK);
   if (sync) {
     //! whait for the current command id to finisch
     result = waitOnCommandID(cmd_id);
