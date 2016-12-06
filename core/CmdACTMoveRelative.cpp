@@ -43,9 +43,9 @@ BATCH_COMMAND_ADD_DOUBLE_PARAM(CMD_ACT_MM_OFFSET, "offset in mm",chaos::common::
 BATCH_COMMAND_CLOSE_DESCRIPTION()
 
 // return the implemented handler
-uint8_t own::CmdACTMoveRelative::implementedHandler(){
-    return	AbstractActuatorCommand::implementedHandler()|chaos_batch::HandlerType::HT_Acquisition;
-}
+//uint8_t own::CmdACTMoveRelative::implementedHandler(){
+//    return	AbstractActuatorCommand::implementedHandler()|chaos_batch::HandlerType::HT_Acquisition;
+//}
 
 void own::CmdACTMoveRelative::setHandler(c_data::CDataWrapper *data) {
     chaos::common::data::RangeValueInfo position_sp_attr_info;
@@ -204,39 +204,43 @@ void own::CmdACTMoveRelative::setHandler(c_data::CDataWrapper *data) {
 }
 
 void own::CmdACTMoveRelative::acquireHandler() {
-	int err = 0;
-        int state=0;
-        double position;
-	std::string desc;
-        
-	std::string state_str;
-	SCLDBG_ << "MoveRelative Start Acquire Handler " ;
-	//acquire the current readout
-	SCLDBG_ << "fetch current readout";
-        
-        if((err = actuator_drv->getState(*axID,&state, state_str))) {
-		LOG_AND_TROW(SCLERR_, 1, boost::str(boost::format("Error fetching state readout with code %1%") % err));
-	} else {
-		*o_status_id = state;
-		//copy up to 255 and put the termination character
-		strncpy(o_status, state_str.c_str(), 256);
-	}
-        
-	if ((err = actuator_drv->getPosition(*axID,readTyp,&position)) !=0) {
-		LOG_AND_TROW(SCLERR_, 1, boost::str(boost::format("Error fetching position with code %1%") % err));
-	} else {
-                 *o_position = position;
-	}
-	if((slow_acquisition_index = !slow_acquisition_index)) {
-	
-	} else {
-	    SCLDBG_ << "fetch alarms readout";
-		if((err = actuator_drv->getAlarms(*axID,o_alarms,desc))){
-			LOG_AND_TROW(SCLERR_, 2, boost::str(boost::format("Error fetching alarms readout with code %1%") % err));
-		}
-                o_alarm_str = getAttributeCache()->getRWPtr<char>(DOMAIN_OUTPUT, "alarmStr");
-		strncpy(o_alarm_str, desc.c_str(), 256);
-	}
+//	int err = 0;
+//        int state=0;
+//        double position;
+//	std::string desc;
+//        
+//	std::string state_str;
+//	SCLDBG_ << "MoveRelative Start Acquire Handler " ;
+//	//acquire the current readout
+//	SCLDBG_ << "fetch current readout";
+//        
+//        if((err = actuator_drv->getState(*axID,&state, state_str))) {
+//		LOG_AND_TROW(SCLERR_, 1, boost::str(boost::format("Error fetching state readout with code %1%") % err));
+//	} else {
+//		*o_status_id = state;
+//		//copy up to 255 and put the termination character
+//		strncpy(o_status, state_str.c_str(), 256);
+//	}
+//        
+//	if ((err = actuator_drv->getPosition(*axID,readTyp,&position)) !=0) {
+//		LOG_AND_TROW(SCLERR_, 1, boost::str(boost::format("Error fetching position with code %1%") % err));
+//	} else {
+//                 *o_position = position;
+//	}
+//	if((slow_acquisition_index = !slow_acquisition_index)) {
+//	
+//	} else {
+//	    SCLDBG_ << "fetch alarms readout";
+//		if((err = actuator_drv->getAlarms(*axID,o_alarms,desc))){
+//			LOG_AND_TROW(SCLERR_, 2, boost::str(boost::format("Error fetching alarms readout with code %1%") % err));
+//		}
+//                o_alarm_str = getAttributeCache()->getRWPtr<char>(DOMAIN_OUTPUT, "alarmStr");
+//		strncpy(o_alarm_str, desc.c_str(), 256);
+//	} // ******************* Commentato ******************
+    
+    
+        //acquire the current readout
+        AbstractActuatorCommand::acquireHandler();
 	//force output dataset as changed
 	getAttributeCache()->setOutputDomainAsChanged();
 }

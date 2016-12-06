@@ -51,6 +51,7 @@ namespace driver {
 			//implemented handler
 			uint8_t implementedHandler();
 
+                        void acquireHandler(); // ******** Aggiunto qui!!! ********
 			void ccHandler();
 			
 			// set the data fr the command

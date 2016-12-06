@@ -55,8 +55,67 @@ void AbstractActuatorCommand::setHandler(c_data::CDataWrapper *data) {
 }
 
 // return the implemented handler
-uint8_t AbstractActuatorCommand::implementedHandler() {
-	return  chaos_batch::HandlerType::HT_Set |chaos_batch::HandlerType::HT_Correlation;
+uint8_t AbstractActuatorCommand::implementedHandler() { 
+	return  chaos_batch::HandlerType::HT_Set |chaos_batch::HandlerType::HT_Acquisition|chaos_batch::HandlerType::HT_Correlation; // modificata ****************************************************
+}
+
+void AbstractActuatorCommand::acquireHandler(){// ******** Aggiunta questa definizione!!! ********
+    
+    int err;
+    int state=0;
+    double position;
+    std::string desc;
+       
+    std::string state_str;
+	
+    SCLDBG_ << "AbstractActuatorCommand::acquireHandler() " ;
+    //acquire the current readout
+    SCLDBG_ << "fetch current readout";
+        
+    if((err = actuator_drv->getAlarms(*axID,o_alarms,desc))==0){
+        LOG_AND_TROW(SCLERR_, 2, boost::str(boost::format("Error fetching alarms readout with code %1%") % err));
+                        
+    }
+        
+    o_alarm_str = getAttributeCache()->getRWPtr<char>(DOMAIN_OUTPUT, "alarmStr");
+    strncpy(o_alarm_str, desc.c_str(), 256);
+        
+    if((err = actuator_drv->getState(*axID,&state, state_str))==0) {
+        *o_status_id = state;
+        //copy up to 255 and put the termination character
+        strncpy(o_status, state_str.c_str(), 256);
+    } else {
+        CMDCUERR_ <<boost::str( boost::format("Error calling driver on get state readout with code %1%") % err);
+    }
+        
+    if ((err = actuator_drv->getPosition(*axID,readTyp,&position))==0) {
+        //LOG_AND_TROW(SCLERR_, 1, boost::str(boost::format("Error fetching position with code %1%") % err));
+        *o_position = position;
+    } else {
+        //*o_position = position;
+        CMDCUERR_ <<boost::str( boost::format("Error calling driver on get Position readout with code %1%") % err);
+    }
+        
+//	if((slow_acquisition_index = !slow_acquisition_index)) {
+//	
+//	} else {
+//	    SCLDBG_ << "fetch alarms readout";
+//		if((err = actuator_drv->getAlarms(*axID,o_alarms,desc))){
+//			LOG_AND_TROW(SCLERR_, 2, boost::str(boost::format("Error fetching alarms readout with code %1%") % err));
+//		}
+//                o_alarm_str = getAttributeCache()->getRWPtr<char>(DOMAIN_OUTPUT, "alarmStr");
+//		strncpy(o_alarm_str, desc.c_str(), 256);
+//	}
+        
+    CMDCUDBG_ << "current ->" << *o_current;
+    CMDCUDBG_ << "current_sp ->" << *i_current;
+    CMDCUDBG_ << "voltage ->" << *o_voltage;
+    CMDCUDBG_ << "polarity ->" << *o_pol;
+    CMDCUDBG_ << "alarms ->" << *o_alarms;
+    CMDCUDBG_ << "stby -> " << *o_stby;
+    
+    //force output dataset as changed
+  
 }
 
 void AbstractActuatorCommand::ccHandler() {
