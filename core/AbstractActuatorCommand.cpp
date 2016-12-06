@@ -37,21 +37,30 @@ AbstractActuatorCommand::~AbstractActuatorCommand() {
 }
 
 void AbstractActuatorCommand::setHandler(c_data::CDataWrapper *data) {
-	CMDCUDBG_ << "loading pointer for output channel";
-
+	CMDCUDBG_ << "setting ";
 	o_status_id = getAttributeCache()->getRWPtr<int32_t>(DOMAIN_OUTPUT, "status_id");
-	o_status = getAttributeCache()->getRWPtr<char>(DOMAIN_OUTPUT, "status");
-    o_alarms = getAttributeCache()->getRWPtr<uint64_t>(DOMAIN_OUTPUT, "alarms");
-	    i_bypass =getAttributeCache()->getROPtr<bool>(DOMAIN_INPUT, "bypass");
-
-                chaos::cu::driver_manager::driver::DriverAccessor *actuator_accessor = *i_bypass&&(driverAccessorsErogator->getAccessoInstanceByIndex(1))?driverAccessorsErogator->getAccessoInstanceByIndex(1):driverAccessorsErogator->getAccessoInstanceByIndex(0);
-
-	//get pointer to the output datase variable
-	if(actuator_accessor != NULL) {
+	o_status_str = getAttributeCache()->getRWPtr<char>(DOMAIN_OUTPUT, "status");
+        o_alarms_id = getAttributeCache()->getRWPtr<uint64_t>(DOMAIN_OUTPUT, "alarms");
+        o_alarm_str = getAttributeCache()->getRWPtr<char>(DOMAIN_OUTPUT, "alarmStr");  
+        o_position = getAttributeCache()->getRWPtr<double>(DOMAIN_OUTPUT, "position");
+        
+        
+        //...
+        //...
+        //...
+	i_bypass =getAttributeCache()->getROPtr<bool>(DOMAIN_INPUT, "bypass");
+        //...
+        //...
+        //...
+        
+        //get pointer to the output datase variable
+        chaos::cu::driver_manager::driver::DriverAccessor *actuator_accessor = *i_bypass&&(driverAccessorsErogator->getAccessoInstanceByIndex(1))?driverAccessorsErogator->getAccessoInstanceByIndex(1):driverAccessorsErogator->getAccessoInstanceByIndex(0);
+        if(actuator_accessor != NULL) {
 	  if(actuator_drv == NULL){
 	    actuator_drv = new chaos::driver::actuator::ChaosActuatorInterface(actuator_accessor);
 	  }
 	}
+        setWorkState(false);
 }
 
 // return the implemented handler
@@ -62,28 +71,31 @@ uint8_t AbstractActuatorCommand::implementedHandler() {
 void AbstractActuatorCommand::acquireHandler(){// ******** Aggiunta questa definizione!!! ********
     
     int err;
-    int state=0;
+    
     double position;
-    std::string desc;
-       
-    std::string state_str;
+   
+    std::string descStr;
+    uint64_t tmp_uint64;
+    int state=0;
+    
 	
     SCLDBG_ << "AbstractActuatorCommand::acquireHandler() " ;
     //acquire the current readout
     SCLDBG_ << "fetch current readout";
         
-    if((err = actuator_drv->getAlarms(*axID,o_alarms,desc))==0){
-        LOG_AND_TROW(SCLERR_, 2, boost::str(boost::format("Error fetching alarms readout with code %1%") % err));
-                        
+    if((err = actuator_drv->getAlarms(*axID,&tmp_uint64,descStr))==0){
+        *o_alarms_id = tmp_uint64;
+        //copy up to 255 and put the termination character
+        strncpy(o_alarm_str, descStr.c_str(), 256);
     }
-        
-    o_alarm_str = getAttributeCache()->getRWPtr<char>(DOMAIN_OUTPUT, "alarmStr");
-    strncpy(o_alarm_str, desc.c_str(), 256);
-        
-    if((err = actuator_drv->getState(*axID,&state, state_str))==0) {
+    else{
+        CMDCUERR_<<boost::str( boost::format("Error calling driver on get alarms readout with code %1%") % err);
+    }
+   
+    if((err = actuator_drv->getState(*axID,&state, descStr))==0) {
         *o_status_id = state;
         //copy up to 255 and put the termination character
-        strncpy(o_status, state_str.c_str(), 256);
+        strncpy(o_status_str, descStr.c_str(), 256);
     } else {
         CMDCUERR_ <<boost::str( boost::format("Error calling driver on get state readout with code %1%") % err);
     }
@@ -95,43 +107,33 @@ void AbstractActuatorCommand::acquireHandler(){// ******** Aggiunta questa defin
         //*o_position = position;
         CMDCUERR_ <<boost::str( boost::format("Error calling driver on get Position readout with code %1%") % err);
     }
-        
-//	if((slow_acquisition_index = !slow_acquisition_index)) {
-//	
-//	} else {
-//	    SCLDBG_ << "fetch alarms readout";
-//		if((err = actuator_drv->getAlarms(*axID,o_alarms,desc))){
-//			LOG_AND_TROW(SCLERR_, 2, boost::str(boost::format("Error fetching alarms readout with code %1%") % err));
-//		}
-//                o_alarm_str = getAttributeCache()->getRWPtr<char>(DOMAIN_OUTPUT, "alarmStr");
-//		strncpy(o_alarm_str, desc.c_str(), 256);
-//	}
-        
-    CMDCUDBG_ << "current ->" << *o_current;
-    CMDCUDBG_ << "current_sp ->" << *i_current;
-    CMDCUDBG_ << "voltage ->" << *o_voltage;
-    CMDCUDBG_ << "polarity ->" << *o_pol;
-    CMDCUDBG_ << "alarms ->" << *o_alarms;
-    CMDCUDBG_ << "stby -> " << *o_stby;
+          
+    CMDCUDBG_ << "position ->" << *o_position;
+    CMDCUDBG_ << "state id ->" << *o_status_id;
+    CMDCUDBG_ << "state ->" << o_status_str;
+    CMDCUDBG_ << "alarms id->" << *o_alarms_id;
+    CMDCUDBG_ << "alarms -> " << *o_alarm_str;
     
     //force output dataset as changed
-  
 }
 
 void AbstractActuatorCommand::ccHandler() {
-	
+    getAttributeCache()->setOutputDomainAsChanged();
 }
 
 void AbstractActuatorCommand::getState(int32_t axisID,int& current_state, std::string& current_state_str) {
-	CHAOS_ASSERT(actuator_drv)
-	int err = 0;
+        CHAOS_ASSERT(actuator_drv)
+        int err = 0;
 	std::string state_str;
-	int32_t i_driver_timeout = getAttributeCache()->getValue<int32_t>(DOMAIN_INPUT, "driver_timeout");
-	if((err=actuator_drv->getState(axisID,&current_state, state_str)) != 0) {
+	//int32_t i_driver_timeout = getAttributeCache()->getValue<int32_t>(DOMAIN_INPUT, "driver_timeout");
+//	if((err=actuator_drv->getState(axisID,&current_state, state_str)) != 0) {
+//		setWorkState(false);
+//		CMDCUERR_ << boost::str( boost::format("Error getting the actuator state = %1% ") % err);
+//	}
+        if((err=actuator_drv->getState(axisID,&current_state, state_str)) != 0) {
 		setWorkState(false);
 		CMDCUERR_ << boost::str( boost::format("Error getting the actuator state = %1% ") % err);
 	}
-
 }
 
 void AbstractActuatorCommand::setWorkState(bool working_flag) {

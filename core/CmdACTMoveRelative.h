@@ -37,13 +37,13 @@ namespace driver {
 			double	*o_position_sp;
 			double	*o_position;
 			double *i_speed;
-			const uint32_t *axID;
+			//const uint32_t *axID;
 			
 			const uint32_t	*i_command_timeout;
 			const double	*__i_delta_setpoint;
 			
 			const double	*__i_setpoint_affinity;
-::common::actuators::AbstractActuator::readingTypes readTyp;
+//::common::actuators::AbstractActuator::readingTypes readTyp;
 
 			//is the delta to the setpoint that notify the end of command
 			double affinity_set_delta;

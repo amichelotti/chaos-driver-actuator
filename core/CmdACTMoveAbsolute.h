@@ -51,7 +51,7 @@ namespace driver {
                          bool slow_acquisition_index;
 		protected:
 			//implemented handler
-			uint8_t implementedHandler();
+			//uint8_t implementedHandler();// ************ Commentato *************
 			
 			// Set handler
 			void setHandler(c_data::CDataWrapper *data);

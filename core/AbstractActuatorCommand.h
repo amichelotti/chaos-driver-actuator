@@ -40,11 +40,17 @@ namespace driver {
 		  AbstractActuatorCommand();
 		  ~AbstractActuatorCommand();
 		protected:
-			char		*o_status;
+                        int32_t		*o_status_id;
+			char            *o_status_str;
+                        uint64_t	*o_alarms_id;
 			char		*o_alarm_str;
-			int32_t		*o_status_id;
-			uint64_t	*o_alarms;
-                        const bool            *i_bypass;
+                        double          *o_position;
+                        ::common::actuators::AbstractActuator::readingTypes readTyp;
+                        
+                        const int       *axID;  // ********* AGGIUNTO. axID ora di tipo int anziche' uint32_t ************
+                        
+                        const bool      *i_bypass;
+
 			//reference of the chaos bastraction ofactuator driver
 			chaos::driver::actuator::ChaosActuatorInterface *actuator_drv;
 			

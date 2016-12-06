@@ -40,10 +40,10 @@ BATCH_COMMAND_OPEN_DESCRIPTION_ALIAS(driver::actuator::,CmdACTMoveAbsolute,CMD_A
 BATCH_COMMAND_ADD_DOUBLE_PARAM(CMD_ACT_MM_OFFSET, "position mm",chaos::common::batch_command::BatchCommandAndParameterDescriptionkey::BC_PARAMETER_FLAG_MANDATORY)
 BATCH_COMMAND_CLOSE_DESCRIPTION()
 
-// return the implemented handler
-uint8_t own::CmdACTMoveAbsolute::implementedHandler(){
-    return	AbstractActuatorCommand::implementedHandler()|chaos_batch::HandlerType::HT_Acquisition;
-}
+//// return the implemented handler           //************************** commentato *****************************
+//uint8_t own::CmdACTMoveAbsolute::implementedHandler(){
+//    return	AbstractActuatorCommand::implementedHandler()|chaos_batch::HandlerType::HT_Acquisition;
+//}
 uint64_t computed_timeout;
 
 void own::CmdACTMoveAbsolute::setHandler(c_data::CDataWrapper *data) {
@@ -200,39 +200,9 @@ void own::CmdACTMoveAbsolute::setHandler(c_data::CDataWrapper *data) {
 
 }
 
-void own::CmdACTMoveAbsolute::acquireHandler() {
-	int err = 0;
-        int state=0;
-        double position;
-	std::string desc;
-        
-	std::string state_str;
+void own::CmdACTMoveAbsolute::acquireHandler() {   //************ modificato in maniera analoga al file CmdACTMoveRelative.cpp **********
 	//acquire the current readout
-	SCLDBG_ << "fetch current readout";
-        
-        if((err = actuator_drv->getState(*axID,&state, state_str))) {
-		LOG_AND_TROW(SCLERR_, 1, boost::str(boost::format("Error fetching state readout with code %1%") % err));
-	} else {
-		*o_status_id = state;
-		//copy up to 255 and put the termination character
-		strncpy(o_status, state_str.c_str(), 256);
-	}
-        
-	if ((err = actuator_drv->getPosition(*axID,readTyp,&position)) !=0) {
-		LOG_AND_TROW(SCLERR_, 1, boost::str(boost::format("Error fetching position with code %1%") % err));
-	} else {
-                 *o_position = position;
-	}
-	if((slow_acquisition_index = !slow_acquisition_index)) {
-	
-	} else {
-	    SCLDBG_ << "fetch alarms readout";
-		if((err = actuator_drv->getAlarms(*axID,o_alarms,desc))){
-			LOG_AND_TROW(SCLERR_, 2, boost::str(boost::format("Error fetching alarms readout with code %1%") % err));
-		}
-                o_alarm_str = getAttributeCache()->getRWPtr<char>(DOMAIN_OUTPUT, "alarmStr");
-		strncpy(o_alarm_str, desc.c_str(), 256);
-	}
+        AbstractActuatorCommand::acquireHandler();
 	//force output dataset as changed
 	getAttributeCache()->setOutputDomainAsChanged();
 }
