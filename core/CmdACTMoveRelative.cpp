@@ -51,13 +51,13 @@ void own::CmdACTMoveRelative::setHandler(c_data::CDataWrapper *data) {
         //chaos::common::data::RangeValueInfo position_sp_attr_info;   // ************* Commentato *************
         //chaos::common::data::RangeValueInfo attributeInfo;           // ************* Commentato *************
 	AbstractActuatorCommand::setHandler(data);
-        AbstractActuatorCommand::acquireHandler(); // ********** aggiunto ************** Ha aggiornato anche position....
+        // ********** aggiunto ************** Ha aggiornato anche position....
 
 	double max_position=0,min_position=0;
 	int err = 0;
 	//int state;
         //int *tmpInt;            // ************* Commentato *************
-        double position;
+        double currentPosition;
 	//std::string state_str;
 	float offset_mm = 0.f;
 	chaos::common::data::RangeValueInfo attr_info;
@@ -87,12 +87,6 @@ void own::CmdACTMoveRelative::setHandler(c_data::CDataWrapper *data) {
             
             BC_FAULT_RUNNING_PROPERTY;// ********** aggiunto **************
             return;
-            
-            //SCLERR_<< attr_info.name <<":"<< attr_info.maxSize <<";"<<attr_info.maxRange <<":";   ******** commentato **********
-            
-           
-            //         BC_END_RUNNING_PROPERTY;
-            //  return;
         }
 
         // REQUIRE MIN MAX POSITION IN THE MDS
@@ -107,35 +101,9 @@ void own::CmdACTMoveRelative::setHandler(c_data::CDataWrapper *data) {
                   
             BC_FAULT_RUNNING_PROPERTY;
             return;
-            //       BC_END_RUNNING_PROPERTY;
-	    //return;
-
         }
         
-
-//	//acquire the state readout
-//	SCLDBG_ << "fetch state readout";
-//	if((err = actuator_drv->getState(*axID,&state, state_str))) {
-//		LOG_AND_TROW(SCLERR_, 1, boost::str(boost::format("Error fetching state readout with code %1%") % err));
-//	} else {
-//		*o_status_id = state;
-//		//copy up to 255 and put the termination character
-//		strncpy(o_status, state_str.c_str(), 256);
-//	}
-//
-//
-//        if(((*o_status_id)&::common::actuators::ACTUATOR_READY)==0){
-//            SCLERR_ << boost::str( boost::format("Bad state for moving actuator %1%[%2%]") % o_status % *o_status_id);
-//	    BC_END_RUNNING_PROPERTY;
-//	    return;
-//        }
-//	
-//	SCLDBG_ << "fetch position readout";
-//        if ((err = actuator_drv->getPosition(*axID,readTyp,&position)) !=0) {
-//		LOG_AND_TROW(SCLERR_, 1, boost::str(boost::format("Error fetching position with code %1%") % err));
-//	} else {
-//                 *o_position = position;
-//	}
+        
 
         SCLDBG_<<"minimum working value:"<<*p_minimumWorkingValue;
         SCLDBG_<<"maximum, working value:"<<*p_maximumWorkingValue;
@@ -168,14 +136,17 @@ void own::CmdACTMoveRelative::setHandler(c_data::CDataWrapper *data) {
             BC_FAULT_RUNNING_PROPERTY;
             return;
         }
-    
 
-        if((position + offset_mm) > max_position || (position + offset_mm)<min_position){
-        	//SCLERR_ << boost::str( boost::format("position %1 'currentSP' \"max_position\":%2% \"min_position\":%3%" ) % (position + offset_mm) % max_position % min_position);
-		//BC_END_RUNNING_PROPERTY;
-		//return;
-            
+        AbstractActuatorCommand::acquireHandler(); // Per aggiornare al momento piu opportuno *o_position
+        currentPosition=*o_position;
+        if((currentPosition + offset_mm) > max_position || (currentPosition + offset_mm)<min_position){ // nota: *o_position aggiornata inizialmente da AbstractActuatorCommand::acquireHandler();  
+            setAlarmSeverity("final setpoint_mm_invalid_set", chaos::common::alarm::MultiSeverityAlarmLevelWarning);
+            metadataLogging(chaos::common::metadata_logging::StandardLoggingChannel::LogLevelError,CHAOS_FORMAT("Final set point %1% outside the maximum/minimum 'position_sp' \"max_position\":%2% \"min_position\":%3%" , % currentPosition + offset_mm % max_position % min_position));
+            BC_FAULT_RUNNING_PROPERTY;
+            return;
         }
+        
+        
     
 
     SCLDBG_ << "compute timeout for moving relative = " << offset_mm;
