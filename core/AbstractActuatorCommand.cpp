@@ -45,7 +45,7 @@ void AbstractActuatorCommand::setHandler(c_data::CDataWrapper *data) {
         o_position = getAttributeCache()->getRWPtr<double>(DOMAIN_OUTPUT, "position");
         
         
-        //...
+        //...DA INIZIALIZZARE axID, i_bypass (entrambi dovrebbe essere di tipo DOMAIN_INPUT)
         //...
         //...
 	i_bypass =getAttributeCache()->getROPtr<bool>(DOMAIN_INPUT, "bypass");
@@ -125,18 +125,16 @@ void AbstractActuatorCommand::getState(int32_t axisID,int& current_state, std::s
         CHAOS_ASSERT(actuator_drv)
         int err = 0;
 	std::string state_str;
-	//int32_t i_driver_timeout = getAttributeCache()->getValue<int32_t>(DOMAIN_INPUT, "driver_timeout");
-//	if((err=actuator_drv->getState(axisID,&current_state, state_str)) != 0) {
-//		setWorkState(false);
-//		CMDCUERR_ << boost::str( boost::format("Error getting the actuator state = %1% ") % err);
-//	}
-        if((err=actuator_drv->getState(axisID,&current_state, state_str)) != 0) {
-		setWorkState(false);
-		CMDCUERR_ << boost::str( boost::format("Error getting the actuator state = %1% ") % err);
+	//int32_t i_driver_timeout = getAttributeCache()->getValue<int32_t>(DOMAIN_INPUT, "driver_timeout"); // *************** commentato *************
+	if((err=actuator_drv->getState(axisID,&current_state, state_str)) != 0) {
+		//setWorkState(false);    // *************** commentato *****************
+            CMDCUERR_ << boost::str( boost::format("Error getting the actuator state = %1% ") % err);
 	}
 }
 
 void AbstractActuatorCommand::setWorkState(bool working_flag) {
-	int64_t *o_dev_state = getAttributeCache()->getRWPtr<int64_t>(DOMAIN_OUTPUT, "dev_state");
-	*o_dev_state = working_flag;
+//	int64_t *o_dev_state = getAttributeCache()->getRWPtr<int64_t>(DOMAIN_OUTPUT, "dev_state");
+//	*o_dev_state = working_flag;
+    setBusyFlag(working_flag);
+        
 }
