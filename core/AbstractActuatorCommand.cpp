@@ -38,23 +38,27 @@ AbstractActuatorCommand::~AbstractActuatorCommand() {
 
 void AbstractActuatorCommand::setHandler(c_data::CDataWrapper *data) {
 	CMDCUDBG_ << "setting ";
+        int *tmpInt;
 	o_status_id = getAttributeCache()->getRWPtr<int32_t>(DOMAIN_OUTPUT, "status_id");
 	o_status_str = getAttributeCache()->getRWPtr<char>(DOMAIN_OUTPUT, "status");
         o_alarms_id = getAttributeCache()->getRWPtr<uint64_t>(DOMAIN_OUTPUT, "alarms");
         o_alarm_str = getAttributeCache()->getRWPtr<char>(DOMAIN_OUTPUT, "alarmStr");  
         o_position = getAttributeCache()->getRWPtr<double>(DOMAIN_OUTPUT, "position");
+        axID = getAttributeCache()->getROPtr<uint32_t>(DOMAIN_INPUT, "axisID");
+        tmpInt =  (int*) getAttributeCache()->getROPtr<int32_t>(DOMAIN_INPUT, "readingType") ; 
+        readTyp=(::common::actuators::AbstractActuator::readingTypes) *tmpInt; 
         
         
         //...DA INIZIALIZZARE axID, i_bypass (entrambi dovrebbe essere di tipo DOMAIN_INPUT)
         //...
         //...
-	i_bypass =getAttributeCache()->getROPtr<bool>(DOMAIN_INPUT, "bypass");
+	s_bypass =getAttributeCache()->getROPtr<bool>(DOMAIN_INPUT, "bypass");
         //...
         //...
         //...
         
         //get pointer to the output datase variable
-        chaos::cu::driver_manager::driver::DriverAccessor *actuator_accessor = *i_bypass&&(driverAccessorsErogator->getAccessoInstanceByIndex(1))?driverAccessorsErogator->getAccessoInstanceByIndex(1):driverAccessorsErogator->getAccessoInstanceByIndex(0);
+        chaos::cu::driver_manager::driver::DriverAccessor *actuator_accessor = *s_bypass&&(driverAccessorsErogator->getAccessoInstanceByIndex(1))?driverAccessorsErogator->getAccessoInstanceByIndex(1):driverAccessorsErogator->getAccessoInstanceByIndex(0);
         if(actuator_accessor != NULL) {
 	  if(actuator_drv == NULL){
 	    actuator_drv = new chaos::driver::actuator::ChaosActuatorInterface(actuator_accessor);
@@ -133,8 +137,7 @@ void AbstractActuatorCommand::getState(int32_t axisID,int& current_state, std::s
 }
 
 void AbstractActuatorCommand::setWorkState(bool working_flag) {
-//	int64_t *o_dev_state = getAttributeCache()->getRWPtr<int64_t>(DOMAIN_OUTPUT, "dev_state");
-//	*o_dev_state = working_flag;
+//	int64_t *o_dev_state = getAttributeCache()->getRWPtr<int64_t>(DOMAIN_OUTPUT, "dev_state"); // *************** commentato *****************
+//	*o_dev_state = working_flag; // *************** commentato *****************
     setBusyFlag(working_flag);
-        
 }

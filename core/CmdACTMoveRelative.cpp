@@ -55,7 +55,7 @@ void own::CmdACTMoveRelative::setHandler(c_data::CDataWrapper *data) {
 	double max_position=0,min_position=0;
 	int err = 0;
 	int state;
-        int *tmpInt;
+        //int *tmpInt;            // ************* Commentato *************
         double position;
 	std::string state_str;
 	float offset_mm = 0.f;
@@ -66,9 +66,9 @@ void own::CmdACTMoveRelative::setHandler(c_data::CDataWrapper *data) {
 	i_command_timeout = getAttributeCache()->getROPtr<uint32_t>(DOMAIN_INPUT, "command_timeout");
 	__i_delta_setpoint = getAttributeCache()->getROPtr<double>(DOMAIN_INPUT, "__delta_setpoint");
 	__i_setpoint_affinity = getAttributeCache()->getROPtr<double>(DOMAIN_INPUT, "__setpoint_affinity");
-	axID = getAttributeCache()->getROPtr<uint32_t>(DOMAIN_INPUT, "axisID");
-        tmpInt =  (int*) getAttributeCache()->getROPtr<int32_t>(DOMAIN_INPUT, "readingType") ;
-        readTyp=(::common::actuators::AbstractActuator::readingTypes) *tmpInt;
+	//axID = getAttributeCache()->getROPtr<uint32_t>(DOMAIN_INPUT, "axisID");    // ************* Commentato *************
+//        tmpInt =  (int*) getAttributeCache()->getROPtr<int32_t>(DOMAIN_INPUT, "readingType") ; 
+//        readTyp=(::common::actuators::AbstractActuator::readingTypes) *tmpInt;     // ************* Commentato *************
         
            
         getDeviceDatabase()->getAttributeRangeValueInfo("position_sp", attr_info);

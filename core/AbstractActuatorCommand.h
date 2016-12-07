@@ -46,10 +46,9 @@ namespace driver {
 			char		*o_alarm_str;
                         double          *o_position;
                         ::common::actuators::AbstractActuator::readingTypes readTyp;
-                        
-                        const int       *axID;  // ********* AGGIUNTO. axID ora di tipo int anziche' uint32_t ************
-                        
-                        const bool      *i_bypass;
+                         
+                        const uint32_t *axID;       // ********* AGGIUNTO axID ************
+                        const bool      *s_bypass;
 
 			//reference of the chaos bastraction ofactuator driver
 			chaos::driver::actuator::ChaosActuatorInterface *actuator_drv;
