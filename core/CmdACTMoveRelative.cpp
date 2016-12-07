@@ -48,112 +48,134 @@ BATCH_COMMAND_CLOSE_DESCRIPTION()
 //}
 
 void own::CmdACTMoveRelative::setHandler(c_data::CDataWrapper *data) {
-    chaos::common::data::RangeValueInfo position_sp_attr_info;
-    chaos::common::data::RangeValueInfo attributeInfo;
+        //chaos::common::data::RangeValueInfo position_sp_attr_info;   // ************* Commentato *************
+        //chaos::common::data::RangeValueInfo attributeInfo;           // ************* Commentato *************
 	AbstractActuatorCommand::setHandler(data);
+        AbstractActuatorCommand::acquireHandler(); // ********** aggiunto ************** Ha aggiornato anche position....
 
 	double max_position=0,min_position=0;
 	int err = 0;
-	int state;
+	//int state;
         //int *tmpInt;            // ************* Commentato *************
         double position;
-	std::string state_str;
+	//std::string state_str;
 	float offset_mm = 0.f;
 	chaos::common::data::RangeValueInfo attr_info;
-	o_position = getAttributeCache()->getRWPtr<double>(DOMAIN_OUTPUT, "position");
-	o_position_sp = getAttributeCache()->getRWPtr<double>(DOMAIN_OUTPUT, "position_sp");
-	i_speed = ( double*) getAttributeCache()->getROPtr<double>(DOMAIN_INPUT, "speed");		
-	i_command_timeout = getAttributeCache()->getROPtr<uint32_t>(DOMAIN_INPUT, "command_timeout");
-	__i_delta_setpoint = getAttributeCache()->getROPtr<double>(DOMAIN_INPUT, "__delta_setpoint");
-	__i_setpoint_affinity = getAttributeCache()->getROPtr<double>(DOMAIN_INPUT, "__setpoint_affinity");
+	//o_position = getAttributeCache()->getRWPtr<double>(DOMAIN_OUTPUT, "position");     // ************* Commentato *************
+//	o_position_sp = getAttributeCache()->getRWPtr<double>(DOMAIN_OUTPUT, "position_sp"); // ************* Commentato *************
+//	i_speed = ( double*) getAttributeCache()->getROPtr<double>(DOMAIN_INPUT, "speed");   // ************* Commentato *************		
+//	i_command_timeout = getAttributeCache()->getROPtr<uint32_t>(DOMAIN_INPUT, "command_timeout");  // ************* Commentato ************* 
+//	__i_delta_setpoint = getAttributeCache()->getROPtr<double>(DOMAIN_INPUT, "__delta_setpoint");  // ************* Commentato *************
+//	__i_setpoint_affinity = getAttributeCache()->getROPtr<double>(DOMAIN_INPUT, "__setpoint_affinity");  // ************* Commentato *************
 	//axID = getAttributeCache()->getROPtr<uint32_t>(DOMAIN_INPUT, "axisID");    // ************* Commentato *************
-//        tmpInt =  (int*) getAttributeCache()->getROPtr<int32_t>(DOMAIN_INPUT, "readingType") ; 
+//        tmpInt =  (int*) getAttributeCache()->getROPtr<int32_t>(DOMAIN_INPUT, "readingType") ; // ************* Commentato *************  
 //        readTyp=(::common::actuators::AbstractActuator::readingTypes) *tmpInt;     // ************* Commentato *************
-        
-           
         getDeviceDatabase()->getAttributeRangeValueInfo("position_sp", attr_info);
- // REQUIRE MIN MAX SET IN THE MDS
+        setAlarmSeverity("position_invalid_set", chaos::common::alarm::MultiSeverityAlarmLevelClear);// ********** aggiunto **************
+        setAlarmSeverity("position_out_of_set", chaos::common::alarm::MultiSeverityAlarmLevelClear);// ********** aggiunto **************
+          
+        // REQUIRE MIN MAX SET IN THE MDS
 
-  if (attr_info.maxRange.size()) {
-      max_position = atof(attr_info.maxRange.c_str());
-    SCLDBG_ << "max_position max=" << max_position;
+        if (attr_info.maxRange.size()) {
+            max_position = atof(attr_info.maxRange.c_str());
+            SCLDBG_ << "max_position max=" << max_position;
 
-  } else {
-      SCLERR_<< attr_info.name <<":"<< attr_info.maxSize <<";"<<attr_info.maxRange <<":";
-           SCLERR_ << "not defined maximum 'position_sp' attribute, quitting command";
-          //         BC_END_RUNNING_PROPERTY;
-	  //  return;
-  }
+        } else {
+            SCLERR_ << "not defined maximum 'position_sp' attribute, quitting command";
+            metadataLogging(chaos::common::metadata_logging::StandardLoggingChannel::LogLevelError,"not defined maximum 'position_sp' attribute, quitting command" ); // ********** aggiunto **************
+            setAlarmSeverity("position_sp_invalid_set", chaos::common::alarm::MultiSeverityAlarmLevelWarning); // ********** aggiunto **************
+            
+            BC_FAULT_RUNNING_PROPERTY;// ********** aggiunto **************
+            return;
+            
+            //SCLERR_<< attr_info.name <<":"<< attr_info.maxSize <<";"<<attr_info.maxRange <<":";   ******** commentato **********
+            
+           
+            //         BC_END_RUNNING_PROPERTY;
+            //  return;
+        }
 
-  // REQUIRE MIN MAX POSITION IN THE MDS
-  if (attr_info.minRange.size()) {
+        // REQUIRE MIN MAX POSITION IN THE MDS
+        if (attr_info.minRange.size()) {
             min_position = atof(attr_info.minRange.c_str());
 
-        SCLDBG_ << "min_position min=" << min_position;
-  } else {
-                  SCLERR_ << "not defined minimum 'position_sp' attribute, quitting command";
+            SCLDBG_ << "min_position min=" << min_position;
+        } else {
+            SCLERR_ << "not defined minimum 'position_sp' attribute, quitting command";
+            setAlarmSeverity("position_sp_invalid_set", chaos::common::alarm::MultiSeverityAlarmLevelWarning);
+            metadataLogging(chaos::common::metadata_logging::StandardLoggingChannel::LogLevelError,"not defined minimum 'position_sp' attribute, quitting command" );     
+                  
+            BC_FAULT_RUNNING_PROPERTY;
+            return;
             //       BC_END_RUNNING_PROPERTY;
 	    //return;
 
-  }
-        
-        
-  
- 
-
-	//acquire the state readout
-	SCLDBG_ << "fetch state readout";
-	if((err = actuator_drv->getState(*axID,&state, state_str))) {
-		LOG_AND_TROW(SCLERR_, 1, boost::str(boost::format("Error fetching state readout with code %1%") % err));
-	} else {
-		*o_status_id = state;
-		//copy up to 255 and put the termination character
-		strncpy(o_status, state_str.c_str(), 256);
-	}
-
-
-        if(((*o_status_id)&::common::actuators::ACTUATOR_READY)==0){
-            SCLERR_ << boost::str( boost::format("Bad state for moving actuator %1%[%2%]") % o_status % *o_status_id);
-	    BC_END_RUNNING_PROPERTY;
-	    return;
         }
-	
-	SCLDBG_ << "fetch position readout";
-        if ((err = actuator_drv->getPosition(*axID,readTyp,&position)) !=0) {
-		LOG_AND_TROW(SCLERR_, 1, boost::str(boost::format("Error fetching position with code %1%") % err));
-	} else {
-                 *o_position = position;
-	}
-
         
-       
-		
+
+//	//acquire the state readout
+//	SCLDBG_ << "fetch state readout";
+//	if((err = actuator_drv->getState(*axID,&state, state_str))) {
+//		LOG_AND_TROW(SCLERR_, 1, boost::str(boost::format("Error fetching state readout with code %1%") % err));
+//	} else {
+//		*o_status_id = state;
+//		//copy up to 255 and put the termination character
+//		strncpy(o_status, state_str.c_str(), 256);
+//	}
+//
+//
+//        if(((*o_status_id)&::common::actuators::ACTUATOR_READY)==0){
+//            SCLERR_ << boost::str( boost::format("Bad state for moving actuator %1%[%2%]") % o_status % *o_status_id);
+//	    BC_END_RUNNING_PROPERTY;
+//	    return;
+//        }
+//	
+//	SCLDBG_ << "fetch position readout";
+//        if ((err = actuator_drv->getPosition(*axID,readTyp,&position)) !=0) {
+//		LOG_AND_TROW(SCLERR_, 1, boost::str(boost::format("Error fetching position with code %1%") % err));
+//	} else {
+//                 *o_position = position;
+//	}
+
+        SCLDBG_<<"minimum working value:"<<*p_minimumWorkingValue;
+        SCLDBG_<<"maximum, working value:"<<*p_maximumWorkingValue;
+        
+        //set comamnd timeout for this instance
+        SCLDBG_ << "Checking for timeout";
+	
 	SCLDBG_ << "check data";
 	if(!data ||
 	   !data->hasKey(CMD_ACT_MM_OFFSET)) {
 		SCLERR_ << "Offset millimeters parameter not present";
-		BC_END_RUNNING_PROPERTY;
+                setAlarmSeverity("Offset_mm_invalid_set", chaos::common::alarm::MultiSeverityAlarmLevelWarning);
+		BC_FAULT_RUNNING_PROPERTY;
 		return;
 	}
 	if(!data->isDoubleValue(CMD_ACT_MM_OFFSET)) {
 		SCLERR_ << "Offset millimeters parameter is not a Double data type";
-		BC_END_RUNNING_PROPERTY;
+                setAlarmSeverity("Offset_mm_invalid_set", chaos::common::alarm::MultiSeverityAlarmLevelWarning);
+		BC_FAULT_RUNNING_PROPERTY;
 		return;
 	}
-    
-    offset_mm = static_cast<float>(data->getDoubleValue(CMD_ACT_MM_OFFSET));
-    if(isnan(offset_mm)==true){
-        SCLERR_ << "Offset millimeters parameter is not a valid double number (nan?)";
-        BC_END_RUNNING_PROPERTY;
-        return;
-    }
+        
+        offset_mm = 0;
+        offset_mm = static_cast<float>(data->getDoubleValue(CMD_ACT_MM_OFFSET));
+        SCLAPP_<<"offset_mm:"<<offset_mm;
+        
+        if(isnan(offset_mm)==true){
+            SCLERR_ << "Offset millimeters parameter is not a valid double number (nan?)";
+            setAlarmSeverity("Offset_mm_invalid_set", chaos::common::alarm::MultiSeverityAlarmLevelWarning);
+            BC_FAULT_RUNNING_PROPERTY;
+            return;
+        }
     
 
-    if((position + offset_mm) > max_position || (position + offset_mm)<min_position){
+        if((position + offset_mm) > max_position || (position + offset_mm)<min_position){
         	//SCLERR_ << boost::str( boost::format("position %1 'currentSP' \"max_position\":%2% \"min_position\":%3%" ) % (position + offset_mm) % max_position % min_position);
 		//BC_END_RUNNING_PROPERTY;
 		//return;
-    }
+            
+        }
     
 
     SCLDBG_ << "compute timeout for moving relative = " << offset_mm;
@@ -203,7 +225,7 @@ void own::CmdACTMoveRelative::setHandler(c_data::CDataWrapper *data) {
 
 }
 
-void own::CmdACTMoveRelative::acquireHandler() {
+void own::CmdACTMoveRelative::acquireHandler() {          //OK
     
         //acquire the current readout
         AbstractActuatorCommand::acquireHandler();

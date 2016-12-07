@@ -46,6 +46,14 @@ namespace driver {
 			char		*o_alarm_str;
                         double          *o_position;
                         ::common::actuators::AbstractActuator::readingTypes readTyp;
+                        
+                        double	*o_position_sp; // ********* AGGIUNTO ************
+                        double *i_speed; // ********* AGGIUNTO ************
+                        const uint32_t	*i_command_timeout;// ********* AGGIUNTO ************
+                        const double	*__i_delta_setpoint;// ********* AGGIUNTO ************
+                        const double	*__i_setpoint_affinity;// ********* AGGIUNTO ************
+                        
+                        const double*p_minimumWorkingValue,*p_maximumWorkingValue;  // ********* AGGIUNTO ************
                          
                         const uint32_t *axID;       // ********* AGGIUNTO axID ************
                         const bool      *s_bypass;

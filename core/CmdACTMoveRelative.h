@@ -34,16 +34,16 @@ namespace driver {
 		//! Command for change the mode of the actuator
 		DEFINE_BATCH_COMMAND_CLASS(CmdACTMoveRelative,AbstractActuatorCommand) {
 			
-			double	*o_position_sp;
-			double	*o_position;
-			double *i_speed;
-			//const uint32_t *axID;
+			//double	*o_position_sp; *******commentato **********
+			//double	*o_position;    *******commentato **********
+			//double *i_speed;              *******commentato **********
+			//const uint32_t *axID;*******commentato **********
 			
-			const uint32_t	*i_command_timeout;
-			const double	*__i_delta_setpoint;
+			//const uint32_t	*i_command_timeout;*******commentato **********
+			//const double	*__i_delta_setpoint;*******commentato **********
 			
-			const double	*__i_setpoint_affinity;
-//::common::actuators::AbstractActuator::readingTypes readTyp;
+			//const double	*__i_setpoint_affinity; *******commentato **********
+//::common::actuators::AbstractActuator::readingTypes readTyp;*******commentato **********
 
 			//is the delta to the setpoint that notify the end of command
 			double affinity_set_delta;
