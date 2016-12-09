@@ -42,22 +42,26 @@ namespace driver {
 		protected:
                         int32_t		*o_status_id;
 			char            *o_status_str;
-                        uint64_t	*o_alarms_id;
+                        uint64_t	*o_alarms;
 			char		*o_alarm_str;
                         double          *o_position,*i_position;
                         ::common::actuators::AbstractActuator::readingTypes readTyp;
                         
-                        double	*o_position_sp; // ********* AGGIUNTO ************
+                        bool		*o_stby;
+                        
+                        //double	*o_position_sp; // ********* AGGIUNTO ************
                         double *i_speed; // ********* AGGIUNTO ************
                         const uint32_t	*i_command_timeout;// ********* AGGIUNTO ************
                         const double	*__i_delta_setpoint;// ********* AGGIUNTO ************
                         const double	*__i_setpoint_affinity;// ********* AGGIUNTO ************
                         
-                        const double*p_minimumWorkingValue,*p_maximumWorkingValue,*p_resolution;  // ********* AGGIUNTO ************
+                        const double*p_minimumWorkingValue,*p_maximumWorkingValue,*p_resolution,*p_warningThreshold;  // ********* AGGIUNTO ************
                          
                         const uint32_t *axID;       // ********* AGGIUNTO axID ************
                         const bool      *s_bypass;
                         const uint32_t *p_setTimeout;
+                        
+                        uint64_t	*o_alarms;
                         
 
 			//reference of the chaos bastraction ofactuator driver

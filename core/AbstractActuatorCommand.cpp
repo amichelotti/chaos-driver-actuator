@@ -39,23 +39,29 @@ AbstractActuatorCommand::~AbstractActuatorCommand() {
 void AbstractActuatorCommand::setHandler(c_data::CDataWrapper *data) {
 	CMDCUDBG_ << "setting ";
         int *tmpInt;
+        
+        o_stby=getAttributeCache()->getRWPtr<bool>(DOMAIN_OUTPUT, "stby");
 	o_status_id = getAttributeCache()->getRWPtr<int32_t>(DOMAIN_OUTPUT, "status_id");
 	o_status_str = getAttributeCache()->getRWPtr<char>(DOMAIN_OUTPUT, "status");
-        o_alarms_id = getAttributeCache()->getRWPtr<uint64_t>(DOMAIN_OUTPUT, "alarms");
+        o_alarms = getAttributeCache()->getRWPtr<uint64_t>(DOMAIN_OUTPUT, "alarms");
         o_alarm_str = getAttributeCache()->getRWPtr<char>(DOMAIN_OUTPUT, "alarmStr");  
         o_position = getAttributeCache()->getRWPtr<double>(DOMAIN_OUTPUT, "position");
         i_position = getAttributeCache()->getRWPtr<double>(DOMAIN_INPUT, "position");
+        //o_position_sp = getAttributeCache()->getRWPtr<double>(DOMAIN_OUTPUT, "position_sp");
+        // ********* nota: i_position rimpiazza o_position_sp
+        
         
         axID = getAttributeCache()->getROPtr<uint32_t>(DOMAIN_INPUT, "axisID");
         tmpInt =  (int*) getAttributeCache()->getROPtr<int32_t>(DOMAIN_INPUT, "readingType") ; 
         readTyp=(::common::actuators::AbstractActuator::readingTypes) *tmpInt; 
-        o_position_sp = getAttributeCache()->getRWPtr<double>(DOMAIN_OUTPUT, "position_sp");
+        
 	i_speed = ( double*) getAttributeCache()->getROPtr<double>(DOMAIN_INPUT, "speed");		
 	i_command_timeout = getAttributeCache()->getROPtr<uint32_t>(DOMAIN_INPUT, "command_timeout");
 	__i_delta_setpoint = getAttributeCache()->getROPtr<double>(DOMAIN_INPUT, "__delta_setpoint");
 	__i_setpoint_affinity = getAttributeCache()->getROPtr<double>(DOMAIN_INPUT, "__setpoint_affinity");
         p_minimumWorkingValue = getAttributeCache()->getROPtr<double>(DOMAIN_INPUT, "minimumWorkingValue");
         p_maximumWorkingValue = getAttributeCache()->getROPtr<double>(DOMAIN_INPUT, "maximumWorkingValue");
+        p_warningThreshold = getAttributeCache()->getROPtr<double>(DOMAIN_INPUT, "warningThreshold");
         
         p_setTimeout = getAttributeCache()->getROPtr<uint32_t>(DOMAIN_INPUT, "setTimeout"); 
         
