@@ -102,8 +102,6 @@ void own::CmdACTMoveRelative::setHandler(c_data::CDataWrapper *data) {
             BC_FAULT_RUNNING_PROPERTY;
             return;
         }
-        
-        
 
         SCLDBG_<<"minimum working value:"<<*p_minimumWorkingValue;
         SCLDBG_<<"maximum, working value:"<<*p_maximumWorkingValue;
@@ -137,54 +135,69 @@ void own::CmdACTMoveRelative::setHandler(c_data::CDataWrapper *data) {
             return;
         }
 
+        // Controllo setpoint finale: se tale valore appartiene al range [min_position-tolmin,max_position+tolmax]
+        double tolmax = fabs(max_position*0.3);
+        double tolmin = fabs(min_position*0.3);
+        
         AbstractActuatorCommand::acquireHandler(); // Per aggiornare al momento piu opportuno *o_position
         currentPosition=*o_position;
-        if((currentPosition + offset_mm) > max_position || (currentPosition + offset_mm)<min_position){ // nota: *o_position aggiornata inizialmente da AbstractActuatorCommand::acquireHandler();  
+        double newPosition=currentPosition+offset_mm;
+        if((newPosition) > (max_position+tolmax)|| (newPosition)< (min_position-tolmin)){ // nota: *o_position aggiornata inizialmente da AbstractActuatorCommand::acquireHandler();  
             setAlarmSeverity("final setpoint_mm_invalid_set", chaos::common::alarm::MultiSeverityAlarmLevelWarning);
             metadataLogging(chaos::common::metadata_logging::StandardLoggingChannel::LogLevelError,CHAOS_FORMAT("Final set point %1% outside the maximum/minimum 'position_sp' \"max_position\":%2% \"min_position\":%3%" , % currentPosition + offset_mm % max_position % min_position));
             BC_FAULT_RUNNING_PROPERTY;
             return;
         }
         
+        // Ma lo spostamento da effettuare e' maggiore dello spostamento minimo *p_resolution?
+        // Nota: *p_resolution sostituisce il vecchio *__i_delta_setpoint
+        if(offset_mm<*p_resolution){
+            SCLDBG_ << "operation inibited because of resolution:" << *p_resolution;
+            metadataLogging(chaos::common::metadata_logging::StandardLoggingChannel::LogLevelWarning,CHAOS_FORMAT("operation inibited because of resolution %1% , delta current %2%",%*p_resolution %delta ));
+            *i_position=newPosition;
+            getAttributeCache()->setInputDomainAsChanged();
+            BC_END_RUNNING_PROPERTY;
+            return;
+        }
         
-    
-
-    SCLDBG_ << "compute timeout for moving relative = " << offset_mm;
-    uint64_t computed_timeout;
+        SCLDBG_ << "Compute timeout for moving relative = " << offset_mm;
+        
+        uint64_t computed_timeout; // timeout will be expressed in [ms]
 	if (*i_speed != 0)
         {
-            double ccTim  = offset_mm / *i_speed;
-            ccTim*=100;
-            ccTim*=10000000;
-            computed_timeout = (uint64_t)ccTim;
+            computed_timeout  = uint64_t((offset_mm / *i_speed)*1000) + DEFAULT_MOVE_TIMETOL_OFFSET_MS; 
+                                                     //i_speed is expressed in [mm/s]
+            computed_timeout=std::max(computed_timeout,*p_setTimeout);
         }
-        else computed_timeout=60;
-
-  	
-		
+        else computed_timeout=*p_setTimeout;
+	
 	SCLDBG_ << "Calculated timeout is = " << computed_timeout;
 	SCLDBG_ << "o_position_sp is = " << *o_position_sp;
 	setFeatures(chaos_batch::features::FeaturesFlagTypes::FF_SET_COMMAND_TIMEOUT, computed_timeout);
 	
         
-        //set current set poi into the output channel
-	if(*__i_delta_setpoint && (offset_mm < *__i_delta_setpoint)) {
-		SCLERR_ << "The offset don't pass delta check of = " << *__i_delta_setpoint << " setpoint point = "<<offset_mm <<" actual position" << *o_position_sp;
-		BC_END_RUNNING_PROPERTY;
-		return;
-	}
+//        //set current set poi into the output channel
+//	if(*__i_delta_setpoint && (offset_mm < *__i_delta_setpoint)) {
+//		SCLERR_ << "The offset don't pass delta check of = " << *__i_delta_setpoint << " setpoint point = "<<offset_mm <<" actual position" << *o_position_sp;
+//		BC_END_RUNNING_PROPERTY;
+//		return;
+//	}
 
-	if(*__i_setpoint_affinity) {
-		affinity_set_delta = *__i_setpoint_affinity;
-	} else {
-		affinity_set_delta = 1;
-	}
-	SCLDBG_ << "The setpoint affinity value is of +-" << affinity_set_delta << " of millimeters";
+//	if(*__i_setpoint_affinity) {
+//		affinity_set_delta = *__i_setpoint_affinity;
+//	} else {
+//		affinity_set_delta = 1;
+//	}
+//	SCLDBG_ << "The setpoint affinity value is of +-" << affinity_set_delta << " of millimeters";
 
 	SCLDBG_ << "Move of offset " << offset_mm;
 	if((err = actuator_drv->moveRelativeMillimeters(*axID,offset_mm)) != 0) {
-		LOG_AND_TROW(SCLERR_, 1, boost::str(boost::format("Error %1% setting current") % err));
-	}
+		//LOG_AND_TROW(SCLERR_, 1, boost::str(boost::format("Error %1% setting current") % err));
+            metadataLogging(chaos::common::metadata_logging::StandardLoggingChannel::LogLevelError,boost::str( boost::format("Error moving relative %1%") % offset_mm) );
+            setAlarmSeverity("move_relative_invalid_set", chaos::common::alarm::MultiSeverityAlarmLevelHigh);
+            BC_FAULT_RUNNING_PROPERTY;
+            return;
+        }
 	
 	//assign new position setpoint
 	slow_acquisition_index = false;

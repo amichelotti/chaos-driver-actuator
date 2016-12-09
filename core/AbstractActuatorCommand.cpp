@@ -44,6 +44,8 @@ void AbstractActuatorCommand::setHandler(c_data::CDataWrapper *data) {
         o_alarms_id = getAttributeCache()->getRWPtr<uint64_t>(DOMAIN_OUTPUT, "alarms");
         o_alarm_str = getAttributeCache()->getRWPtr<char>(DOMAIN_OUTPUT, "alarmStr");  
         o_position = getAttributeCache()->getRWPtr<double>(DOMAIN_OUTPUT, "position");
+        i_position = getAttributeCache()->getRWPtr<double>(DOMAIN_INPUT, "position");
+        
         axID = getAttributeCache()->getROPtr<uint32_t>(DOMAIN_INPUT, "axisID");
         tmpInt =  (int*) getAttributeCache()->getROPtr<int32_t>(DOMAIN_INPUT, "readingType") ; 
         readTyp=(::common::actuators::AbstractActuator::readingTypes) *tmpInt; 
@@ -55,6 +57,9 @@ void AbstractActuatorCommand::setHandler(c_data::CDataWrapper *data) {
         p_minimumWorkingValue = getAttributeCache()->getROPtr<double>(DOMAIN_INPUT, "minimumWorkingValue");
         p_maximumWorkingValue = getAttributeCache()->getROPtr<double>(DOMAIN_INPUT, "maximumWorkingValue");
         
+        p_setTimeout = getAttributeCache()->getROPtr<uint32_t>(DOMAIN_INPUT, "setTimeout"); 
+        
+        p_resolution = getAttributeCache()->getROPtr<double>(DOMAIN_INPUT, "resolution");
         
         //...DA INIZIALIZZARE axID, i_bypass (entrambi dovrebbe essere di tipo DOMAIN_INPUT)
         //...

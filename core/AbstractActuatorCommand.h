@@ -44,7 +44,7 @@ namespace driver {
 			char            *o_status_str;
                         uint64_t	*o_alarms_id;
 			char		*o_alarm_str;
-                        double          *o_position;
+                        double          *o_position,*i_position;
                         ::common::actuators::AbstractActuator::readingTypes readTyp;
                         
                         double	*o_position_sp; // ********* AGGIUNTO ************
@@ -53,10 +53,12 @@ namespace driver {
                         const double	*__i_delta_setpoint;// ********* AGGIUNTO ************
                         const double	*__i_setpoint_affinity;// ********* AGGIUNTO ************
                         
-                        const double*p_minimumWorkingValue,*p_maximumWorkingValue;  // ********* AGGIUNTO ************
+                        const double*p_minimumWorkingValue,*p_maximumWorkingValue,*p_resolution;  // ********* AGGIUNTO ************
                          
                         const uint32_t *axID;       // ********* AGGIUNTO axID ************
                         const bool      *s_bypass;
+                        const uint32_t *p_setTimeout;
+                        
 
 			//reference of the chaos bastraction ofactuator driver
 			chaos::driver::actuator::ChaosActuatorInterface *actuator_drv;
