@@ -234,32 +234,38 @@ void own::CmdACTMoveRelative::ccHandler() {
 		BC_END_RUNNING_PROPERTY;
 		//setWorkState(false);   // ******************* commentato *********************
         }
-        
 	if(*o_alarms) {
-		SCLERR_ << "We got alarms on actuator so we end the command";
+		SCLERR_ << "We got alarms on actuator/slit so we end the command";
 		BC_END_RUNNING_PROPERTY;
 		//setWorkState(false);   // ******************* commentato *********************
 	}
 }
 
 bool own::CmdACTMoveRelative::timeoutHandler() {
+    
+        uint64_t elapsed_msec = chaos::common::utility::TimingUtil::getTimeStamp() - getSetTime();
 	double delta_position_reached = std::abs(*i_position - *o_position);
-	uint64_t elapsed_msec = chaos::common::utility::TimingUtil::getTimeStamp() - getSetTime();
+	//uint64_t elapsed_msec = chaos::common::utility::TimingUtil::getTimeStamp() - getSetTime();
 	//move the state machine on fault
-	setWorkState(false);
-	actuator_drv->accessor->base_opcode_priority=50;
-        SCLDBG_ << "ALEDEBUG delta position reached " << delta_position_reached << " affinity_set_delta " << affinity_set_delta ;
+	//setWorkState(false);  ************* commentato *******************
+        metadataLogging(chaos::common::metadata_logging::StandardLoggingChannel::LogLevelWarning,CHAOS_FORMAT("timeout, delta position remaining %1%",%delta_position_reached));
         
-	if(delta_position_reached <= affinity_set_delta) {
-		uint64_t elapsed_msec = chaos::common::utility::TimingUtil::getTimeStamp() - getSetTime();
-		SCLDBG_ << "[metric] Setpoint reached on timeout with readout position " << *o_position << " in " << elapsed_msec << " milliseconds";
+        
+	if(delta_position_reached <= *p_resolution || delta_position_reached <*p_warningThreshold) {
+		
+		SCLDBG_ << "[metric] Setpoint reached on timeout with set point " << *i_position<< " readout position" << *o_position << " resolution" << *p_resolution << " warning threshold " << *p_warningThreshold << " in " << elapsed_msec << " milliseconds";
 		//the command is endedn because we have reached the affinitut delta set
-		BC_END_RUNNING_PROPERTY;
+		//BC_END_RUNNING_PROPERTY;
 	}else {
+                //uint64_t elapsed_msec = chaos::common::utility::TimingUtil::getTimeStamp() - getSetTime();
 		SCLERR_ << "[metric] Setpoint not reached on timeout with readout position " << *o_position << " in " << elapsed_msec << " milliseconds";
-		//FIRE OUT OF SET
-		BC_END_RUNNING_PROPERTY;
+		setAlarmSeverity("value_not_reached", chaos::common::alarm::MultiSeverityAlarmLevelWarning);
+                //FIRE OUT OF SET
+		//BC_END_RUNNING_PROPERTY; // ************* commentato *******************
 		//BC_FAULT_RUNNING_PROPERTY;
 	}
+
+        setWorkState(false);
+        BC_END_RUNNING_PROPERTY;
 	return false;
 }
