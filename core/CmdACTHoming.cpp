@@ -37,16 +37,17 @@ BATCH_COMMAND_CLOSE_DESCRIPTION()
 
 
 // return the implemented handler
-uint8_t own::CmdACTHoming::implementedHandler(){
-  return      AbstractActuatorCommand::implementedHandler()|chaos_batch::HandlerType::HT_Acquisition;
-}
+//uint8_t own::CmdACTHoming::implementedHandler(){
+//  return      AbstractActuatorCommand::implementedHandler()|chaos_batch::HandlerType::HT_Acquisition;
+//}
 // empty set handler
 void own::CmdACTHoming::setHandler(c_data::CDataWrapper *data) 
 {
-	int err = 0;
-	int state,*tmpInt;
-	std::string state_str;
-	AbstractActuatorCommand::setHandler(data);
+        AbstractActuatorCommand::setHandler(data);
+        
+        int err = 0;
+	int *tmpInt;
+        
     	int32_t homType = data->getInt32Value(CMD_ACT_HOMINGTYPE);
         axID=getAttributeCache()->getROPtr<uint32_t>(DOMAIN_INPUT, "axisID");
 
@@ -58,27 +59,24 @@ void own::CmdACTHoming::setHandler(c_data::CDataWrapper *data)
         //scheduleTime= getFeatures(chaos_batch::features::FeaturesFlagTypes::FF_SET_SCHEDULER_DELAY);
 
 	 //check mode parameter
-    if(!data->hasKey(CMD_ACT_HOMINGTYPE)) 
-    {
+        if(!data->hasKey(CMD_ACT_HOMINGTYPE)) 
+        {
             SCLERR_ << "Homing type not present";
             BC_END_RUNNING_PROPERTY;
             return;
-    }
+        }
 	SCLDBG_ << "Accessing accessor at " << actuator_drv;
 	actuator_drv->accessor->base_opcode_priority=100;
 	setWorkState(true);
 	//actuator_drv->setTimeoutHoming(30000);
-    setFeatures(chaos_batch::features::FeaturesFlagTypes::FF_SET_SCHEDULER_DELAY, (uint64_t)100000);
-    if(err = actuator_drv->homing(*axID,(::common::actuators::AbstractActuator::homingType) homType) < 0) 
-    {
-		LOG_AND_TROW(SCLERR_, 1, boost::str(boost::format("Error %1% while homing") % err));
-    }
+        setFeatures(chaos_batch::features::FeaturesFlagTypes::FF_SET_SCHEDULER_DELAY, (uint64_t)100000);
+        if(err = actuator_drv->homing(*axID,(::common::actuators::AbstractActuator::homingType) homType) < 0) 
+        {
+            LOG_AND_TROW(SCLERR_, 1, boost::str(boost::format("Error %1% while homing") % err));
+        }
 	setWorkState(false);
 	BC_EXEC_RUNNING_PROPERTY;
 }
-
-
-
 
 //  acquire handler
 void own::CmdACTHoming::acquireHandler() {
@@ -117,7 +115,6 @@ void own::CmdACTHoming::acquireHandler() {
     	//force output dataset as changed
     	getAttributeCache()->setOutputDomainAsChanged();
 
-
 }
 //  correlation handler
 void own::CmdACTHoming::ccHandler() {
@@ -129,6 +126,7 @@ void own::CmdACTHoming::ccHandler() {
                 setFeatures(chaos_batch::features::FeaturesFlagTypes::FF_SET_SCHEDULER_DELAY, (uint64_t)1000000);
 	}
 }
+
 // empty timeout handler
 bool own::CmdACTHoming::timeoutHandler() {
 
