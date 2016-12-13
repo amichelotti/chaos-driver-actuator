@@ -108,7 +108,7 @@ void own::CmdACTMoveRelative::setHandler(c_data::CDataWrapper *data) {
         SCLDBG_<<"maximum, working value:"<<*p_maximumWorkingValue;
         
         //set comamnd timeout for this instance
-        SCLDBG_ << "Checking for timeout";
+        //SCLDBG_ << "Checking for timeout";
 	
 	SCLDBG_ << "check data";
 	if(!data ||
@@ -127,7 +127,7 @@ void own::CmdACTMoveRelative::setHandler(c_data::CDataWrapper *data) {
         
         offset_mm = 0;
         offset_mm = static_cast<float>(data->getDoubleValue(CMD_ACT_MM_OFFSET));
-        SCLAPP_<<"offset_mm:"<<offset_mm;
+        //SCLAPP_<<"offset_mm:"<<offset_mm;
         
         if(isnan(offset_mm)==true){
             SCLERR_ << "Offset millimeters parameter is not a valid double number (nan?)";
@@ -145,7 +145,7 @@ void own::CmdACTMoveRelative::setHandler(c_data::CDataWrapper *data) {
         double newPosition=currentPosition+offset_mm;
         if((newPosition) > (max_position+tolmax)|| (newPosition)< (min_position-tolmin)){ // nota: *o_position aggiornata inizialmente da AbstractActuatorCommand::acquireHandler();  
             setAlarmSeverity("final setpoint_mm_invalid_set", chaos::common::alarm::MultiSeverityAlarmLevelWarning);
-            metadataLogging(chaos::common::metadata_logging::StandardLoggingChannel::LogLevelError,CHAOS_FORMAT("Final set point %1% outside the maximum/minimum 'position_sp' \"max_position\":%2% \"min_position\":%3%" , % currentPosition + offset_mm % max_position % min_position));
+            metadataLogging(chaos::common::metadata_logging::StandardLoggingChannel::LogLevelError,CHAOS_FORMAT("Final set point %1% outside the maximum/minimum 'position_sp' = tolerance \"max_position\":%2% \"min_position\":%3%" , % currentPosition + offset_mm % max_position % min_position));
             BC_FAULT_RUNNING_PROPERTY;
             return;
         }
@@ -173,7 +173,6 @@ void own::CmdACTMoveRelative::setHandler(c_data::CDataWrapper *data) {
         else computed_timeout=*p_setTimeout;
 	
 	SCLDBG_ << "Calculated timeout is = " << computed_timeout;
-	
 	setFeatures(chaos_batch::features::FeaturesFlagTypes::FF_SET_COMMAND_TIMEOUT, computed_timeout);
 	
 //	if(*__i_setpoint_affinity) {
@@ -201,12 +200,13 @@ void own::CmdACTMoveRelative::setHandler(c_data::CDataWrapper *data) {
             return;
         } 
 
-        SCLDBG_ << "Move of offset " << offset_mm;
+        SCLDBG_ << "Move to position " << positionToReach << "reading type " << readTyp;
+        
 	if((err = actuator_drv->moveRelativeMillimeters(*axID,offset_mm)) != 0) {
             SCLERR_<<"## error setting moving relative of "<<offset_mm;
             setAlarmSeverity("position_invalid_set", chaos::common::alarm::MultiSeverityAlarmLevelHigh);
             BC_FAULT_RUNNING_PROPERTY;
-              return;
+            return;
         }
         
         metadataLogging(chaos::common::metadata_logging::StandardLoggingChannel::LogLevelInfo,boost::str( boost::format("performing command move relative :%1% timeout %2%") % offset_mm % computed_timeout) );
