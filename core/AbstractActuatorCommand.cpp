@@ -55,7 +55,8 @@ void AbstractActuatorCommand::setHandler(c_data::CDataWrapper *data) {
         tmpInt =  (int*) getAttributeCache()->getROPtr<int32_t>(DOMAIN_INPUT, "readingType") ; 
         readTyp=(::common::actuators::AbstractActuator::readingTypes) *tmpInt; 
         
-	i_speed = ( double*) getAttributeCache()->getROPtr<double>(DOMAIN_INPUT, "speed");		
+	i_speed = ( double*) getAttributeCache()->getROPtr<double>(DOMAIN_INPUT, "speed");
+        highspeed_homing= ( double*) getAttributeCache()->getROPtr<double>(DOMAIN_INPUT, "highspeed_homing");
 	i_command_timeout = getAttributeCache()->getROPtr<uint32_t>(DOMAIN_INPUT, "command_timeout");
 	__i_delta_setpoint = getAttributeCache()->getROPtr<double>(DOMAIN_INPUT, "__delta_setpoint");
 	__i_setpoint_affinity = getAttributeCache()->getROPtr<double>(DOMAIN_INPUT, "__setpoint_affinity");

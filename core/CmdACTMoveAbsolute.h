@@ -48,7 +48,7 @@ namespace driver {
 			//is the delta to the setpoint that notify the end of command
 			//time_t launched;
 			//double affinity_set_delta;
-                        bool slow_acquisition_index;
+                        //bool slow_acquisition_index;
 		protected:
 			//implemented handler
 			//uint8_t implementedHandler();// ************ Commentato *************

@@ -160,7 +160,7 @@ void own::CmdACTMoveAbsolute::setHandler(c_data::CDataWrapper *data) {
     if (*i_speed!= 0)
     {
         computed_timeout  = uint64_t((deltaPosition / *i_speed)*1000) + DEFAULT_MOVE_TIMETOL_OFFSET_MS; 
-        computed_timeout=std::max(computed_timeout,*p_setTimeout);
+        computed_timeout = std::max(computed_timeout,*p_setTimeout);
     
     }   else computed_timeout=*p_setTimeout;
     
@@ -168,7 +168,7 @@ void own::CmdACTMoveAbsolute::setHandler(c_data::CDataWrapper *data) {
     SCLDBG_ << "Calculated timeout is = " << computed_timeout;
     setFeatures(chaos_batch::features::FeaturesFlagTypes::FF_SET_COMMAND_TIMEOUT, computed_timeout);
     
-    slow_acquisition_index = false;
+    //slow_acquisition_index = false;
     *i_position=positionToReach;
     setWorkState(true);
     getAttributeCache()->setInputDomainAsChanged();
@@ -179,6 +179,7 @@ void own::CmdACTMoveAbsolute::setHandler(c_data::CDataWrapper *data) {
     if(*o_stby){
         // we are in standby only the SP is set
         SCLDBG_ << "we are in standby we cannot start moving to: "<<*i_position;
+        setWorkState(false);
         BC_END_RUNNING_PROPERTY;
         return;
     } 
@@ -188,6 +189,7 @@ void own::CmdACTMoveAbsolute::setHandler(c_data::CDataWrapper *data) {
     if((err = actuator_drv->moveAbsoluteMillimeters(*axID,positionToReach)) != 0) {
         SCLERR_<<"## error setting moving absolute of "<<positionToReach;
         setAlarmSeverity("position_invalid_set", chaos::common::alarm::MultiSeverityAlarmLevelHigh);
+        setWorkState(false);
         BC_FAULT_RUNNING_PROPERTY;
         return;
     }
@@ -213,13 +215,13 @@ void own::CmdACTMoveAbsolute::ccHandler() {
 	uint64_t elapsed_msec = chaos::common::utility::TimingUtil::getTimeStamp() - getSetTime();
 	//the command is endedn because we have reached the affinitut delta set
 	SCLDBG_ << "[metric ]Set point reached with - delta: "<< delta_position_reached <<" sp: "<< *i_position <<" affinity check " << *p_resolution <<  " warning threshold: " << *p_warningThreshold << " mm in " << elapsed_msec << " milliseconds";
-	BC_END_RUNNING_PROPERTY;
-	//setWorkState(false);
+	setWorkState(false);
+        BC_END_RUNNING_PROPERTY;
     }
     if(*o_alarms) {
         SCLERR_ << "We got alarms on actuator/slit so we end the command";
+        setWorkState(false);
 	BC_END_RUNNING_PROPERTY;
-	//setWorkState(false);
     }
 }
 

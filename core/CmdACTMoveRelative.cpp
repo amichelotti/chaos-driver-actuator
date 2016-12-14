@@ -185,7 +185,7 @@ void own::CmdACTMoveRelative::setHandler(c_data::CDataWrapper *data) {
         
 
 	//assign new position setpoint
-	slow_acquisition_index = false;
+	//slow_acquisition_index = false;
         *i_position=newPosition; //**************** nota: *i_position rimpiazza *o_position_sp *************************
         setWorkState(true);
         getAttributeCache()->setInputDomainAsChanged();
@@ -196,6 +196,7 @@ void own::CmdACTMoveRelative::setHandler(c_data::CDataWrapper *data) {
         if(*o_stby){
          // we are in standby only the SP is set
             SCLDBG_ << "we are in standby we cannot start moving to: "<<*i_position;
+            setWorkState(false);
             BC_END_RUNNING_PROPERTY;
             return;
         } 
@@ -205,6 +206,7 @@ void own::CmdACTMoveRelative::setHandler(c_data::CDataWrapper *data) {
 	if((err = actuator_drv->moveRelativeMillimeters(*axID,offset_mm)) != 0) {
             SCLERR_<<"## error setting moving relative of "<<offset_mm;
             setAlarmSeverity("position_invalid_set", chaos::common::alarm::MultiSeverityAlarmLevelHigh);
+            setWorkState(false);
             BC_FAULT_RUNNING_PROPERTY;
             return;
         }
@@ -231,13 +233,13 @@ void own::CmdACTMoveRelative::ccHandler() {
 		uint64_t elapsed_msec = chaos::common::utility::TimingUtil::getTimeStamp() - getSetTime();
 		//the command is endedn because we have reached the affinitut delta set
 		SCLDBG_ << "[metric ]Set point reached with - delta: "<< delta_position_reached <<" sp: "<< *i_position <<" affinity check " << *p_resolution <<  " warning threshold: " << *p_warningThreshold << " mm in " << elapsed_msec << " milliseconds";
-		BC_END_RUNNING_PROPERTY;
-		//setWorkState(false);   // ******************* commentato *********************
+		setWorkState(false);
+                BC_END_RUNNING_PROPERTY;	
         }
 	if(*o_alarms) {
 		SCLERR_ << "We got alarms on actuator/slit so we end the command";
-		BC_END_RUNNING_PROPERTY;
-		//setWorkState(false);   // ******************* commentato *********************
+                setWorkState(false); 
+		BC_END_RUNNING_PROPERTY;  
 	}
 }
 

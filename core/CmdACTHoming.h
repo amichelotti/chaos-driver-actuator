@@ -27,11 +27,11 @@ namespace driver {
 	namespace actuator {
 		 DEFINE_BATCH_COMMAND_CLASS(CmdACTHoming,AbstractActuatorCommand) {
 			int  homResult;
-			int32_t homingTypeVar;
+			int32_t homingTypeVar;  // ok
 		 	uint64_t scheduleTime;	
 			::common::actuators::AbstractActuator::readingTypes readTyp;
-			double	*o_position;
-			const uint32_t *axID;
+			//double	*o_position;
+			//const uint32_t *axID;
 
 			//implemented handler
 			uint8_t implementedHandler();
