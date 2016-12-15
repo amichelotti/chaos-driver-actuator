@@ -142,9 +142,9 @@ void CmdACTDefault::acquireHandler() {
 		*o_status_id = stato;
 		//the new pointer need to be got (set new size can reallocate the pointer)
 		//could it be avoided?????
-		o_status = getAttributeCache()->getRWPtr<char>(DOMAIN_OUTPUT, "status");
+		o_status_str = getAttributeCache()->getRWPtr<char>(DOMAIN_OUTPUT, "status");
 		//copy up to 255 and put the termination character
-		strncpy(o_status, desc.c_str(), 256);
+		strncpy(o_status_str, desc.c_str(), 256);
 	} else {
 		LOG_AND_TROW(CMDCUERR_, 3, boost::str( boost::format("Error calling driver on get state readout with code %1%") % err));
 	}
@@ -184,7 +184,7 @@ void CmdACTDefault::acquireHandler() {
     CMDCU_ << "alarms ->" << *o_alarms;
     CMDCU_ << "alarm desc -> " << o_alarm_str;
     CMDCU_ << "status_id -> " << *o_status_id;
-    CMDCU_ << "status desc -> " << o_status;
+    CMDCU_ << "status desc -> " << o_status_str;
 	
 	//force output dataset as changed
     if (  (lastState!=*o_status_id) || 

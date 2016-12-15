@@ -61,8 +61,7 @@ namespace driver {
                         const uint32_t *axID;       // ********* AGGIUNTO axID ************
                         const bool      *s_bypass;
                         const uint32_t *p_setTimeout;
-                        
-                        uint64_t	*o_alarms;
+                       
                         
 
 			//reference of the chaos bastraction ofactuator driver

@@ -102,12 +102,12 @@ void AbstractActuatorCommand::acquireHandler(){// ******** Aggiunta questa defin
     int state=0;
     
 	
-    SCLDBG_ << "AbstractActuatorCommand::acquireHandler() " ;
+    CMDCUDBG_ << "AbstractActuatorCommand::acquireHandler() " ;
     //acquire the current readout
-    SCLDBG_ << "fetch current readout";
+    CMDCUDBG_ << "fetch current readout";
         
     if((err = actuator_drv->getAlarms(*axID,&tmp_uint64,descStr))==0){
-        *o_alarms_id = tmp_uint64;
+        *o_alarms = tmp_uint64;
         //copy up to 255 and put the termination character
         strncpy(o_alarm_str, descStr.c_str(), 256);
     }
@@ -134,7 +134,7 @@ void AbstractActuatorCommand::acquireHandler(){// ******** Aggiunta questa defin
     CMDCUDBG_ << "position ->" << *o_position;
     CMDCUDBG_ << "state id ->" << *o_status_id;
     CMDCUDBG_ << "state ->" << o_status_str;
-    CMDCUDBG_ << "alarms id->" << *o_alarms_id;
+    CMDCUDBG_ << "alarms id->" << *o_alarms;
     CMDCUDBG_ << "alarms -> " << *o_alarm_str;
     
     //force output dataset as changed

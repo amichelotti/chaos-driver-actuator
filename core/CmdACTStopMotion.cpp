@@ -63,7 +63,7 @@ void own::CmdACTStopMotion::acquireHandler() {
 	} else {
 		*o_status_id = state;
 		//copy up to 255 and put the termination character
-		strncpy(o_status, desc.c_str(), 256);
+		strncpy(o_status_str, desc.c_str(), 256);
 	}
 
 	if((slow_acquisition_index = !slow_acquisition_index)) {
@@ -102,7 +102,7 @@ bool own::CmdACTStopMotion::timeoutHandler() {
 	uint64_t elapsed_msec;
 	setWorkState(false);
 	actuator_drv->accessor->base_opcode_priority=50;
-	if ((o_status && ::common::actuators::ACTUATOR_INMOTION)==0)
+	if ((o_status_str && ::common::actuators::ACTUATOR_INMOTION)==0)
         {
 	   uint64_t elapsed_msec = chaos::common::utility::TimingUtil::getTimeStamp() - getSetTime();
 	   SCLDBG_ << "[metric] Motor Stopped on timeout in " << elapsed_msec << " milliseconds";

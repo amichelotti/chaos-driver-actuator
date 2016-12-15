@@ -71,7 +71,7 @@ void own::CmdACTPoweron::ccHandler() {
 		*o_status_id = state;
  			SCLERR_ << "ALEDEBUG poweron CC got state "<<state_str ;
 		//copy up to 255 and put the termination character
-		strncpy(o_status, state_str.c_str(), 256);
+		strncpy(o_status_str, state_str.c_str(), 256);
 		if(((*o_status_id)&::common::actuators::ACTUATOR_POWER_SUPPLIED)!=0)
 		{
 			BC_END_RUNNING_PROPERTY;
@@ -94,7 +94,7 @@ bool own::CmdACTPoweron::timeoutHandler() {
         {
                 *o_status_id = state;
                 //copy up to 255 and put the termination character
-                strncpy(o_status, state_str.c_str(), 256);
+                strncpy(o_status_str, state_str.c_str(), 256);
                 if(((*o_status_id)&::common::actuators::ACTUATOR_POWER_SUPPLIED)!=0)
                 {
                         BC_END_RUNNING_PROPERTY;

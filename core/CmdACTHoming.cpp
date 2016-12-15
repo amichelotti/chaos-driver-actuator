@@ -124,9 +124,9 @@ void own::CmdACTHoming::setHandler(c_data::CDataWrapper *data)
         if (*highspeed_homing!= 0)
         {
         computed_timeout  = uint64_t((* o_position / *highspeed_homing)*1000) + DEFAULT_MOVE_TIMETOL_OFFSET_MS; 
-        computed_timeout = std::max(computed_timeout,*p_setTimeout);
+        computed_timeout = std::max(computed_timeout,(uint64_t)*p_setTimeout);
     
-        }   else computed_timeout=*p_setTimeout;
+        }   else computed_timeout=(uint64_t)*p_setTimeout;
         
         setFeatures(chaos_batch::features::FeaturesFlagTypes::FF_SET_COMMAND_TIMEOUT, computed_timeout); 
         setFeatures(chaos_batch::features::FeaturesFlagTypes::FF_SET_SCHEDULER_DELAY, (uint64_t)100000); //*********** (uint64_t)100000 deve diventare un parametro ************

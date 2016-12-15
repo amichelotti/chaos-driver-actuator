@@ -118,7 +118,6 @@ void own::CmdACTMoveAbsolute::setHandler(c_data::CDataWrapper *data) {
 	return;
     }
         
-    positionToReach = 0;
     positionToReach = static_cast<float>(data->getDoubleValue(CMD_ACT_MM_OFFSET));
     if(isnan(positionToReach)==true){
         SCLERR_ << "Position parameter is not a valid double number (nan?)";
@@ -160,9 +159,9 @@ void own::CmdACTMoveAbsolute::setHandler(c_data::CDataWrapper *data) {
     if (*i_speed!= 0)
     {
         computed_timeout  = uint64_t((deltaPosition / *i_speed)*1000) + DEFAULT_MOVE_TIMETOL_OFFSET_MS; 
-        computed_timeout = std::max(computed_timeout,*p_setTimeout);
+        computed_timeout = std::max(computed_timeout,(uint64_t)*p_setTimeout);
     
-    }   else computed_timeout=*p_setTimeout;
+    }   else computed_timeout=(uint64_t)*p_setTimeout;
     
     //setFeatures(chaos_batch::features::FeaturesFlagTypes::FF_SET_COMMAND_TIMEOUT, computed_timeout)
     SCLDBG_ << "Calculated timeout is = " << computed_timeout;

@@ -145,7 +145,7 @@ void own::CmdACTMoveRelative::setHandler(c_data::CDataWrapper *data) {
         double newPosition=currentPosition+offset_mm;
         if((newPosition) > (max_position+tolmax)|| (newPosition)< (min_position-tolmin)){ // nota: *o_position aggiornata inizialmente da AbstractActuatorCommand::acquireHandler();  
             setAlarmSeverity("final setpoint_mm_invalid_set", chaos::common::alarm::MultiSeverityAlarmLevelWarning);
-            metadataLogging(chaos::common::metadata_logging::StandardLoggingChannel::LogLevelError,CHAOS_FORMAT("Final set point %1% outside the maximum/minimum 'position_sp' = tolerance \"max_position\":%2% \"min_position\":%3%" , % currentPosition + offset_mm % max_position % min_position));
+            metadataLogging(chaos::common::metadata_logging::StandardLoggingChannel::LogLevelError,CHAOS_FORMAT("Final set point %1% outside the maximum/minimum 'position_sp' = tolerance \"max_position\":%2% \"min_position\":%3%" , % (currentPosition + offset_mm) % max_position % min_position));
             BC_FAULT_RUNNING_PROPERTY;
             return;
         }
@@ -154,7 +154,7 @@ void own::CmdACTMoveRelative::setHandler(c_data::CDataWrapper *data) {
         // ****************** Nota: *p_resolution sostituisce il vecchio *__i_delta_setpoint *********************
         if(offset_mm<*p_resolution){
             SCLDBG_ << "operation inibited because of resolution:" << *p_resolution;
-            metadataLogging(chaos::common::metadata_logging::StandardLoggingChannel::LogLevelWarning,CHAOS_FORMAT("operation inibited because of resolution %1% , delta current %2%",%*p_resolution %delta ));
+            metadataLogging(chaos::common::metadata_logging::StandardLoggingChannel::LogLevelWarning,CHAOS_FORMAT("operation inibited because of resolution %1% , delta position %2%",%*p_resolution %offset_mm ));
             *i_position=newPosition;
             getAttributeCache()->setInputDomainAsChanged();
             BC_END_RUNNING_PROPERTY;
@@ -168,9 +168,9 @@ void own::CmdACTMoveRelative::setHandler(c_data::CDataWrapper *data) {
         {
             computed_timeout  = uint64_t((offset_mm / *i_speed)*1000) + DEFAULT_MOVE_TIMETOL_OFFSET_MS; 
                                                      //i_speed is expressed in [mm/s]
-            computed_timeout=std::max(computed_timeout,*p_setTimeout);
+            computed_timeout=std::max(computed_timeout,(uint64_t)*p_setTimeout);
         }
-        else computed_timeout=*p_setTimeout;
+        else computed_timeout=(uint64_t)*p_setTimeout;
 	
 	SCLDBG_ << "Calculated timeout is = " << computed_timeout;
 	setFeatures(chaos_batch::features::FeaturesFlagTypes::FF_SET_COMMAND_TIMEOUT, computed_timeout);
@@ -201,7 +201,7 @@ void own::CmdACTMoveRelative::setHandler(c_data::CDataWrapper *data) {
             return;
         } 
 
-        SCLDBG_ << "Move to position " << positionToReach << "reading type " << readTyp;
+        SCLDBG_ << "Move to position " << newPosition << "reading type " << readTyp;
         
 	if((err = actuator_drv->moveRelativeMillimeters(*axID,offset_mm)) != 0) {
             SCLERR_<<"## error setting moving relative of "<<offset_mm;
