@@ -46,7 +46,7 @@ void AbstractActuatorCommand::setHandler(c_data::CDataWrapper *data) {
         o_alarms = getAttributeCache()->getRWPtr<uint64_t>(DOMAIN_OUTPUT, "alarms");
         o_alarm_str = getAttributeCache()->getRWPtr<char>(DOMAIN_OUTPUT, "alarmStr");  
         o_position = getAttributeCache()->getRWPtr<double>(DOMAIN_OUTPUT, "position");
-        i_position = getAttributeCache()->getRWPtr<double>(DOMAIN_INPUT, "position");
+        i_position = (double*) getAttributeCache()->getRWPtr<double>(DOMAIN_INPUT, "position");
         //o_position_sp = getAttributeCache()->getRWPtr<double>(DOMAIN_OUTPUT, "position_sp");
         // ********* nota: i_position rimpiazza o_position_sp
         
@@ -56,13 +56,15 @@ void AbstractActuatorCommand::setHandler(c_data::CDataWrapper *data) {
         readTyp=(::common::actuators::AbstractActuator::readingTypes) *tmpInt; 
         
 	i_speed = ( double*) getAttributeCache()->getROPtr<double>(DOMAIN_INPUT, "speed");
-        highspeed_homing= ( double*) getAttributeCache()->getROPtr<double>(DOMAIN_INPUT, "highspeed_homing");
-	i_command_timeout = getAttributeCache()->getROPtr<uint32_t>(DOMAIN_INPUT, "command_timeout");
+        highspeed_homing= ( double*) getAttributeCache()->getROPtr<double>(DOMAIN_INPUT, "highspeedhoming");
+	//i_command_timeout = getAttributeCache()->getROPtr<uint32_t>(DOMAIN_INPUT, "command_timeout");
 	__i_delta_setpoint = getAttributeCache()->getROPtr<double>(DOMAIN_INPUT, "__delta_setpoint");
 	__i_setpoint_affinity = getAttributeCache()->getROPtr<double>(DOMAIN_INPUT, "__setpoint_affinity");
-        p_minimumWorkingValue = getAttributeCache()->getROPtr<double>(DOMAIN_INPUT, "minimumWorkingValue");
-        p_maximumWorkingValue = getAttributeCache()->getROPtr<double>(DOMAIN_INPUT, "maximumWorkingValue");
-        p_warningThreshold = getAttributeCache()->getROPtr<double>(DOMAIN_INPUT, "warningThreshold");
+        //p_minimumWorkingValue = getAttributeCache()->getROPtr<double>(DOMAIN_INPUT, "minimumWorkingValue");
+        p_minimumWorkingValue=0;
+        p_maximumWorkingValue=0;
+        //p_maximumWorkingValue = getAttributeCache()->getROPtr<double>(DOMAIN_INPUT, "maximumWorkingValue");
+        //p_warningThreshold = getAttributeCache()->getROPtr<double>(DOMAIN_INPUT, "warningThreshold");
         
         p_setTimeout = getAttributeCache()->getROPtr<uint32_t>(DOMAIN_INPUT, "setTimeout"); 
         
@@ -130,12 +132,6 @@ void AbstractActuatorCommand::acquireHandler(){// ******** Aggiunta questa defin
         //*o_position = position;
         CMDCUERR_ <<boost::str( boost::format("Error calling driver on get Position readout with code %1%") % err);
     }
-          
-    CMDCUDBG_ << "position ->" << *o_position;
-    CMDCUDBG_ << "state id ->" << *o_status_id;
-    CMDCUDBG_ << "state ->" << o_status_str;
-    CMDCUDBG_ << "alarms id->" << *o_alarms;
-    CMDCUDBG_ << "alarms -> " << *o_alarm_str;
     
     //force output dataset as changed
 }

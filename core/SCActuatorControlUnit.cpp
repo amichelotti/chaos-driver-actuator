@@ -229,12 +229,7 @@ void ::driver::actuator::SCActuatorControlUnit::unitDefineActionAndDataset() thr
   addAttributeToDataSet("position",
                         "position",
                         DataType::TYPE_DOUBLE,
-                        DataType::Output);
-  
-  addAttributeToDataSet("position_sp",
-                        "position Set Point",
-                        DataType::TYPE_DOUBLE,
-                        DataType::Output);
+                        DataType::Bidirectional);
   
   addAttributeToDataSet("alarms",
                         "Alarms",
@@ -271,7 +266,7 @@ addAttributeToDataSet("auxiliaryConfigParameters",
                         DataType::TYPE_INT32,
                         DataType::Input);
   
- addAttributeToDataSet("command_timeout",
+ addAttributeToDataSet("setTimeout",
                         "Command timeout in milliseconds",
                         DataType::TYPE_INT32,
                         DataType::Input);
@@ -286,18 +281,24 @@ addAttributeToDataSet("auxiliaryConfigParameters",
                         DataType::TYPE_DOUBLE,
                         DataType::Input);
   
-  addAttributeToDataSet("__positionWarningTHR",
-                        "Threshold for warning on Position",
+  addAttributeToDataSet("__setpoint_affinity",
+                        "Delta of the setpoint",
+                        DataType::TYPE_DOUBLE,
+                        DataType::Input);
+
+  
+  addAttributeToDataSet("resolution",
+                        "resolution on position",
                         DataType::TYPE_DOUBLE,
                         DataType::Input);
   
-  addAttributeToDataSet("__positionWarningTHR_Timeout",
+  addAttributeToDataSet("positionWarningTHR_Timeout",
                         "Tolerance time for Threshold warning on Position",
                         DataType::TYPE_DOUBLE,
                         DataType::Input);
   
-  addAttributeToDataSet("__positionResolution",
-                        "change in position less than that will not pushed",
+addAttributeToDataSet("positionWarningTHR",
+                        "Position warning threshold",
                         DataType::TYPE_DOUBLE,
                         DataType::Input);
   
@@ -311,6 +312,11 @@ addAttributeToDataSet("auxiliaryConfigParameters",
                           "exclude HW changes",
                           DataType::TYPE_BOOLEAN,
                           DataType::Input);
+   
+   addAttributeToDataSet("stby",
+                          "stdby management",
+                          DataType::TYPE_BOOLEAN,
+                          DataType::Output);
           
 }
 
@@ -331,8 +337,13 @@ void ::driver::actuator::SCActuatorControlUnit::unitInit() throw(CException) {
   RangeValueInfo attr_info;
 
    int32_t *status_id = getAttributeCache()->getRWPtr<int32_t>(DOMAIN_OUTPUT, "status_id");
-   double *o_position = getAttributeCache()->getRWPtr<double>(DOMAIN_OUTPUT, "position"); 
-   double *o_positionSP = getAttributeCache()->getRWPtr<double>(DOMAIN_OUTPUT, "position_sp"); 
+   SCCUAPP << "unitInit() dopo status_id";
+   
+   
+   double *o_positionSP = (double*)getAttributeCache()->getRWPtr<double>(DOMAIN_INPUT, "position"); 
+   SCCUAPP << "unitInit() dopo o_positionSP";
+   
+   double *o_position = getAttributeCache()->getRWPtr<double>(DOMAIN_OUTPUT, "position");
 
   SCCUAPP <<"ALEDEBUG ALEDEBUG REQUESTING ACCESSOR  AND DRIVER   AFTER INIT " ;
     const bool* s_bypass=getAttributeCache()->getROPtr<bool>(DOMAIN_INPUT, "bypass");

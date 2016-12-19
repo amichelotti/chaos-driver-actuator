@@ -70,7 +70,7 @@ void own::CmdACTMoveRelative::setHandler(c_data::CDataWrapper *data) {
 	//axID = getAttributeCache()->getROPtr<uint32_t>(DOMAIN_INPUT, "axisID");    // ************* Commentato *************
 //        tmpInt =  (int*) getAttributeCache()->getROPtr<int32_t>(DOMAIN_INPUT, "readingType") ; // ************* Commentato *************  
 //        readTyp=(::common::actuators::AbstractActuator::readingTypes) *tmpInt;     // ************* Commentato *************
-        getDeviceDatabase()->getAttributeRangeValueInfo("position_sp", attr_info);
+        getDeviceDatabase()->getAttributeRangeValueInfo("position", attr_info);
         setAlarmSeverity("position_invalid_set", chaos::common::alarm::MultiSeverityAlarmLevelClear);// ********** aggiunto **************
         setAlarmSeverity("position_out_of_set", chaos::common::alarm::MultiSeverityAlarmLevelClear);// ********** aggiunto **************
           
@@ -104,8 +104,8 @@ void own::CmdACTMoveRelative::setHandler(c_data::CDataWrapper *data) {
         }
 
         // ********************* a cosa servono **********************
-        SCLDBG_<<"minimum working value:"<<*p_minimumWorkingValue;
-        SCLDBG_<<"maximum, working value:"<<*p_maximumWorkingValue;
+        //SCLDBG_<<"minimum working value:"<<*p_minimumWorkingValue;
+        //SCLDBG_<<"maximum, working value:"<<*p_maximumWorkingValue;
         
         //set comamnd timeout for this instance
         //SCLDBG_ << "Checking for timeout";
@@ -139,8 +139,14 @@ void own::CmdACTMoveRelative::setHandler(c_data::CDataWrapper *data) {
         // Controllo setpoint finale: se tale valore appartiene al range [min_position-tolmin,max_position+tolmax]
         double tolmax = std::abs(max_position*0.3);
         double tolmin = std::abs(min_position*0.3);
-        
-        AbstractActuatorCommand::acquireHandler(); // Per aggiornare al momento piu opportuno *o_position
+        double position;
+        if ((err = actuator_drv->getPosition(*axID,readTyp,&position))==0) {
+            //LOG_AND_TROW(SCLERR_, 1, boost::str(boost::format("Error fetching position with code %1%") % err));
+            *o_position = position;
+        } else {
+            //*o_position = position;
+            SCLERR_ <<boost::str( boost::format("Error calling driver on get Position readout with code %1%") % err);
+        }
         currentPosition=*o_position;
         double newPosition=currentPosition+offset_mm;
         if((newPosition) > (max_position+tolmax)|| (newPosition)< (min_position-tolmin)){ // nota: *o_position aggiornata inizialmente da AbstractActuatorCommand::acquireHandler();  
@@ -152,7 +158,7 @@ void own::CmdACTMoveRelative::setHandler(c_data::CDataWrapper *data) {
         
         // Ma lo spostamento da effettuare e' maggiore dello spostamento minimo *p_resolution?
         // ****************** Nota: *p_resolution sostituisce il vecchio *__i_delta_setpoint *********************
-        if(offset_mm<*p_resolution){
+        if(std::abs(offset_mm)<*p_resolution){
             SCLDBG_ << "operation inibited because of resolution:" << *p_resolution;
             metadataLogging(chaos::common::metadata_logging::StandardLoggingChannel::LogLevelWarning,CHAOS_FORMAT("operation inibited because of resolution %1% , delta position %2%",%*p_resolution %offset_mm ));
             *i_position=newPosition;
@@ -166,7 +172,7 @@ void own::CmdACTMoveRelative::setHandler(c_data::CDataWrapper *data) {
         uint64_t computed_timeout; // timeout will be expressed in [ms]
 	if (*i_speed != 0)
         {
-            computed_timeout  = uint64_t((offset_mm / *i_speed)*1000) + DEFAULT_MOVE_TIMETOL_OFFSET_MS; 
+            computed_timeout  = uint64_t((offset_mm / *i_speed)*1000000000) + DEFAULT_MOVE_TIMETOL_OFFSET_MS; 
                                                      //i_speed is expressed in [mm/s]
             computed_timeout=std::max(computed_timeout,(uint64_t)*p_setTimeout);
         }
@@ -228,14 +234,15 @@ void own::CmdACTMoveRelative::ccHandler() {
 	//check if we are in the delta of the setpoint to end the command
 	double delta_position_reached = std::abs(*o_position-*i_position);
 	SCLDBG_ << "Readout: "<< *o_position <<" SetPoint: "<< *i_position <<" Delta to reach: " << delta_position_reached;
-	if(delta_position_reached <= *p_resolution || delta_position_reached<*p_warningThreshold) 
+	if(delta_position_reached <= *p_resolution) 
         {
 		uint64_t elapsed_msec = chaos::common::utility::TimingUtil::getTimeStamp() - getSetTime();
 		//the command is endedn because we have reached the affinitut delta set
-		SCLDBG_ << "[metric ]Set point reached with - delta: "<< delta_position_reached <<" sp: "<< *i_position <<" affinity check " << *p_resolution <<  " warning threshold: " << *p_warningThreshold << " mm in " << elapsed_msec << " milliseconds";
+		SCLDBG_ << "[metric ]Set point reached with - delta: "<< delta_position_reached <<" sp: "<< *i_position <<" affinity check " << *p_resolution << " mm in " << elapsed_msec << " milliseconds";
 		setWorkState(false);
                 BC_END_RUNNING_PROPERTY;	
         }
+        
 	if(*o_alarms) {
 		SCLERR_ << "We got alarms on actuator/slit so we end the command";
                 setWorkState(false); 
@@ -253,7 +260,7 @@ bool own::CmdACTMoveRelative::timeoutHandler() {
         metadataLogging(chaos::common::metadata_logging::StandardLoggingChannel::LogLevelWarning,CHAOS_FORMAT("timeout, delta position remaining %1%",%delta_position_reached));
         
         
-	if(delta_position_reached <= *p_resolution || delta_position_reached <*p_warningThreshold) {
+	if(delta_position_reached <= *p_resolution) {
 		
 		SCLDBG_ << "[metric] Setpoint reached on timeout with set point " << *i_position<< " readout position" << *o_position << " resolution" << *p_resolution << " warning threshold " << *p_warningThreshold << " in " << elapsed_msec << " milliseconds";
 		//the command is endedn because we have reached the affinitut delta set
