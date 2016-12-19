@@ -44,7 +44,8 @@ namespace driver {
 			char            *o_status_str;
                         uint64_t	*o_alarms;
 			char		*o_alarm_str;
-                        double          *o_position,*i_position;
+                        double          *o_position;
+                        double *i_position;
                         ::common::actuators::AbstractActuator::readingTypes readTyp;
                         
                         bool		*o_stby;

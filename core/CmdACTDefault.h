@@ -34,10 +34,10 @@ namespace driver {
 			uint64_t        OutOfSetWarningTimestamp;
                         bool            OutOfSetWarningStatus;
 			unsigned int	slow_acquisition_idx;
-			const uint32_t *axID;
+			//const uint32_t *axID;
 			uint64_t	*o_dev_state;
-                      ::common::actuators::AbstractActuator::readingTypes   readTyp;
-                        double          *o_position;
+                      //::common::actuators::AbstractActuator::readingTypes   readTyp;
+                        //double          *o_position;
                         double          *o_positionEnc;
 			double		*o_acceleration;
                         const double          *positionTHR;
@@ -51,7 +51,7 @@ namespace driver {
                         int32_t lastState;
                         double lastPosition;
                         uint64_t lastAlarms;
-                        int32_t __lastWarning;
+                        
 
 		protected:
 			// return the implemented handler
