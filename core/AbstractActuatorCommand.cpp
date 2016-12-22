@@ -49,7 +49,9 @@ void AbstractActuatorCommand::setHandler(c_data::CDataWrapper *data) {
         i_position = (double*) getAttributeCache()->getRWPtr<double>(DOMAIN_INPUT, "position");
         //o_position_sp = getAttributeCache()->getRWPtr<double>(DOMAIN_OUTPUT, "position_sp");
         // ********* nota: i_position rimpiazza o_position_sp
-        
+        //p_stopCommandInExecution = getAttributeCache()->getROPtr<bool>(DOMAIN_INPUT, "stopCommandInExecution");
+
+        p_stopCommandInExecution = getAttributeCache()->getRWPtr<bool>(DOMAIN_OUTPUT, "stopHoming");
         
         axID = getAttributeCache()->getROPtr<uint32_t>(DOMAIN_INPUT, "axisID");
         tmpInt =  (int*) getAttributeCache()->getROPtr<int32_t>(DOMAIN_INPUT, "readingType") ; 

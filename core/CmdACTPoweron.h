@@ -28,7 +28,7 @@ namespace driver {
 		 DEFINE_BATCH_COMMAND_CLASS(CmdACTPoweron,AbstractActuatorCommand) {
 			const uint32_t *axID;
 			//implemented handler
-			uint8_t implementedHandler();
+			//uint8_t implementedHandler();
 			//initial set handler
 			void setHandler(c_data::CDataWrapper *data);
 			//custom acquire handler

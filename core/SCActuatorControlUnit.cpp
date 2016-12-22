@@ -207,7 +207,6 @@ void ::driver::actuator::SCActuatorControlUnit::unitDefineActionAndDataset() thr
 
   }
 
-
    addAttributeToDataSet("axisID",
                         "axis ID for the motor",
                         DataType::TYPE_INT32,
@@ -302,12 +301,6 @@ addAttributeToDataSet("positionWarningTHR",
                         DataType::TYPE_DOUBLE,
                         DataType::Input);
   
-  
-   addAttributeToDataSet("__outputWarning",
-                        "Warning Status for out of pos",
-                        DataType::TYPE_INT32,
-                        DataType::Output);
-   
    addAttributeToDataSet("bypass",
                           "exclude HW changes",
                           DataType::TYPE_BOOLEAN,
@@ -317,7 +310,12 @@ addAttributeToDataSet("positionWarningTHR",
                           "stdby management",
                           DataType::TYPE_BOOLEAN,
                           DataType::Output);
-          
+   
+   addAttributeToDataSet("stopHoming",
+                          "homing to be stopped flag",
+                          DataType::TYPE_BOOLEAN,
+                          DataType::Output);
+ 
 }
 
 void ::driver::actuator::SCActuatorControlUnit::unitDefineCustomAttribute() {

@@ -70,8 +70,8 @@ void own::CmdACTMoveAbsolute::setHandler(c_data::CDataWrapper *data) {
 //    readTyp=(::common::actuators::AbstractActuator::readingTypes) *tmpInt;
          
     getDeviceDatabase()->getAttributeRangeValueInfo("position", attr_info);
-    setAlarmSeverity("position_invalid_set", chaos::common::alarm::MultiSeverityAlarmLevelClear);
-    setAlarmSeverity("position_out_of_set", chaos::common::alarm::MultiSeverityAlarmLevelClear);
+    setAlarmSeverity("moveAbsoluteMillimeters command error", chaos::common::alarm::MultiSeverityAlarmLevelClear);
+    //setAlarmSeverity("position_out_of_set", chaos::common::alarm::MultiSeverityAlarmLevelClear);
     
     // REQUIRE MIN MAX SET IN THE MDS
     if (attr_info.maxRange.size()) {
@@ -81,7 +81,7 @@ void own::CmdACTMoveAbsolute::setHandler(c_data::CDataWrapper *data) {
     } else {
         SCLERR_ << "Not defined maximum 'position_sp' attribute, quitting command";
         metadataLogging(chaos::common::metadata_logging::StandardLoggingChannel::LogLevelError,"not defined maximum 'position_sp' attribute, quitting command" );
-        setAlarmSeverity("position_sp_invalid_set", chaos::common::alarm::MultiSeverityAlarmLevelWarning);
+        //setAlarmSeverity("position_sp_invalid_set", chaos::common::alarm::MultiSeverityAlarmLevelWarning);
         BC_FAULT_RUNNING_PROPERTY;// ********** aggiunto **************
         return;
     }
@@ -92,7 +92,7 @@ void own::CmdACTMoveAbsolute::setHandler(c_data::CDataWrapper *data) {
         SCLDBG_ << "min_position min=" << min_position;
     } else {
         SCLERR_ << "not defined minimum 'position_sp' attribute, quitting command";
-        setAlarmSeverity("position_sp_invalid_set", chaos::common::alarm::MultiSeverityAlarmLevelWarning);
+        //setAlarmSeverity("position_sp_invalid_set", chaos::common::alarm::MultiSeverityAlarmLevelWarning);
         metadataLogging(chaos::common::metadata_logging::StandardLoggingChannel::LogLevelError,"not defined minimum 'position_sp' attribute, quitting command" );     
         BC_FAULT_RUNNING_PROPERTY;
         return;
@@ -107,13 +107,13 @@ void own::CmdACTMoveAbsolute::setHandler(c_data::CDataWrapper *data) {
     if(!data ||
 	!data->hasKey(CMD_ACT_MM_OFFSET)) {
         SCLERR_ << "Position millimeters parameter not present";
-        setAlarmSeverity("Offset_mm_invalid_set", chaos::common::alarm::MultiSeverityAlarmLevelWarning);
+        //setAlarmSeverity("Offset_mm_invalid_set", chaos::common::alarm::MultiSeverityAlarmLevelWarning);
         BC_FAULT_RUNNING_PROPERTY;
 	return;
     }
     if(!data->isDoubleValue(CMD_ACT_MM_OFFSET)) {
 	SCLERR_ << "Position millimeters parameter is not a Double data type";
-        setAlarmSeverity("Offset_mm_invalid_set", chaos::common::alarm::MultiSeverityAlarmLevelWarning);
+        //setAlarmSeverity("Offset_mm_invalid_set", chaos::common::alarm::MultiSeverityAlarmLevelWarning);
 	BC_FAULT_RUNNING_PROPERTY;
 	return;
     }
@@ -121,7 +121,7 @@ void own::CmdACTMoveAbsolute::setHandler(c_data::CDataWrapper *data) {
     positionToReach = static_cast<float>(data->getDoubleValue(CMD_ACT_MM_OFFSET));
     if(isnan(positionToReach)==true){
         SCLERR_ << "Position parameter is not a valid double number (nan?)";
-        setAlarmSeverity("Offset_mm_invalid_set", chaos::common::alarm::MultiSeverityAlarmLevelWarning);
+        //setAlarmSeverity("Offset_mm_invalid_set", chaos::common::alarm::MultiSeverityAlarmLevelWarning);
         BC_FAULT_RUNNING_PROPERTY;
         return;
     }
@@ -132,7 +132,7 @@ void own::CmdACTMoveAbsolute::setHandler(c_data::CDataWrapper *data) {
     
     if (((positionToReach) > (max_position+tolmax)) || ((positionToReach)< (min_position-tolmin)))
     {
-        setAlarmSeverity("final setpoint_mm_invalid_set", chaos::common::alarm::MultiSeverityAlarmLevelWarning);
+        //setAlarmSeverity("final setpoint_mm_invalid_set", chaos::common::alarm::MultiSeverityAlarmLevelWarning);
         SCLERR_ << "Finale position "<<positionToReach<< " out of range ( " << min_position << ","<< max_position <<") the command won't be executed";
         metadataLogging(chaos::common::metadata_logging::StandardLoggingChannel::LogLevelError,CHAOS_FORMAT("Final set point %1% outside the maximum/minimum 'position_sp' = tolerance \"max_position\":%2% \"min_position\":%3%" , % positionToReach % max_position % min_position));
         BC_FAULT_RUNNING_PROPERTY;
@@ -194,7 +194,7 @@ void own::CmdACTMoveAbsolute::setHandler(c_data::CDataWrapper *data) {
     
     if((err = actuator_drv->moveAbsoluteMillimeters(*axID,positionToReach)) != 0) {
         SCLERR_<<"## error setting moving absolute of "<<positionToReach;
-        setAlarmSeverity("position_invalid_set", chaos::common::alarm::MultiSeverityAlarmLevelHigh);
+        setAlarmSeverity("moveAbsoluteMillimeters command error", chaos::common::alarm::MultiSeverityAlarmLevelHigh);
         setWorkState(false);
         BC_FAULT_RUNNING_PROPERTY;
         return;
@@ -216,6 +216,29 @@ void own::CmdACTMoveAbsolute::ccHandler() {
     double delta_position_reached = std::abs(*i_position - *o_position);
     //SCLDBG_ << "ccH MoveABsolute Readout: "<< *o_position <<" SetPoint: "<< *o_position_sp <<" Delta to reach: " << delta_position_reached << " computed Timeout " << computed_timeout ;
     SCLDBG_ << "Readout: "<< *o_position <<" SetPoint: "<< *i_position <<" Delta to reach: " << delta_position_reached;
+ 	if (((*o_status_id) & ::common::actuators::ACTUATOR_INMOTION)==0)
+        {
+                setWorkState(false);
+                BC_END_RUNNING_PROPERTY;
+        }
+if (((*o_status_id) & ::common::actuators::ACTUATOR_POWER_SUPPLIED)==0)
+        {
+                int err;
+                if (err=actuator_drv->stopMotion(*axID)!= 0)
+                {
+                     SCLERR_<<"## error while stopping motion";
+                        setAlarmSeverity("moveAbsoluteMillimeters command error", chaos::common::alarm::MultiSeverityAlarmLevelHigh);
+                        setWorkState(false);
+                        BC_FAULT_RUNNING_PROPERTY;
+                        return;
+
+                }
+                setWorkState(false);
+                BC_END_RUNNING_PROPERTY;
+
+        }
+
+
     if(delta_position_reached <= *p_resolution) 
     {
 	uint64_t elapsed_msec = chaos::common::utility::TimingUtil::getTimeStamp() - getSetTime();
@@ -245,7 +268,7 @@ bool own::CmdACTMoveAbsolute::timeoutHandler() {
     }else {
 
         SCLERR_ << "[metric] Setpoint not reached on timeout with readout position " << *o_position << " in " << elapsed_msec << " milliseconds";
-        setAlarmSeverity("value_not_reached", chaos::common::alarm::MultiSeverityAlarmLevelWarning);
+        setAlarmSeverity("position_value_not_reached", chaos::common::alarm::MultiSeverityAlarmLevelWarning);
     }
     setWorkState(false);
     BC_END_RUNNING_PROPERTY;

@@ -36,82 +36,107 @@ BATCH_COMMAND_CLOSE_DESCRIPTION()
 
 
 // return the implemented handler
-uint8_t own::CmdACTStopMotion::implementedHandler(){
-	return      AbstractActuatorCommand::implementedHandler()|chaos_batch::HandlerType::HT_Acquisition;
-}
+//uint8_t own::CmdACTStopMotion::implementedHandler(){
+//	return      AbstractActuatorCommand::implementedHandler()|chaos_batch::HandlerType::HT_Acquisition;
+//}
 // empty set handler
 void own::CmdACTStopMotion::setHandler(c_data::CDataWrapper *data) {
 	int err=0;
 AbstractActuatorCommand::setHandler(data);
+        
+        
 	axID = getAttributeCache()->getROPtr<uint32_t>(DOMAIN_INPUT, "axisID");
-
-	SCLDBG_ << "Stop Motion " ;
+        
+        setAlarmSeverity("stop_motion_error", chaos::common::alarm::MultiSeverityAlarmLevelClear);
+        setAlarmSeverity("Stop motion command error because of alarms", chaos::common::alarm::MultiSeverityAlarmLevelClear);// ***
+	setAlarmSeverity("Stop motion command error", chaos::common::alarm::MultiSeverityAlarmLevelClear);
+        
+        SCLDBG_ << "Stop Motion " ;
+        
+        if(*o_stby){
+        // we are in standby only the SP is set
+            SCLDBG_ << "we are in standby we cannot start stop command: ";
+            
+            setWorkState(false);
+            BC_END_RUNNING_PROPERTY;
+            return;
+        } 
+        p_setTimeout = getAttributeCache()->getROPtr<uint32_t>(DOMAIN_INPUT, "setTimeout"); 
+        
+        setFeatures(chaos_batch::features::FeaturesFlagTypes::FF_SET_COMMAND_TIMEOUT, *p_setTimeout);
 	if((err = actuator_drv->stopMotion(*axID)) != 0) {
-		LOG_AND_TROW(SCLERR_, 1, boost::str(boost::format("Error %1% stopping motor") % err));
+		//LOG_AND_TROW(SCLERR_, 1, boost::str(boost::format("Error %1% stopping motor") % err));
+            SCLERR_ << "Stop motion command error";
+            
+            metadataLogging(chaos::common::metadata_logging::StandardLoggingChannel::LogLevelInfo,boost::str( boost::format("performing reset alarms: operation failed")) );
+            setAlarmSeverity("Stop motion command error", chaos::common::alarm::MultiSeverityAlarmLevelHigh);
+            BC_FAULT_RUNNING_PROPERTY;
+            return;    
 	}
-actuator_drv->accessor->base_opcode_priority=100;
+//actuator_drv->accessor->base_opcode_priority=100;
 	setWorkState(true);
+        *p_stopCommandInExecution=true;
 	BC_EXEC_RUNNING_PROPERTY;
 }
 // empty acquire handler
 void own::CmdACTStopMotion::acquireHandler() {
-	int err = 0;
-	int state = 0;
-	std::string desc;
-	if((err = actuator_drv->getState(*axID,&state, desc))) {
-		LOG_AND_TROW(SCLERR_, 1, boost::str(boost::format("Error fetching state readout with code %1%") % err));
-	} else {
-		*o_status_id = state;
-		//copy up to 255 and put the termination character
-		strncpy(o_status_str, desc.c_str(), 256);
-	}
 
-	if((slow_acquisition_index = !slow_acquisition_index)) {
-	
-	} else {
-	    SCLDBG_ << "fetch alarms readout";
-		if((err = actuator_drv->getAlarms(*axID,o_alarms,desc))){
-			LOG_AND_TROW(SCLERR_, 2, boost::str(boost::format("Error fetching alarms readout with code %1%") % err));
-		}
+        SCLDBG_ << "ALEDEBUG Stop motion acquire handler ";
+        //acquire the current readout
+        AbstractActuatorCommand::acquireHandler();
 	//force output dataset as changed
 	getAttributeCache()->setOutputDomainAsChanged();
-	}
 }
 // empty correlation handler
 void own::CmdACTStopMotion::ccHandler() {
-	int err=0;
-	double position;
+	//int err=0;
+	//double position;
         uint64_t elapsed_msec = chaos::common::utility::TimingUtil::getTimeStamp() - getSetTime();
+        
 	//the command is endedn because we have reached the affinitut delta set
 	SCLDBG_ << "cc handler Stop motion " << ((*o_status_id) & ::common::actuators::ACTUATOR_INMOTION) ;
-        DPRINT(" :   %x %x",*o_status_id, ::common::actuators::ACTUATOR_INMOTION);
+        //DPRINT(" :   %x %x",*o_status_id, ::common::actuators::ACTUATOR_INMOTION);
+        
 	if (((*o_status_id) & ::common::actuators::ACTUATOR_INMOTION)==0)
 	{
 	     SCLDBG_ << "[metric ]:Motor Stopped  in " << elapsed_msec << " milliseconds";
+             
 	     setWorkState(false);
 	     BC_END_RUNNING_PROPERTY;
+             return;
 	}
 	if (*o_alarms) {
-		SCLERR_ << "We got alarms on actuator so we end the command";
-		setWorkState(false);
-		BC_END_RUNNING_PROPERTY;
+            SCLERR_ << "We got alarms on actuator so we end the command";
+            
+            //metadataLogging(chaos::common::metadata_logging::StandardLoggingChannel::LogLevelInfo,boost::str( boost::format("performing stop motion command: operation failed because of alarms detection")));
+            metadataLogging(chaos::common::metadata_logging::StandardLoggingChannel::LogLevelWarning,"performing stop motion command: operation failed because of alarms detection"); 
+            //setAlarmSeverity("Stop motion command error because of alarms", chaos::common::alarm::MultiSeverityAlarmLevelClear);// ***
+            setAlarmSeverity("Stop motion command error because of alarms", chaos::common::alarm::MultiSeverityAlarmLevelHigh);
+            setWorkState(false);
+	    BC_FAULT_RUNNING_PROPERTY;
 	}
 }
 // empty timeout handler
 bool own::CmdACTStopMotion::timeoutHandler() {
-	uint64_t elapsed_msec;
-	setWorkState(false);
-	actuator_drv->accessor->base_opcode_priority=50;
-	if ((o_status_str && ::common::actuators::ACTUATOR_INMOTION)==0)
+	
+	uint64_t elapsed_msec = chaos::common::utility::TimingUtil::getTimeStamp() - getSetTime();
+        metadataLogging(chaos::common::metadata_logging::StandardLoggingChannel::LogLevelWarning,"time out for stop motion command");
+        
+	//actuator_drv->accessor->base_opcode_priority=50;
+	if ((*o_status_id && ::common::actuators::ACTUATOR_INMOTION)==0)
         {
-	   uint64_t elapsed_msec = chaos::common::utility::TimingUtil::getTimeStamp() - getSetTime();
+           //metadataLogging(chaos::common::metadata_logging::StandardLoggingChannel::LogLevelError,CHAOS_FORMAT("timeout for stop command. Motorwas stopped. Elapsed time %1%" , % elapsed_msec));
 	   SCLDBG_ << "[metric] Motor Stopped on timeout in " << elapsed_msec << " milliseconds";
 	   //the command is endedn because we have reached the affinitut delta set
-	   BC_END_RUNNING_PROPERTY;
+           
+           BC_END_RUNNING_PROPERTY;
 	}else {
-           SCLERR_ << "[metric] Motor not stopped before timeout of " << elapsed_msec << " milliseconds";
-	   BC_FAULT_RUNNING_PROPERTY;
+           SCLDBG_ << "[metric] Motor not stopped before timeout of " << elapsed_msec << " milliseconds";
+	   
+           metadataLogging(chaos::common::metadata_logging::StandardLoggingChannel::LogLevelWarning,"Motor not stopped before timeout"); 
+           setAlarmSeverity("Motion not stopped in maximum time specified", chaos::common::alarm::MultiSeverityAlarmLevelWarning);
+           BC_FAULT_RUNNING_PROPERTY;
 	}
-	return false;
-	
+        setWorkState(false);
+	return false;	
 }
