@@ -329,6 +329,33 @@ addAlarm("position_value_not_reached",
 
 addAlarm("command_error",
             "Notify when a command action fails");
+/***************************ALARMS******************************************/
+addAlarm("DRIVER_COMMAND_ERROR",
+            "Notify when a driver returns a generic command error");
+addAlarm("DRIVER_COMMUNICATION_ERROR",
+            "Notify when a comunication error has raised from the driver");
+addAlarm("DRIVER_SHORT_CIRCUIT_PROTECTION",
+            "Notify when the driver is in protection for short-circuit");
+addAlarm("DRIVER_INVALID_SETUP_DATA",
+            "Notify when the driver received a bad data setup");
+addAlarm("DRIVER_CONTROL_ERROR",
+            "Notify when the driver sends a generic  control error");
+addAlarm("DRIVER_HALL_SENSOR_MISSING",
+            "Notify when the driver sends a hall sensor missing alarm");
+addAlarm("DRIVER_OVER_CURRENT",
+            "Notify when the driver has an over current alarm");
+addAlarm("DRIVER_I2T_ALARM",
+            "Notify when the driver raise a I2T  alarm");
+addAlarm("MOTOR_OVER_TEMPERATURE",
+            "Notify when the motor is in over temperature");
+addAlarm("DRIVE_OVER_TEMPERATURE",
+            "Notify when the drive is in over temperature");
+addAlarm("OVER_VOLTAGE_ALARM",
+            "Notify when there is an over voltage on the system");
+addAlarm("UNDER_VOLTAGE_ALARM",
+            "Notify when there is an under voltage on the system");
+addAlarm("READING_ALARM_PROBLEM",
+            "Notify when the driver cannot execute the reading of alarms");
 }
 
 void ::driver::actuator::SCActuatorControlUnit::unitDefineCustomAttribute() {
