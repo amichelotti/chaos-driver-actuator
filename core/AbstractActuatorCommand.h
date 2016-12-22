@@ -23,6 +23,7 @@
 #define __Actuator__AbstractActuatorCommand__
 
 #include "ActuatorConstants.h"
+#include "common/actuators/core/AbstractActuator.h"
 
 #include <driver/actuator/core/ChaosActuatorInterface.h>
 
@@ -82,6 +83,8 @@ namespace driver {
 			void getState(int32_t axisID,int& current_state, std::string& current_state_str);
 			
 			void setWorkState(bool working);
+			void DecodeAndRaiseAlarms(uint64_t mask);
+
 		};
 	}
 }

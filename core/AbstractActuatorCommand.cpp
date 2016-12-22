@@ -25,6 +25,7 @@
 #define CMDCUERR_ ERR_LOG(AbstractActuatorCommand)
 
 using namespace driver::actuator;
+
 namespace chaos_batch = chaos::common::batch_command;
 
 AbstractActuatorCommand::AbstractActuatorCommand() {
@@ -95,77 +96,77 @@ uint8_t AbstractActuatorCommand::implementedHandler() {
 	return  chaos_batch::HandlerType::HT_Set |chaos_batch::HandlerType::HT_Acquisition|chaos_batch::HandlerType::HT_Correlation; // modificata ****************************************************
 }
 
-void DecodeAndRaiseAlarms(uint64_t mask)
+void AbstractActuatorCommand::DecodeAndRaiseAlarms(uint64_t mask)
 {
-if (mask & actuatorAlarms::ACTUATOR_CANBUS_ERROR!= 0)
+if (mask & ::common::actuators::ACTUATOR_CANBUS_ERROR!= 0)
 	setAlarmSeverity("DRIVER_COMMUNICATION_ERROR", chaos::common::alarm::MultiSeverityAlarmLevelHigh);
 else
 	setAlarmSeverity("DRIVER_COMMUNICATION_ERROR", chaos::common::alarm::MultiSeverityAlarmLevelClear);
-if (mask & actuatorAlarms::ACTUATOR_SHORT_CIRCUIT!= 0)
+if (mask & ::common::actuators::ACTUATOR_SHORT_CIRCUIT!= 0)
 	setAlarmSeverity("DRIVER_SHORT_CIRCUIT_PROTECTION", chaos::common::alarm::MultiSeverityAlarmLevelHigh);
 else
 	setAlarmSeverity("DRIVER_SHORT_CIRCUIT_PROTECTION", chaos::common::alarm::MultiSeverityAlarmLevelClear);
 
-if (mask & actuatorAlarms::ACTUATOR_INVALID_SETUP_DATA!= 0)
+if (mask & ::common::actuators::ACTUATOR_INVALID_SETUP_DATA!= 0)
 	setAlarmSeverity("DRIVER_INVALID_SETUP_DATA", chaos::common::alarm::MultiSeverityAlarmLevelHigh);
 else
 	setAlarmSeverity("DRIVER_INVALID_SETUP_DATA", chaos::common::alarm::MultiSeverityAlarmLevelClear);
 
 
-if (mask & actuatorAlarms::ACTUATOR_CONTROL_ERROR!= 0)
+if (mask & ::common::actuators::ACTUATOR_CONTROL_ERROR!= 0)
 	setAlarmSeverity("DRIVER_CONTROL_ERROR", chaos::common::alarm::MultiSeverityAlarmLevelHigh);
 else
 	setAlarmSeverity("DRIVER_CONTROL_ERROR", chaos::common::alarm::MultiSeverityAlarmLevelClear);
 
 
-if (mask & actuatorAlarms::ACTUATOR_SERIAL_COMM_ERROR!= 0)
+if (mask & ::common::actuators::ACTUATOR_SERIAL_COMM_ERROR!= 0)
 	setAlarmSeverity("DRIVER_COMMUNICATION_ERROR", chaos::common::alarm::MultiSeverityAlarmLevelHigh);
 else
 	setAlarmSeverity("DRIVER_COMMUNICATION_ERROR", chaos::common::alarm::MultiSeverityAlarmLevelClear);
 
-if (mask & actuatorAlarms::ACTUATOR_HALL_SENSOR_MISSING!= 0)
+if (mask & ::common::actuators::ACTUATOR_HALL_SENSOR_MISSING!= 0)
 	setAlarmSeverity("DRIVER_HALL_SENSOR_MISSING", chaos::common::alarm::MultiSeverityAlarmLevelHigh);
 else
 	setAlarmSeverity("DRIVER_HALL_SENSOR_MISSING", chaos::common::alarm::MultiSeverityAlarmLevelClear);
 
 
-if (mask & actuatorAlarms::ACTUATOR_OVER_CURRENT!= 0)
+if (mask & ::common::actuators::ACTUATOR_OVER_CURRENT!= 0)
 	setAlarmSeverity("DRIVER_OVER_CURRENT", chaos::common::alarm::MultiSeverityAlarmLevelHigh);
 else
 	setAlarmSeverity("DRIVER_OVER_CURRENT", chaos::common::alarm::MultiSeverityAlarmLevelClear);
 
-if (mask & actuatorAlarms::ACTUATOR_I2T!= 0)
+if (mask & ::common::actuators::ACTUATOR_I2T!= 0)
 	setAlarmSeverity("DRIVER_I2T_ALARM", chaos::common::alarm::MultiSeverityAlarmLevelHigh);
 else
 	setAlarmSeverity("DRIVER_I2T_ALARM", chaos::common::alarm::MultiSeverityAlarmLevelClear);
 
-if (mask & actuatorAlarms::ACTUATOR_OVERTEMP_MOTOR!= 0)
+if (mask & ::common::actuators::ACTUATOR_OVERTEMP_MOTOR!= 0)
 	setAlarmSeverity("MOTOR_OVER_TEMPERATURE", chaos::common::alarm::MultiSeverityAlarmLevelHigh);
 else
 	setAlarmSeverity("MOTOR_OVER_TEMPERATURE", chaos::common::alarm::MultiSeverityAlarmLevelClear);
 
-if (mask & actuatorAlarms::ACTUATOR_OVERTEMP_DRIVE!= 0)
+if (mask & ::common::actuators::ACTUATOR_OVERTEMP_DRIVE!= 0)
 	setAlarmSeverity("DRIVE_OVER_TEMPERATURE", chaos::common::alarm::MultiSeverityAlarmLevelHigh);
 else
 	setAlarmSeverity("DRIVE_OVER_TEMPERATURE", chaos::common::alarm::MultiSeverityAlarmLevelClear);
 
 
-if (mask & actuatorAlarms::ACTUATOR_OVERVOLTAGE!= 0)
+if (mask & ::common::actuators::ACTUATOR_OVERVOLTAGE!= 0)
 	setAlarmSeverity("OVER_VOLTAGE_ALARM", chaos::common::alarm::MultiSeverityAlarmLevelHigh);
 else
 	setAlarmSeverity("OVER_VOLTAGE_ALARM", chaos::common::alarm::MultiSeverityAlarmLevelClear);
 
-if (mask & actuatorAlarms::ACTUATOR_UNDERVOLTAGE!= 0)
+if (mask & ::common::actuators::ACTUATOR_UNDERVOLTAGE!= 0)
 	setAlarmSeverity("UNDER_VOLTAGE_ALARM", chaos::common::alarm::MultiSeverityAlarmLevelHigh);
 else
 	setAlarmSeverity("UNDER_VOLTAGE_ALARM", chaos::common::alarm::MultiSeverityAlarmLevelClear);
 
-if (mask & actuatorAlarms::ACTUATOR_COMMANDERROR!= 0)
+if (mask & ::common::actuators::ACTUATOR_COMMANDERROR!= 0)
 	setAlarmSeverity("DRIVER_COMMAND_ERROR", chaos::common::alarm::MultiSeverityAlarmLevelHigh);
 else
 	setAlarmSeverity("", chaos::common::alarm::MultiSeverityAlarmLevelClear);
 
-if (mask & actuatorAlarms::ACTUATOR_ALARMS_READING_ERROR!= 0)
+if (mask & ::common::actuators::ACTUATOR_ALARMS_READING_ERROR!= 0)
 	setAlarmSeverity("READING_ALARM_PROBLEM", chaos::common::alarm::MultiSeverityAlarmLevelHigh);
 else
 	setAlarmSeverity("READING_ALARM_PROBLEM", chaos::common::alarm::MultiSeverityAlarmLevelClear);
