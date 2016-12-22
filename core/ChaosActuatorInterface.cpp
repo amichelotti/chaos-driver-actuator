@@ -289,6 +289,7 @@ int ChaosActuatorInterface::getPosition(int32_t axisID,::common::actuators::Abst
 }
 
 int ChaosActuatorInterface::resetAlarms(int32_t axisID,uint64_t alrm){
+    
     WRITE_OP_AX_64INT_TIM(OP_RESET_ALARMS,axisID,alrm,0);
 }
 

@@ -207,7 +207,6 @@ void ::driver::actuator::SCActuatorControlUnit::unitDefineActionAndDataset() thr
 
   }
 
-
    addAttributeToDataSet("axisID",
                         "axis ID for the motor",
                         DataType::TYPE_INT32,
@@ -229,12 +228,7 @@ void ::driver::actuator::SCActuatorControlUnit::unitDefineActionAndDataset() thr
   addAttributeToDataSet("position",
                         "position",
                         DataType::TYPE_DOUBLE,
-                        DataType::Output);
-  
-  addAttributeToDataSet("position_sp",
-                        "position Set Point",
-                        DataType::TYPE_DOUBLE,
-                        DataType::Output);
+                        DataType::Bidirectional);
   
   addAttributeToDataSet("alarms",
                         "Alarms",
@@ -271,7 +265,7 @@ addAttributeToDataSet("auxiliaryConfigParameters",
                         DataType::TYPE_INT32,
                         DataType::Input);
   
- addAttributeToDataSet("command_timeout",
+ addAttributeToDataSet("setTimeout",
                         "Command timeout in milliseconds",
                         DataType::TYPE_INT32,
                         DataType::Input);
@@ -286,32 +280,55 @@ addAttributeToDataSet("auxiliaryConfigParameters",
                         DataType::TYPE_DOUBLE,
                         DataType::Input);
   
-  addAttributeToDataSet("__positionWarningTHR",
-                        "Threshold for warning on Position",
+  addAttributeToDataSet("__setpoint_affinity",
+                        "Delta of the setpoint",
+                        DataType::TYPE_DOUBLE,
+                        DataType::Input);
+
+  
+  addAttributeToDataSet("resolution",
+                        "resolution on position",
                         DataType::TYPE_DOUBLE,
                         DataType::Input);
   
-  addAttributeToDataSet("__positionWarningTHR_Timeout",
+  addAttributeToDataSet("positionWarningTHR_Timeout",
                         "Tolerance time for Threshold warning on Position",
                         DataType::TYPE_DOUBLE,
                         DataType::Input);
   
-  addAttributeToDataSet("__positionResolution",
-                        "change in position less than that will not pushed",
+addAttributeToDataSet("positionWarningTHR",
+                        "Position warning threshold",
                         DataType::TYPE_DOUBLE,
                         DataType::Input);
   
-  
-   addAttributeToDataSet("__outputWarning",
-                        "Warning Status for out of pos",
-                        DataType::TYPE_INT32,
-                        DataType::Output);
-   
    addAttributeToDataSet("bypass",
                           "exclude HW changes",
                           DataType::TYPE_BOOLEAN,
                           DataType::Input);
-          
+   
+   addAttributeToDataSet("stby",
+                          "stdby management",
+                          DataType::TYPE_BOOLEAN,
+                          DataType::Output);
+   
+   addAttributeToDataSet("stopHoming",
+                          "homing to be stopped flag",
+                          DataType::TYPE_BOOLEAN,
+                          DataType::Output);
+ 
+/***************************ALARMS******************************************/
+addAlarm("position_out_of_set",
+            "Notify when a position has drifted away from set");
+
+
+addAlarm("homing_operation_failed",
+            "Notify when a homing operation has failed");
+
+addAlarm("position_value_not_reached",
+            "Notify when a moving operation has failed to reach the final set point ");
+
+addAlarm("command_error",
+            "Notify when a command action fails");
 }
 
 void ::driver::actuator::SCActuatorControlUnit::unitDefineCustomAttribute() {
@@ -331,8 +348,13 @@ void ::driver::actuator::SCActuatorControlUnit::unitInit() throw(CException) {
   RangeValueInfo attr_info;
 
    int32_t *status_id = getAttributeCache()->getRWPtr<int32_t>(DOMAIN_OUTPUT, "status_id");
-   double *o_position = getAttributeCache()->getRWPtr<double>(DOMAIN_OUTPUT, "position"); 
-   double *o_positionSP = getAttributeCache()->getRWPtr<double>(DOMAIN_OUTPUT, "position_sp"); 
+   SCCUAPP << "unitInit() dopo status_id";
+   
+   
+   double *o_positionSP = (double*)getAttributeCache()->getRWPtr<double>(DOMAIN_INPUT, "position"); 
+   SCCUAPP << "unitInit() dopo o_positionSP";
+   
+   double *o_position = getAttributeCache()->getRWPtr<double>(DOMAIN_OUTPUT, "position");
 
   SCCUAPP <<"ALEDEBUG ALEDEBUG REQUESTING ACCESSOR  AND DRIVER   AFTER INIT " ;
     const bool* s_bypass=getAttributeCache()->getROPtr<bool>(DOMAIN_INPUT, "bypass");
@@ -449,15 +471,14 @@ void ::driver::actuator::SCActuatorControlUnit::unitDeinit() throw(CException) {
 #define RESTORE_LERR SCCUERR << "[RESTORE-" <<getCUID() << "] "
 
 bool ::driver::actuator::SCActuatorControlUnit::unitRestoreToSnapshot(chaos::cu::control_manager::AbstractSharedDomainCache *const snapshot_cache) throw(chaos::CException) {
-//  RESTORE_LAPP << "Check if restore cache has the needed data";
-/* 
+  RESTORE_LAPP << "Check if restore cache has the needed data";
  //check if in the restore cache we have all information we need
   if (!snapshot_cache->getSharedDomain(DOMAIN_OUTPUT).hasAttribute("status_id")) return false;
-  if (!snapshot_cache->getSharedDomain(DOMAIN_OUTPUT).hasAttribute("polarity")) return false;
-  if (!snapshot_cache->getSharedDomain(DOMAIN_OUTPUT).hasAttribute("current_sp")) return false;
+  if (!snapshot_cache->getSharedDomain(DOMAIN_OUTPUT).hasAttribute("position")) return false;
 
   RESTORE_LAPP << "Start the restore of the powersupply";
   uint64_t start_restore_time = chaos::common::utility::TimingUtil::getTimeStamp();
+/* 
   try {
     bool cmd_result = true;
     //get actual state

@@ -38,22 +38,29 @@ BATCH_COMMAND_CLOSE_DESCRIPTION()
 
 
 // return the implemented handler
-uint8_t own::CmdACTPoweron::implementedHandler(){
-	return      AbstractActuatorCommand::implementedHandler()|chaos_batch::HandlerType::HT_Acquisition;
-}
+//uint8_t own::CmdACTPoweron::implementedHandler(){
+//	return      AbstractActuatorCommand::implementedHandler()|chaos_batch::HandlerType::HT_Acquisition;
+//}
 // empty set handler
 void own::CmdACTPoweron::setHandler(c_data::CDataWrapper *data) {
 	int err;
 	int32_t onState = data->getInt32Value(CMD_ACT_POWERON_VALUE);
-	axID=getAttributeCache()->getROPtr<uint32_t>(DOMAIN_INPUT, "axisID");
-
-
 	AbstractActuatorCommand::setHandler(data);
+
+        if(*o_stby){
+            // we are in standby only the SP is set
+            SCLDBG_ << "we are in standby we cannot start stop command: ";
+            setWorkState(false);
+            BC_END_RUNNING_PROPERTY;
+            return;
+        } 
+        
+	
 	if((err = actuator_drv->poweron(*axID,onState)) != 0) {
 		LOG_AND_TROW(SCLERR_, 1, boost::str(boost::format("Error %1% while power on the actuator") % err));
 	}
 	setWorkState(true);
-	BC_EXEC_RUNNING_PROPERTY;
+	BC_NORMAL_RUNNING_PROPERTY;
 }
 // empty acquire handler
 void own::CmdACTPoweron::acquireHandler() {
@@ -69,9 +76,8 @@ void own::CmdACTPoweron::ccHandler() {
 	else 
  	{
 		*o_status_id = state;
- 			SCLERR_ << "ALEDEBUG poweron CC got state "<<state_str ;
 		//copy up to 255 and put the termination character
-		strncpy(o_status, state_str.c_str(), 256);
+		strncpy(o_status_str, state_str.c_str(), 256);
 		if(((*o_status_id)&::common::actuators::ACTUATOR_POWER_SUPPLIED)!=0)
 		{
 			BC_END_RUNNING_PROPERTY;
@@ -94,7 +100,7 @@ bool own::CmdACTPoweron::timeoutHandler() {
         {
                 *o_status_id = state;
                 //copy up to 255 and put the termination character
-                strncpy(o_status, state_str.c_str(), 256);
+                strncpy(o_status_str, state_str.c_str(), 256);
                 if(((*o_status_id)&::common::actuators::ACTUATOR_POWER_SUPPLIED)!=0)
                 {
                         BC_END_RUNNING_PROPERTY;

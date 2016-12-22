@@ -40,17 +40,40 @@ namespace driver {
 		  AbstractActuatorCommand();
 		  ~AbstractActuatorCommand();
 		protected:
-			char		*o_status;
+                        int32_t		*o_status_id;
+			char            *o_status_str;
+                        uint64_t	*o_alarms;
 			char		*o_alarm_str;
-			int32_t		*o_status_id;
-			uint64_t	*o_alarms;
-                        const bool            *i_bypass;
+                        double          *o_position;
+                        double *i_position;
+                        ::common::actuators::AbstractActuator::readingTypes readTyp;
+                        
+                        bool		*o_stby;
+                        
+                        //double	*o_position_sp; // ********* AGGIUNTO ************
+                        double *i_speed; // ********* AGGIUNTO ************
+                        double *highspeed_homing;  // ********* AGGIUNTO ************
+                        const uint32_t	*i_command_timeout;// ********* AGGIUNTO ************
+                        const double	*__i_delta_setpoint;// ********* AGGIUNTO ************
+                        const double	*__i_setpoint_affinity;// ********* AGGIUNTO ************
+                        
+                        const double*p_minimumWorkingValue,*p_maximumWorkingValue,*p_resolution,*p_warningThreshold;  // ********* AGGIUNTO ************
+                         
+                        const uint32_t *axID;       // ********* AGGIUNTO axID ************
+                        const bool      *s_bypass;
+                        const uint32_t *p_setTimeout;
+                        
+                        bool *p_stopCommandInExecution;
+                       
+                        
+
 			//reference of the chaos bastraction ofactuator driver
 			chaos::driver::actuator::ChaosActuatorInterface *actuator_drv;
 			
 			//implemented handler
 			uint8_t implementedHandler();
 
+                        void acquireHandler(); // ******** Aggiunto qui!!! ********
 			void ccHandler();
 			
 			// set the data fr the command

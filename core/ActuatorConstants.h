@@ -70,8 +70,8 @@ namespace driver {
         const char * const CMD_ACT_CALIBRATE_TO = "to";
         const char * const CMD_ACT_CALIBRATE_STEACT = "steps";
 
-        #define DEFAULT_COMMAND_TIMEOUT_MS   10000
-        #define DEFAULT_RAMP_TIME_OFFSET_MS  10000
+        #define DEFAULT_COMMAND_TIMEOUT_MS   10000000
+        #define DEFAULT_MOVE_TIMETOL_OFFSET_MS  10000
 
 	}
 }

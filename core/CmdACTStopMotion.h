@@ -32,7 +32,7 @@ namespace driver {
 			const uint32_t *axID;
 
 			//implemented handler
-			uint8_t implementedHandler();
+			//uint8_t implementedHandler();
 			//initial set handler
 			void setHandler(c_data::CDataWrapper *data);
 			//custom acquire handler
@@ -41,6 +41,10 @@ namespace driver {
 			void ccHandler();
 			//manage the timeout 
 			bool timeoutHandler();
+                        
+                       
+                            
+                        
 			};
 		}
 	}
