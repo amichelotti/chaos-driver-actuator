@@ -114,6 +114,7 @@ void AbstractActuatorCommand::acquireHandler(){// ******** Aggiunta questa defin
         *o_alarms = tmp_uint64;
         //copy up to 255 and put the termination character
         strncpy(o_alarm_str, descStr.c_str(), 256);
+	//decode and raise alarms
     }
     else{
         CMDCUERR_<<boost::str( boost::format("Error calling driver on get alarms readout with code %1%") % err);

@@ -316,6 +316,19 @@ addAttributeToDataSet("positionWarningTHR",
                           DataType::TYPE_BOOLEAN,
                           DataType::Output);
  
+/***************************ALARMS******************************************/
+addAlarm("position_out_of_set",
+            "Notify when a position has drifted away from set");
+
+
+addAlarm("homing_operation_failed",
+            "Notify when a homing operation has failed");
+
+addAlarm("position_value_not_reached",
+            "Notify when a moving operation has failed to reach the final set point ");
+
+addAlarm("command_error",
+            "Notify when a command action fails");
 }
 
 void ::driver::actuator::SCActuatorControlUnit::unitDefineCustomAttribute() {
@@ -458,15 +471,14 @@ void ::driver::actuator::SCActuatorControlUnit::unitDeinit() throw(CException) {
 #define RESTORE_LERR SCCUERR << "[RESTORE-" <<getCUID() << "] "
 
 bool ::driver::actuator::SCActuatorControlUnit::unitRestoreToSnapshot(chaos::cu::control_manager::AbstractSharedDomainCache *const snapshot_cache) throw(chaos::CException) {
-//  RESTORE_LAPP << "Check if restore cache has the needed data";
-/* 
+  RESTORE_LAPP << "Check if restore cache has the needed data";
  //check if in the restore cache we have all information we need
   if (!snapshot_cache->getSharedDomain(DOMAIN_OUTPUT).hasAttribute("status_id")) return false;
-  if (!snapshot_cache->getSharedDomain(DOMAIN_OUTPUT).hasAttribute("polarity")) return false;
-  if (!snapshot_cache->getSharedDomain(DOMAIN_OUTPUT).hasAttribute("current_sp")) return false;
+  if (!snapshot_cache->getSharedDomain(DOMAIN_OUTPUT).hasAttribute("position")) return false;
 
   RESTORE_LAPP << "Start the restore of the powersupply";
   uint64_t start_restore_time = chaos::common::utility::TimingUtil::getTimeStamp();
+/* 
   try {
     bool cmd_result = true;
     //get actual state

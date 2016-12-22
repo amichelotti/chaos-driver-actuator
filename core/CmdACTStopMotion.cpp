@@ -47,9 +47,7 @@ AbstractActuatorCommand::setHandler(data);
         
 	axID = getAttributeCache()->getROPtr<uint32_t>(DOMAIN_INPUT, "axisID");
         
-        setAlarmSeverity("stop_motion_error", chaos::common::alarm::MultiSeverityAlarmLevelClear);
-        setAlarmSeverity("Stop motion command error because of alarms", chaos::common::alarm::MultiSeverityAlarmLevelClear);// ***
-	setAlarmSeverity("Stop motion command error", chaos::common::alarm::MultiSeverityAlarmLevelClear);
+        setAlarmSeverity("command_error", chaos::common::alarm::MultiSeverityAlarmLevelClear);
         
         SCLDBG_ << "Stop Motion " ;
         
@@ -69,14 +67,14 @@ AbstractActuatorCommand::setHandler(data);
             SCLERR_ << "Stop motion command error";
             
             metadataLogging(chaos::common::metadata_logging::StandardLoggingChannel::LogLevelInfo,boost::str( boost::format("performing reset alarms: operation failed")) );
-            setAlarmSeverity("Stop motion command error", chaos::common::alarm::MultiSeverityAlarmLevelHigh);
+            setAlarmSeverity("command_error", chaos::common::alarm::MultiSeverityAlarmLevelHigh);
             BC_FAULT_RUNNING_PROPERTY;
             return;    
 	}
 //actuator_drv->accessor->base_opcode_priority=100;
 	setWorkState(true);
         *p_stopCommandInExecution=true;
-	BC_EXEC_RUNNING_PROPERTY;
+	BC_NORMAL_RUNNING_PROPERTY;
 }
 // empty acquire handler
 void own::CmdACTStopMotion::acquireHandler() {
@@ -110,8 +108,7 @@ void own::CmdACTStopMotion::ccHandler() {
             
             //metadataLogging(chaos::common::metadata_logging::StandardLoggingChannel::LogLevelInfo,boost::str( boost::format("performing stop motion command: operation failed because of alarms detection")));
             metadataLogging(chaos::common::metadata_logging::StandardLoggingChannel::LogLevelWarning,"performing stop motion command: operation failed because of alarms detection"); 
-            //setAlarmSeverity("Stop motion command error because of alarms", chaos::common::alarm::MultiSeverityAlarmLevelClear);// ***
-            setAlarmSeverity("Stop motion command error because of alarms", chaos::common::alarm::MultiSeverityAlarmLevelHigh);
+            setAlarmSeverity("command_error", chaos::common::alarm::MultiSeverityAlarmLevelHigh);
             setWorkState(false);
 	    BC_FAULT_RUNNING_PROPERTY;
 	}
@@ -134,7 +131,6 @@ bool own::CmdACTStopMotion::timeoutHandler() {
            SCLDBG_ << "[metric] Motor not stopped before timeout of " << elapsed_msec << " milliseconds";
 	   
            metadataLogging(chaos::common::metadata_logging::StandardLoggingChannel::LogLevelWarning,"Motor not stopped before timeout"); 
-           setAlarmSeverity("Motion not stopped in maximum time specified", chaos::common::alarm::MultiSeverityAlarmLevelWarning);
            BC_FAULT_RUNNING_PROPERTY;
 	}
         setWorkState(false);

@@ -47,13 +47,9 @@ void own::CmdACTresetAlarms::setHandler(c_data::CDataWrapper *data) {
        
  	
         
-        setAlarmSeverity("reset_alarms_error", chaos::common::alarm::MultiSeverityAlarmLevelClear);
-        
-        
         if(!data ||
             !data->hasKey(CMD_ACT_ALRM)) {
             SCLERR_ << "Reset alarms parameter not present";
-            //setAlarmSeverity("ResetAlarms_not_present", chaos::common::alarm::MultiSeverityAlarmLevelWarning);
             metadataLogging(chaos::common::metadata_logging::StandardLoggingChannel::LogLevelInfo,boost::str( boost::format("performing reset alarms: argument non present")) );
             BC_FAULT_RUNNING_PROPERTY;
             return;
@@ -61,7 +57,6 @@ void own::CmdACTresetAlarms::setHandler(c_data::CDataWrapper *data) {
         
         if(!data->isInt64Value(CMD_ACT_ALRM)) {
             SCLERR_ << "Reset alarms parameter is not an integer 64 data type";
-            //setAlarmSeverity("Reset alarms_type_invalid_set", chaos::common::alarm::MultiSeverityAlarmLevelWarning);
             metadataLogging(chaos::common::metadata_logging::StandardLoggingChannel::LogLevelInfo,boost::str( boost::format("performing reset alarms: argument is not an integer 64 type")) );
             BC_FAULT_RUNNING_PROPERTY;
             return;
@@ -71,7 +66,6 @@ void own::CmdACTresetAlarms::setHandler(c_data::CDataWrapper *data) {
         if(isnan(alarmMask)==true)
         {
             SCLERR_ << "Reset alarms parameter is nan";
-            //setAlarmSeverity("Reset_alarms_type_invalid_set", chaos::common::alarm::MultiSeverityAlarmLevelWarning);
             metadataLogging(chaos::common::metadata_logging::StandardLoggingChannel::LogLevelInfo,boost::str( boost::format("performing reset alarms: argument is a nan")) );
             BC_FAULT_RUNNING_PROPERTY;
             return;
@@ -93,7 +87,6 @@ void own::CmdACTresetAlarms::setHandler(c_data::CDataWrapper *data) {
                 //LOG_AND_TROW(SCLERR_, 1, boost::str(boost::format("Error %1% resetting alarms") % err));
             SCLERR_ << "resetAlarms failed";
             metadataLogging(chaos::common::metadata_logging::StandardLoggingChannel::LogLevelInfo,boost::str( boost::format("performing reset alarms: operation failed")) );
-            setAlarmSeverity("reset_alarms_error", chaos::common::alarm::MultiSeverityAlarmLevelHigh);
             BC_FAULT_RUNNING_PROPERTY;
             return;
         }	
@@ -101,7 +94,7 @@ void own::CmdACTresetAlarms::setHandler(c_data::CDataWrapper *data) {
 	//actuator_drv->accessor->base_opcode_priority=100;
         setWorkState(true);
         metadataLogging(chaos::common::metadata_logging::StandardLoggingChannel::LogLevelInfo,boost::str( boost::format("performing command homing of type: timeout")) );
-        BC_EXEC_RUNNING_PROPERTY;
+        BC_NORMAL_RUNNING_PROPERTY;
 	return;
 }
 

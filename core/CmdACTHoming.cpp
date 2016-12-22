@@ -52,33 +52,7 @@ void own::CmdACTHoming::setHandler(c_data::CDataWrapper *data)
         *p_stopCommandInExecution=false;
         chaos::common::data::RangeValueInfo attr_info;
         getDeviceDatabase()->getAttributeRangeValueInfo("homing_type", attr_info);
-        setAlarmSeverity("homing operation failed", chaos::common::alarm::MultiSeverityAlarmLevelClear);
-        //setAlarmSeverity("homing_type_out_of_set", chaos::common::alarm::MultiSeverityAlarmLevelClear);
-        
-        // REQUIRE MIN MAX SET IN THE MDS
-//        if (attr_info.maxRange.size()) {
-//            max_homing_type = atof(attr_info.maxRange.c_str());
-//            SCLDBG_ << "max homing_type=" << max_homing_type;
-//        } 
-//        else {
-//            SCLERR_ << "Not defined maximum 'homing_type' attribute, quitting command";
-//            metadataLogging(chaos::common::metadata_logging::StandardLoggingChannel::LogLevelError,"not defined maximum 'homing_type' attribute, quitting command" );
-//            setAlarmSeverity("homing_type_invalid_set", chaos::common::alarm::MultiSeverityAlarmLevelWarning);
-//            BC_FAULT_RUNNING_PROPERTY;// ********** aggiunto **************
-//            return;
-//        }
-        
-//        if (attr_info.minRange.size()) {
-//            min_homing_type = atof(attr_info.minRange.c_str());
-//            SCLDBG_ << "min homing_type=" << min_homing_type;
-//        }
-//        else {
-//            SCLERR_ << "not defined minimum 'homing_type' attribute, quitting command";
-//            setAlarmSeverity("homing_type_invalid_set", chaos::common::alarm::MultiSeverityAlarmLevelWarning);
-//            metadataLogging(chaos::common::metadata_logging::StandardLoggingChannel::LogLevelError,"not defined minimum 'position_sp' attribute, quitting command" );     
-//            BC_FAULT_RUNNING_PROPERTY;
-//            return;
-//        }
+        setAlarmSeverity("homing_operation_failed", chaos::common::alarm::MultiSeverityAlarmLevelClear);
         
         // Controllo natura dato in input
         SCLDBG_ << "check data";
@@ -86,14 +60,12 @@ void own::CmdACTHoming::setHandler(c_data::CDataWrapper *data)
         if(!data ||
             !data->hasKey(CMD_ACT_HOMINGTYPE)) {
             SCLERR_ << "Homing type parameter not present";
-            //setAlarmSeverity("Homing_type_invalid_set", chaos::common::alarm::MultiSeverityAlarmLevelWarning);
             BC_FAULT_RUNNING_PROPERTY;
             return;
         }
         
         if(!data->isInt32Value(CMD_ACT_HOMINGTYPE)) {
             SCLERR_ << "Homing  parameter is not an integer data type";
-            //setAlarmSeverity("Homing_type_invalid_set", chaos::common::alarm::MultiSeverityAlarmLevelWarning);
             BC_FAULT_RUNNING_PROPERTY;
             return;
         }
@@ -101,20 +73,9 @@ void own::CmdACTHoming::setHandler(c_data::CDataWrapper *data)
     	int32_t homType = data->getInt32Value(CMD_ACT_HOMINGTYPE);
         if(isnan(homType)==true){
             SCLERR_ << "homType parameter is not a valid integer number (nan?)";
-            //setAlarmSeverity("homType_invalid_set", chaos::common::alarm::MultiSeverityAlarmLevelWarning);
             BC_FAULT_RUNNING_PROPERTY;
             return;
         }
-        
-        // Controlliamo adesso se il dato appartiene all'input
-//        if (((homType) > (max_homing_type)) || ((homType)< (min_homing_type)))
-//        {
-//            setAlarmSeverity("homing_type invalid_set", chaos::common::alarm::MultiSeverityAlarmLevelWarning);
-//            SCLERR_ << "homing_type "<<homType<< " out of range ( " << min_homing_type << ","<< max_homing_type <<") the command won't be executed";
-//            metadataLogging(chaos::common::metadata_logging::StandardLoggingChannel::LogLevelError,CHAOS_FORMAT("homing_type %1% outside the maximum/minimum 'homing_type' = tolerance \"max_homing_type\":%2% \"min_homing_type\":%3%" , % homType % max_homing_type % min_homing_type));
-//            BC_FAULT_RUNNING_PROPERTY;
-//            return;
-//        }
         
         SCLDBG_ << "Compute timeout for homing operation of type = " << homType;
         //.......................
@@ -135,7 +96,6 @@ void own::CmdACTHoming::setHandler(c_data::CDataWrapper *data)
 //        *i_position=positionToReach;
           setWorkState(true);                  // *************** da inserire? **************
 //        getAttributeCache()->setInputDomainAsChanged();
-//        setAlarmSeverity("position_value_not_reached", chaos::common::alarm::MultiSeverityAlarmLevelClear);
         
 //        if(*o_stby){
 //            // we are in standby only the SP is set
@@ -157,7 +117,7 @@ void own::CmdACTHoming::setHandler(c_data::CDataWrapper *data)
         if(err = actuator_drv->homing(*axID,(::common::actuators::AbstractActuator::homingType) homType) < 0) 
         {
             SCLERR_<<"## error setting homing operation of type "<<homType;
-            setAlarmSeverity("homing operation failed", chaos::common::alarm::MultiSeverityAlarmLevelHigh);
+            setAlarmSeverity("homing_operation_failed", chaos::common::alarm::MultiSeverityAlarmLevelHigh);
             setWorkState(false);
             BC_FAULT_RUNNING_PROPERTY;
             return;
@@ -165,7 +125,7 @@ void own::CmdACTHoming::setHandler(c_data::CDataWrapper *data)
         
         homingTypeVar = homType;
         metadataLogging(chaos::common::metadata_logging::StandardLoggingChannel::LogLevelInfo,boost::str( boost::format("performing command homing of type:%1% timeout %2%") % homType % computed_timeout) );
-        BC_EXEC_RUNNING_PROPERTY;
+        BC_NORMAL_RUNNING_PROPERTY;
 }
 
 //  acquire handler
@@ -187,7 +147,7 @@ void own::CmdACTHoming::acquireHandler() {
     if((err = actuator_drv->homing(*axID,(::common::actuators::AbstractActuator::homingType) homingTypeVar)) < 0)
     {
         SCLERR_<<"## error setting homing operation of type "<<homingTypeVar;
-        setAlarmSeverity("homing operation failed", chaos::common::alarm::MultiSeverityAlarmLevelHigh);
+        setAlarmSeverity("homing_operation_failed", chaos::common::alarm::MultiSeverityAlarmLevelHigh);
         setWorkState(false);
         BC_FAULT_RUNNING_PROPERTY;
         return;
@@ -214,7 +174,7 @@ void own::CmdACTHoming::ccHandler() {
         *p_stopCommandInExecution=false;
         setWorkState(false);
         metadataLogging(chaos::common::metadata_logging::StandardLoggingChannel::LogLevelError,("Error Homing not completed" ));
-        setAlarmSeverity("homing operation failed", chaos::common::alarm::MultiSeverityAlarmLevelHigh);
+        setAlarmSeverity("homing_operation_failed", chaos::common::alarm::MultiSeverityAlarmLevelHigh);
         SCLDBG_ << "Exit from homing because of actutator is not in motion";
         BC_FAULT_RUNNING_PROPERTY;
     }
@@ -224,7 +184,7 @@ if (((*o_status_id) & ::common::actuators::ACTUATOR_POWER_SUPPLIED)==0)
                 if (err=actuator_drv->stopMotion(*axID)!= 0)
                 {
                      SCLERR_<<"## error while stopping motion";
-                setAlarmSeverity("homing operation failed", chaos::common::alarm::MultiSeverityAlarmLevelHigh);
+                setAlarmSeverity("homing_operation_failed", chaos::common::alarm::MultiSeverityAlarmLevelHigh);
                         setWorkState(false);
                         BC_FAULT_RUNNING_PROPERTY;
                         return;
@@ -253,7 +213,7 @@ bool own::CmdACTHoming::timeoutHandler() {
     int err;
     if((err = actuator_drv->stopMotion(*axID)) != 0) {
         SCLERR_<<"## time out ";
-        setAlarmSeverity("homing operation failed", chaos::common::alarm::MultiSeverityAlarmLevelHigh);
+        setAlarmSeverity("homing_operation_failed", chaos::common::alarm::MultiSeverityAlarmLevelHigh);
         setWorkState(false);
         BC_FAULT_RUNNING_PROPERTY;
         return false;
