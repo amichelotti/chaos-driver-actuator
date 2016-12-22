@@ -189,7 +189,6 @@ void own::CmdACTMoveRelative::setHandler(c_data::CDataWrapper *data) {
         setWorkState(true);
         getAttributeCache()->setInputDomainAsChanged();
         setAlarmSeverity("position_value_not_reached", chaos::common::alarm::MultiSeverityAlarmLevelClear);
-        
         SCLDBG_ << "o_position_sp is = " << *i_position;
         
         if(*o_stby){

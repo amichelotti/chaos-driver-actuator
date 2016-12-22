@@ -93,7 +93,6 @@ void own::CmdACTresetAlarms::setHandler(c_data::CDataWrapper *data) {
             SCLERR_ << "resetAlarms after sending to interface";
 	//actuator_drv->accessor->base_opcode_priority=100;
         setWorkState(true);
-        metadataLogging(chaos::common::metadata_logging::StandardLoggingChannel::LogLevelInfo,boost::str( boost::format("performing command homing of type: timeout")) );
         BC_NORMAL_RUNNING_PROPERTY;
 	return;
 }

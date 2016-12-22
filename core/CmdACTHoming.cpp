@@ -112,6 +112,7 @@ void own::CmdACTHoming::setHandler(c_data::CDataWrapper *data)
             setWorkState(false);
             BC_END_RUNNING_PROPERTY;
             return;
+<<<<<<< HEAD
         } 
         
         if(err = actuator_drv->homing(*axID,(::common::actuators::AbstractActuator::homingType) homType) < 0) 
