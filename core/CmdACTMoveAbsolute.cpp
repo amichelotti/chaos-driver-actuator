@@ -196,7 +196,7 @@ void own::CmdACTMoveAbsolute::setHandler(c_data::CDataWrapper *data) {
 	*o_position_sp = offset_mm;
 	actuator_drv->accessor->base_opcode_priority=100;
 	setWorkState(true);
-	BC_EXEC_RUNNING_PROPERTY;
+	BC_NORMAL_RUNNING_PROPERTY;
 
 }
 

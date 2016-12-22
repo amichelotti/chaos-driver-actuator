@@ -51,7 +51,7 @@ AbstractActuatorCommand::setHandler(data);
 	}
 actuator_drv->accessor->base_opcode_priority=100;
 	setWorkState(true);
-	BC_EXEC_RUNNING_PROPERTY;
+	BC_NORMAL_RUNNING_PROPERTY;
 }
 // empty acquire handler
 void own::CmdACTStopMotion::acquireHandler() {

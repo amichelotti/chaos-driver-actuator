@@ -53,7 +53,7 @@ void own::CmdACTPoweron::setHandler(c_data::CDataWrapper *data) {
 		LOG_AND_TROW(SCLERR_, 1, boost::str(boost::format("Error %1% while power on the actuator") % err));
 	}
 	setWorkState(true);
-	BC_EXEC_RUNNING_PROPERTY;
+	BC_NORMAL_RUNNING_PROPERTY;
 }
 // empty acquire handler
 void own::CmdACTPoweron::acquireHandler() {
