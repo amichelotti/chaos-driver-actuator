@@ -66,7 +66,7 @@ namespace driver {
 			bool unitRestoreToSnapshot(chaos::cu::control_manager::AbstractSharedDomainCache * const snapshot_cache) throw(CException);
 
 			//-----------utility methdo for the restore operation---------
-			bool powerON(bool sync = true);
+			bool setPosition(bool sync = true);
                         const uint32_t *axID;
 			
 		public:

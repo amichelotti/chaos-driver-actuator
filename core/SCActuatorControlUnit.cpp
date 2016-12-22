@@ -505,49 +505,16 @@ bool ::driver::actuator::SCActuatorControlUnit::unitRestoreToSnapshot(chaos::cu:
 
   RESTORE_LAPP << "Start the restore of the powersupply";
   uint64_t start_restore_time = chaos::common::utility::TimingUtil::getTimeStamp();
-/* 
+ 
   try {
     bool cmd_result = true;
     //get actual state
-    double *now_current_sp = getAttributeCache()->getRWPtr<double>(DOMAIN_OUTPUT, "current_sp");
+    double *now_position = getAttributeCache()->getRWPtr<double>(DOMAIN_OUTPUT, "position");
     int32_t *now_status_id = getAttributeCache()->getRWPtr<int32_t>(DOMAIN_OUTPUT, "status_id");
-    int32_t *now_polarity = getAttributeCache()->getRWPtr<int32_t>(DOMAIN_OUTPUT, "polarity");
 
-    //chec the restore polarity
-    int32_t restore_polarity = *snapshot_cache->getAttributeValue(DOMAIN_OUTPUT, "polarity")->getValuePtr<int32_t>();
-    double restore_current_sp = *snapshot_cache->getAttributeValue(DOMAIN_OUTPUT, "current_sp")->getValuePtr<double>();
-    //handle bipolar
-    int is_bipolar=powersupply_drv->getFeatures()& ::common::powersupply::POWER_SUPPLY_FEAT_BIPOLAR;
-   
-    ///
+    double restore_position_sp = *snapshot_cache->getAttributeValue(DOMAIN_OUTPUT, "position")->getValuePtr<double>();
 
-    if ((*now_polarity != restore_polarity)&&(is_bipolar==0)) {
-      //we need to change the polarity
-      RESTORE_LAPP << "Change the polarity from:" << *now_polarity << " to:" << restore_polarity;
-
-      //put in standby
-      RESTORE_LAPP << "Put powersupply at setpoint 0";
-      if (setCurrent(0.0)) {
-        usleep(100000);
-        RESTORE_LAPP << "Start the restore of the powersupply";
-        if (powerStandby()) {
-          usleep(100000);
-          RESTORE_LAPP << "Powersupply is gone in standby";
-        } else {
-          LOG_AND_TROW(RESTORE_LERR, 2, "Power supply is not gone in standby");
-        }
-      } else {
-        LOG_AND_TROW(RESTORE_LERR, 1, "Power supply is not gone to 0 ampere");
-      }
-
-      //set the polarity
-      RESTORE_LAPP << "Apply new polarity";
-      if (!setPolarity(restore_polarity)) {
-        LOG_AND_TROW_FORMATTED(RESTORE_LERR, 3, "Power supply is not gone to restore polarity %1%", %restore_polarity);
-      }
-      usleep(100000);
-    }
-
+/*
     int32_t restore_status_id = *snapshot_cache->getAttributeValue(DOMAIN_OUTPUT, "status_id")->getValuePtr<int32_t>();
     if (*now_status_id != restore_status_id) {
       RESTORE_LAPP << "Change the status from:" << *now_status_id << " to:" << restore_status_id;
@@ -578,15 +545,15 @@ bool ::driver::actuator::SCActuatorControlUnit::unitRestoreToSnapshot(chaos::cu:
           break;
       }
     }
-
+*/
 
     usleep(100000);
-    RESTORE_LAPP << "Apply new setpoint " << restore_current_sp;
-    if (!setCurrent(restore_current_sp)) {
+    RESTORE_LAPP << "Apply new setpoint " << restore_position_sp;
+    if (!setPosition(restore_position_sp)) {
       LOG_AND_TROW_FORMATTED(RESTORE_LERR,
                              6,
-                             "Power supply is not gone to restore 'current setpoint %1%' state",
-                             %restore_current_sp);
+                             "Actuator is not gone to restore 'position setpoint %1%' state",
+                             %restore_position_sp);
     }
     uint64_t restore_duration_in_ms = chaos::common::utility::TimingUtil::getTimeStamp() - start_restore_time;
     RESTORE_LAPP << "[metric] Restore successfully achieved in " << restore_duration_in_ms << " milliseconds";
@@ -595,32 +562,31 @@ bool ::driver::actuator::SCActuatorControlUnit::unitRestoreToSnapshot(chaos::cu:
     RESTORE_LAPP << "[metric] Restore has fault in " << restore_duration_in_ms << " milliseconds";
     throw ex;
   }
-*/
+
   return false;
 
 }
 
 //-----------utility methdo for the restore operation---------
-/*
-bool ::driver::actuator::SCActuatorControlUnit::powerON(bool sync) {
+
+bool ::driver::actuator::SCActuatorControlUnit::setPosition(bool sync) {
   uint64_t cmd_id;
   bool result = true;
   std::auto_ptr<CDataWrapper> cmd_pack(new CDataWrapper());
-  cmd_pack->addInt32Value(CMD_PS_MODE_TYPE, 1);
+  cmd_pack->addInt32Value(CMD_ACT_MM_OFFSET, 1);
   //send command
-  submitBatchCommand(CMD_PS_MODE_ALIAS,
+  submitBatchCommand(CMD_ACT_MOVE_ABSOLUTE_ALIAS,
                      cmd_pack.release(),
                      cmd_id,
                      0,
                      50,
                      SubmissionRuleType::SUBMIT_AND_STACK);
   if (sync) {
-    //! whait for the current command id to finisch
     result = waitOnCommandID(cmd_id);
   }
   return result;
 }
-*/
+
 
 
 
