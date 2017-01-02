@@ -97,7 +97,7 @@ int ::driver::actuator::SCActuatorControlUnit::decodeType(const std::string& str
 
     return err;
 }
-bool ::driver::actuator::SCActuatorControlUnit::setPower(const std::string &name,bool value,size_t size){
+bool ::driver::actuator::SCActuatorControlUnit::setPower(const std::string &name,bool value,uint32_t size){
           int err= -1;
           int *axis;
 	  SCCUAPP << "HANDLER set Power" ;
@@ -108,7 +108,7 @@ bool ::driver::actuator::SCActuatorControlUnit::setPower(const std::string &name
 }
 
 
-bool ::driver::actuator::SCActuatorControlUnit::moveAt(const std::string &name,double value,size_t size){
+bool ::driver::actuator::SCActuatorControlUnit::moveAt(const std::string &name,double value,uint32_t size){
           int err= -1;
           int *axis;
 	  SCCUAPP << "HANDLER Move at" ;
