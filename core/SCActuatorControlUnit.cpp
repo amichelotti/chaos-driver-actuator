@@ -97,19 +97,27 @@ int ::driver::actuator::SCActuatorControlUnit::decodeType(const std::string& str
 
     return err;
 }
-
-/*
-bool ::driver::actuator::SCActuatorControlUnit::setMovement(const std::string &name,int32_t value,size_t size){
+bool ::driver::actuator::SCActuatorControlUnit::setPower(const std::string &name,bool value,size_t size){
           int err= -1;
-          const int32_t *mov = getAttributeCache()->getROPtr<int32_t>(DOMAIN_INPUT, "movement");
-	  SCCUAPP << "HANDLER setMovement" ;
-          if(value>=0){
-                  SCCUAPP << "set movement:"<<value<< "::" << mov;
-                  err = actuator_drv->setMovement(value);
-          }
+          int *axis;
+	  SCCUAPP << "HANDLER set Power" ;
+	  axis =(int*) getAttributeCache()->getROPtr<uint32_t>(DOMAIN_INPUT, "axisID");
+
+          err = actuator_drv->poweron(*axID,value);
          return (err==chaos::ErrorCode::EC_NO_ERROR);
 }
-*/
+
+
+bool ::driver::actuator::SCActuatorControlUnit::moveAt(const std::string &name,double value,size_t size){
+          int err= -1;
+          int *axis;
+	  SCCUAPP << "HANDLER Move at" ;
+	  axis =(int*) getAttributeCache()->getROPtr<uint32_t>(DOMAIN_INPUT, "axisID");
+          SCCUAPP << "move to:"<<value ;
+          err = actuator_drv->moveAbsoluteMillimeters(*axID,value);
+         return (err==chaos::ErrorCode::EC_NO_ERROR);
+}
+
 /*
  Return the default configuration
  */
@@ -309,7 +317,7 @@ addAttributeToDataSet("positionWarningTHR",
    addAttributeToDataSet("powerOn",
                           "stdby management",
                           DataType::TYPE_BOOLEAN,
-                          DataType::Output);
+                          DataType::Bidirectional);
    
    addAttributeToDataSet("PositiveLimitSwitchActive",
                           "if on, positive limit switch are currently pressed",
@@ -326,6 +334,13 @@ addAttributeToDataSet("positionWarningTHR",
                           DataType::TYPE_BOOLEAN,
                           DataType::Output);
  
+ addHandlerOnInputAttributeName< ::driver::actuator::SCActuatorControlUnit, double >(this,
+            &::driver::actuator::SCActuatorControlUnit::moveAt,
+            "position");
+
+ addHandlerOnInputAttributeName< ::driver::actuator::SCActuatorControlUnit, bool >(this,
+            &::driver::actuator::SCActuatorControlUnit::setPower,
+            "powerOn");
 /***************************ALARMS******************************************/
 addAlarm("position_out_of_set",
             "Notify when a position has drifted away from set");

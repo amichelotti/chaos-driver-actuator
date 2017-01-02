@@ -67,6 +67,11 @@ namespace driver {
 
 			//-----------utility methdo for the restore operation---------
 			bool setPosition(bool sync = true);
+
+                        //-----------utility methdo for the restore operation---------
+			bool moveAt(const std::string &name,double value,size_t size);
+			bool setPower(const std::string &name,bool value,size_t size);
+
                         const uint32_t *axID;
 			
 		public:
