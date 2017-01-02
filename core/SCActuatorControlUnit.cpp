@@ -306,11 +306,21 @@ addAttributeToDataSet("positionWarningTHR",
                           DataType::TYPE_BOOLEAN,
                           DataType::Input);
    
-   addAttributeToDataSet("stby",
+   addAttributeToDataSet("powerOn",
                           "stdby management",
                           DataType::TYPE_BOOLEAN,
                           DataType::Output);
    
+   addAttributeToDataSet("PositiveLimitSwitchActive",
+                          "if on, positive limit switch are currently pressed",
+                          DataType::TYPE_BOOLEAN,
+                          DataType::Output);
+
+   addAttributeToDataSet("NegativeLimitSwitchActive",
+                          "if on, negative limit switch are currently pressed",
+                          DataType::TYPE_BOOLEAN,
+                          DataType::Output);
+
    addAttributeToDataSet("stopHoming",
                           "homing to be stopped flag",
                           DataType::TYPE_BOOLEAN,

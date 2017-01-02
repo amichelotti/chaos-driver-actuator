@@ -50,7 +50,8 @@ namespace driver {
                         ::common::actuators::AbstractActuator::readingTypes readTyp;
                         
                         bool		*o_stby;
-                        
+                        bool		*o_pswitch;
+                        bool            *o_nswitch; 
                         //double	*o_position_sp; // ********* AGGIUNTO ************
                         double *i_speed; // ********* AGGIUNTO ************
                         double *highspeed_homing;  // ********* AGGIUNTO ************

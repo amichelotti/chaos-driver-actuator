@@ -41,7 +41,10 @@ void AbstractActuatorCommand::setHandler(c_data::CDataWrapper *data) {
 	CMDCUDBG_ << "setting ";
         int *tmpInt;
         
-        o_stby=getAttributeCache()->getRWPtr<bool>(DOMAIN_OUTPUT, "stby");
+        
+        o_nswitch=getAttributeCache()->getRWPtr<bool>(DOMAIN_OUTPUT, "NegativeLimitSwitchActive");
+        o_pswitch=getAttributeCache()->getRWPtr<bool>(DOMAIN_OUTPUT, "PositiveLimitSwitchActive");
+        o_stby=getAttributeCache()->getRWPtr<bool>(DOMAIN_OUTPUT, "powerOn");
 	o_status_id = getAttributeCache()->getRWPtr<int32_t>(DOMAIN_OUTPUT, "status_id");
 	o_status_str = getAttributeCache()->getRWPtr<char>(DOMAIN_OUTPUT, "status");
         o_alarms = getAttributeCache()->getRWPtr<uint64_t>(DOMAIN_OUTPUT, "alarms");
@@ -201,7 +204,18 @@ void AbstractActuatorCommand::acquireHandler(){// ******** Aggiunta questa defin
    
     if((err = actuator_drv->getState(*axID,&state, descStr))==0) {
         *o_status_id = state;
-        //copy up to 255 and put the termination character
+
+        if (state &  ::common::actuators::ACTUATOR_LSP_LIMIT_ACTIVE)
+		*o_pswitch=true;
+        else
+		*o_pswitch=false;
+        
+        if (state &  ::common::actuators::ACTUATOR_LSN_LIMIT_ACTIVE)
+		*o_nswitch=true;
+        else
+		*o_nswitch=false;
+
+
         strncpy(o_status_str, descStr.c_str(), 256);
     } else {
         CMDCUERR_ <<boost::str( boost::format("Error calling driver on get state readout with code %1%") % err);
