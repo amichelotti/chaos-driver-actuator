@@ -225,13 +225,10 @@ void ::driver::actuator::SCActuatorControlUnit::unitDefineActionAndDataset() thr
                         DataType::TYPE_INT32,
                         DataType::Input);
  
-
    addAttributeToDataSet("dev_state",
                         "Bit field device state",
                         DataType::TYPE_INT64,
                         DataType::Output);
-
-          
 
   addAttributeToDataSet("position",
                         "position",
