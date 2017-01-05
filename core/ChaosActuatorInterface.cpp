@@ -266,7 +266,6 @@ int ChaosActuatorInterface::init(void*d){
     WRITE_OP_STRING_TIM(OP_INIT,(char*)d,0);
 }
 int ChaosActuatorInterface::configAxis(void*d){
-    DPRINT("ALEDEBUG CONFIG AXIS %s",(char*)d);
     WRITE_OP_STRING_TIM(OP_CONFIGAXIS,(char*)d,0);
 }
 
@@ -318,6 +317,7 @@ int ChaosActuatorInterface::homing(int32_t axisID,homingType mode){
 
 
 int ChaosActuatorInterface::poweron(int32_t axisID,int on){
+    
     WRITE_OP_AX_INT_TIM(OP_POWERON,axisID,on,0);
 
 }

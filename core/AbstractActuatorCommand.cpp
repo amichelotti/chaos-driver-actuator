@@ -215,6 +215,11 @@ void AbstractActuatorCommand::acquireHandler(){// ******** Aggiunta questa defin
         else
 		*o_nswitch=false;
 
+        if (state &  ::common::actuators::ACTUATOR_POWER_SUPPLIED)
+		*o_stby=true;
+	else
+		*o_stby=false;
+
 
         strncpy(o_status_str, descStr.c_str(), 256);
     } else {

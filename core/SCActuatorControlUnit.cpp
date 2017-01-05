@@ -147,7 +147,7 @@ void ::driver::actuator::SCActuatorControlUnit::unitDefineActionAndDataset() thr
   }
   std::string dataset;
   actuator_drv->sendDataset(dataset) ;
-  SCCUAPP << "ALEDEBUG getting dataset from driver " << dataset;
+  SCCUAPP << "getting dataset from driver " << dataset;
   Json::Value                                 json_parameter;
   Json::Reader                                json_reader;
 
@@ -408,7 +408,6 @@ void ::driver::actuator::SCActuatorControlUnit::unitInit() throw(CException) {
    
    double *o_position = getAttributeCache()->getRWPtr<double>(DOMAIN_OUTPUT, "position");
 
-  SCCUAPP <<"ALEDEBUG ALEDEBUG REQUESTING ACCESSOR  AND DRIVER   AFTER INIT " ;
     const bool* s_bypass=getAttributeCache()->getROPtr<bool>(DOMAIN_INPUT, "bypass");
 
       chaos::cu::driver_manager::driver::DriverAccessor *actuator_accessor = *s_bypass&&(getAccessoInstanceByIndex(1))?getAccessoInstanceByIndex(1):getAccessoInstanceByIndex(0);

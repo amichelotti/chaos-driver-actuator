@@ -47,31 +47,27 @@ void own::CmdACTPoweron::setHandler(c_data::CDataWrapper *data) {
 	int32_t onState = data->getInt32Value(CMD_ACT_POWERON_VALUE);
 	AbstractActuatorCommand::setHandler(data);
 
-        if(*o_stby){
-            // we are in standby only the SP is set
-            SCLDBG_ << "we are in standby we cannot start stop command: ";
-            setWorkState(false);
-            BC_END_RUNNING_PROPERTY;
-            return;
-        } 
-        
 	
+SCLDBG_   << "Launching poweron in set handler power on in axid "<< *axID << " value " << onState;
 	if((err = actuator_drv->poweron(*axID,onState)) != 0) {
-		LOG_AND_TROW(SCLERR_, 1, boost::str(boost::format("Error %1% while power on the actuator") % err));
+            SCLDBG_ << "Error while power on the actuator ";
+	
 	}
 	setWorkState(true);
 	BC_NORMAL_RUNNING_PROPERTY;
 }
 // empty acquire handler
 void own::CmdACTPoweron::acquireHandler() {
+SCLDBG_   << "ALEDEBUG acquire handler power on";
 }
 // empty correlation handler
 void own::CmdACTPoweron::ccHandler() {
 	int err,state;
 	std::string state_str;
+        SCLDBG_ << "cc handler of power on command" ;
 	if((err = actuator_drv->getState(*axID,&state, state_str))) 
 	{
-		LOG_AND_TROW(SCLERR_, 1, boost::str(boost::format("Error fetching state readout with code %1%") % err));
+		SCLDBG_ << "Error fetching state readout";
 	} 
 	else 
  	{
