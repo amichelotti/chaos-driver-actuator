@@ -191,7 +191,7 @@ void own::CmdACTMoveRelative::setHandler(c_data::CDataWrapper *data) {
         setAlarmSeverity("position_value_not_reached", chaos::common::alarm::MultiSeverityAlarmLevelClear);
         SCLDBG_ << "o_position_sp is = " << *i_position;
         
-        if(*o_stby){
+        if(*o_stby==0){
          // we are in standby only the SP is set
             SCLDBG_ << "we are in standby we cannot start moving to: "<<*i_position;
             setWorkState(false);

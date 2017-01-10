@@ -51,7 +51,7 @@ AbstractActuatorCommand::setHandler(data);
         
         SCLDBG_ << "Stop Motion " ;
         
-        if(*o_stby){
+        if(*o_stby=0){
         // we are in standby only the SP is set
             SCLDBG_ << "we are in standby we cannot start stop command: ";
             

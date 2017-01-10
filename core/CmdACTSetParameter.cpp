@@ -67,7 +67,7 @@ void own::CmdACTSetParameter::setHandler(c_data::CDataWrapper *data) {
 	value= static_cast<std::string>(data->getStringValue(CMD_ACT_SETPAR_VALUE));
         //SCLDBG_ << "ALEDEBUG axisID to send " << *axID ;
         
-        if(*o_stby){
+        if(*o_stby=0){
         // we are in standby only the SP is set
             SCLDBG_ << "we are in standby we cannot start set parameter command: ";
             setWorkState(false);

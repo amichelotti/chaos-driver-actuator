@@ -106,7 +106,7 @@ void own::CmdACTHoming::setHandler(c_data::CDataWrapper *data)
 //        } 
         
         SCLDBG_ << "Start homing operation of type " << homType; 
-        if(*o_stby){
+        if(*o_stby==0){
             // we are in standby only the SP is set
             SCLDBG_ << "we are in standby we cannot start homing operation: ";
             setWorkState(false);
