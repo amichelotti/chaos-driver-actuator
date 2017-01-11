@@ -46,7 +46,7 @@ namespace driver {
 		const char * const CMD_ACT_RESET_ALIAS = "rset";
 
 		//! The alias of the "stop motion" command of the type
-		const char * const CMD_ACT_STOPMOTION_ALIAS = "stop";
+		const char * const CMD_ACT_STOPMOTION_ALIAS = "stopMotion";
 		//! The alias of the homing command 
 		const char * const CMD_ACT_HOMING_ALIAS = "homing";
 		//! The alias of the homing type parameter
