@@ -29,6 +29,8 @@ limitations under the License.
 namespace own = driver::actuator;
 namespace c_data =  chaos::common::data;
 namespace chaos_batch = chaos::common::batch_command;
+using namespace chaos::cu::control_manager;
+
 BATCH_COMMAND_OPEN_DESCRIPTION_ALIAS(driver::actuator::,CmdACTStopMotion,CMD_ACT_STOPMOTION_ALIAS,
 			"Stop the Motion of the Actuator, if any",
 			"63768ac0-11dc-11e6-8629-233988a40683")
@@ -47,7 +49,7 @@ AbstractActuatorCommand::setHandler(data);
         
 	axID = getAttributeCache()->getROPtr<uint32_t>(DOMAIN_INPUT, "axisID");
         
-        setAlarmSeverity("command_error", chaos::common::alarm::MultiSeverityAlarmLevelClear);
+        setStateVariableSeverity(StateVariableTypeAlarm,"command_error", chaos::common::alarm::MultiSeverityAlarmLevelClear);
         
         SCLDBG_ << "Stop Motion " ;
         
@@ -67,7 +69,7 @@ AbstractActuatorCommand::setHandler(data);
             SCLERR_ << "Stop motion command error";
             
             metadataLogging(chaos::common::metadata_logging::StandardLoggingChannel::LogLevelInfo,boost::str( boost::format("performing reset alarms: operation failed")) );
-            setAlarmSeverity("command_error", chaos::common::alarm::MultiSeverityAlarmLevelHigh);
+            setStateVariableSeverity(StateVariableTypeAlarm,"command_error", chaos::common::alarm::MultiSeverityAlarmLevelHigh);
             BC_FAULT_RUNNING_PROPERTY;
             return;    
 	}
@@ -108,7 +110,7 @@ void own::CmdACTStopMotion::ccHandler() {
             
             //metadataLogging(chaos::common::metadata_logging::StandardLoggingChannel::LogLevelInfo,boost::str( boost::format("performing stop motion command: operation failed because of alarms detection")));
             metadataLogging(chaos::common::metadata_logging::StandardLoggingChannel::LogLevelWarning,"performing stop motion command: operation failed because of alarms detection"); 
-            setAlarmSeverity("command_error", chaos::common::alarm::MultiSeverityAlarmLevelHigh);
+            setStateVariableSeverity(StateVariableTypeAlarm,"command_error", chaos::common::alarm::MultiSeverityAlarmLevelHigh);
             setWorkState(false);
 	    BC_FAULT_RUNNING_PROPERTY;
 	}

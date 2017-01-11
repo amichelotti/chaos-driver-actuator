@@ -34,6 +34,7 @@
 namespace own =  driver::actuator;
 namespace c_data = chaos::common::data;
 namespace chaos_batch = chaos::common::batch_command;
+using namespace chaos::cu::control_manager;
 
 
 BATCH_COMMAND_OPEN_DESCRIPTION_ALIAS(driver::actuator::,CmdACTMoveRelative,CMD_ACT_MOVE_RELATIVE_ALIAS,
@@ -71,7 +72,7 @@ void own::CmdACTMoveRelative::setHandler(c_data::CDataWrapper *data) {
 //        tmpInt =  (int*) getAttributeCache()->getROPtr<int32_t>(DOMAIN_INPUT, "readingType") ; // ************* Commentato *************  
 //        readTyp=(::common::actuators::AbstractActuator::readingTypes) *tmpInt;     // ************* Commentato *************
         getDeviceDatabase()->getAttributeRangeValueInfo("position", attr_info);
-        setAlarmSeverity("command_error", chaos::common::alarm::MultiSeverityAlarmLevelClear);// ********** aggiunto **************
+        setStateVariableSeverity(StateVariableTypeAlarm,"command_error", chaos::common::alarm::MultiSeverityAlarmLevelClear);// ********** aggiunto **************
           
         // REQUIRE MIN MAX SET IN THE MDS
 
@@ -188,7 +189,7 @@ void own::CmdACTMoveRelative::setHandler(c_data::CDataWrapper *data) {
         *i_position=newPosition; //**************** nota: *i_position rimpiazza *o_position_sp *************************
         setWorkState(true);
         getAttributeCache()->setInputDomainAsChanged();
-        setAlarmSeverity("position_value_not_reached", chaos::common::alarm::MultiSeverityAlarmLevelClear);
+        setStateVariableSeverity(StateVariableTypeAlarm,"position_value_not_reached", chaos::common::alarm::MultiSeverityAlarmLevelClear);
         SCLDBG_ << "o_position_sp is = " << *i_position;
         
         if(*o_stby==0){
@@ -203,7 +204,7 @@ void own::CmdACTMoveRelative::setHandler(c_data::CDataWrapper *data) {
         
 	if((err = actuator_drv->moveRelativeMillimeters(*axID,offset_mm)) != 0) {
             SCLERR_<<"## error setting moving relative of "<<offset_mm;
-            setAlarmSeverity("command_error", chaos::common::alarm::MultiSeverityAlarmLevelHigh);
+            setStateVariableSeverity(StateVariableTypeAlarm,"command_error", chaos::common::alarm::MultiSeverityAlarmLevelHigh);
             setWorkState(false);
             BC_FAULT_RUNNING_PROPERTY;
             return;
@@ -237,7 +238,7 @@ void own::CmdACTMoveRelative::ccHandler() {
 		if (err=actuator_drv->stopMotion(*axID)!= 0)
 		{
 		     SCLERR_<<"## error while stopping motion";
-            		setAlarmSeverity("command_error", chaos::common::alarm::MultiSeverityAlarmLevelHigh);
+            		setStateVariableSeverity(StateVariableTypeAlarm,"command_error", chaos::common::alarm::MultiSeverityAlarmLevelHigh);
             		setWorkState(false);
             		BC_FAULT_RUNNING_PROPERTY;
 		}
@@ -283,7 +284,7 @@ bool own::CmdACTMoveRelative::timeoutHandler() {
 	}else {
                 //uint64_t elapsed_msec = chaos::common::utility::TimingUtil::getTimeStamp() - getSetTime();
 		SCLERR_ << "[metric] Setpoint not reached on timeout with readout position " << *o_position << " in " << elapsed_msec << " milliseconds";
-		setAlarmSeverity("position_value_not_reached", chaos::common::alarm::MultiSeverityAlarmLevelWarning);
+		setStateVariableSeverity(StateVariableTypeAlarm,"position_value_not_reached", chaos::common::alarm::MultiSeverityAlarmLevelWarning);
                 //FIRE OUT OF SET
 		//BC_END_RUNNING_PROPERTY; // ************* commentato *******************
 		

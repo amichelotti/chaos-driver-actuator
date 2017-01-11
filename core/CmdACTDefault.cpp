@@ -32,6 +32,7 @@ using namespace driver::actuator;
 using namespace chaos::common::data;
 using namespace chaos::common::batch_command;
 using namespace chaos::cu::control_manager::slow_command;
+using namespace chaos::cu::control_manager;
 
 BATCH_COMMAND_OPEN_DESCRIPTION(driver::actuator::,CmdACTDefault,
                                                           "Default method",
@@ -129,7 +130,7 @@ void CmdACTDefault::acquireHandler() {
                     if ((now-OutOfSetWarningTimestamp) > *positionTHR_TIM)
                     {
                         CMDCUERR_ << "WARNING OUT OF SET " << *o_position << " ";
-                        setAlarmSeverity("position_out_of_set", chaos::common::alarm::MultiSeverityAlarmLevelWarning);
+                        setStateVariableSeverity(StateVariableTypeAlarm,"position_out_of_set", chaos::common::alarm::MultiSeverityAlarmLevelWarning);
                         metadataLogging(chaos::common::metadata_logging::StandardLoggingChannel::LogLevelWarning,"The position set point has drifted out the defined threshold" );     
                   
                     }
@@ -139,7 +140,7 @@ void CmdACTDefault::acquireHandler() {
             else
             {
                 OutOfSetWarningStatus=false;
-                setAlarmSeverity("position_out_of_set", chaos::common::alarm::MultiSeverityAlarmLevelClear);
+                setStateVariableSeverity(StateVariableTypeAlarm,"position_out_of_set", chaos::common::alarm::MultiSeverityAlarmLevelClear);
             }
         }
 

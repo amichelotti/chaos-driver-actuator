@@ -27,6 +27,7 @@
 using namespace driver::actuator;
 
 namespace chaos_batch = chaos::common::batch_command;
+using namespace chaos::cu::control_manager;
 
 AbstractActuatorCommand::AbstractActuatorCommand() {
   actuator_drv = NULL;
@@ -102,77 +103,77 @@ uint8_t AbstractActuatorCommand::implementedHandler() {
 void AbstractActuatorCommand::DecodeAndRaiseAlarms(uint64_t mask)
 {
 if (mask & ::common::actuators::ACTUATOR_CANBUS_ERROR!= 0)
-	setAlarmSeverity("DRIVER_COMMUNICATION_ERROR", chaos::common::alarm::MultiSeverityAlarmLevelHigh);
+	setStateVariableSeverity(StateVariableTypeAlarm,"DRIVER_COMMUNICATION_ERROR", chaos::common::alarm::MultiSeverityAlarmLevelHigh);
 else
-	setAlarmSeverity("DRIVER_COMMUNICATION_ERROR", chaos::common::alarm::MultiSeverityAlarmLevelClear);
+	setStateVariableSeverity(StateVariableTypeAlarm,"DRIVER_COMMUNICATION_ERROR", chaos::common::alarm::MultiSeverityAlarmLevelClear);
 if (mask & ::common::actuators::ACTUATOR_SHORT_CIRCUIT!= 0)
-	setAlarmSeverity("DRIVER_SHORT_CIRCUIT_PROTECTION", chaos::common::alarm::MultiSeverityAlarmLevelHigh);
+	setStateVariableSeverity(StateVariableTypeAlarm,"DRIVER_SHORT_CIRCUIT_PROTECTION", chaos::common::alarm::MultiSeverityAlarmLevelHigh);
 else
-	setAlarmSeverity("DRIVER_SHORT_CIRCUIT_PROTECTION", chaos::common::alarm::MultiSeverityAlarmLevelClear);
+	setStateVariableSeverity(StateVariableTypeAlarm,"DRIVER_SHORT_CIRCUIT_PROTECTION", chaos::common::alarm::MultiSeverityAlarmLevelClear);
 
 if (mask & ::common::actuators::ACTUATOR_INVALID_SETUP_DATA!= 0)
-	setAlarmSeverity("DRIVER_INVALID_SETUP_DATA", chaos::common::alarm::MultiSeverityAlarmLevelHigh);
+	setStateVariableSeverity(StateVariableTypeAlarm,"DRIVER_INVALID_SETUP_DATA", chaos::common::alarm::MultiSeverityAlarmLevelHigh);
 else
-	setAlarmSeverity("DRIVER_INVALID_SETUP_DATA", chaos::common::alarm::MultiSeverityAlarmLevelClear);
+	setStateVariableSeverity(StateVariableTypeAlarm,"DRIVER_INVALID_SETUP_DATA", chaos::common::alarm::MultiSeverityAlarmLevelClear);
 
 
 if (mask & ::common::actuators::ACTUATOR_CONTROL_ERROR!= 0)
-	setAlarmSeverity("DRIVER_CONTROL_ERROR", chaos::common::alarm::MultiSeverityAlarmLevelHigh);
+	setStateVariableSeverity(StateVariableTypeAlarm,"DRIVER_CONTROL_ERROR", chaos::common::alarm::MultiSeverityAlarmLevelHigh);
 else
-	setAlarmSeverity("DRIVER_CONTROL_ERROR", chaos::common::alarm::MultiSeverityAlarmLevelClear);
+	setStateVariableSeverity(StateVariableTypeAlarm,"DRIVER_CONTROL_ERROR", chaos::common::alarm::MultiSeverityAlarmLevelClear);
 
 
 if (mask & ::common::actuators::ACTUATOR_SERIAL_COMM_ERROR!= 0)
-	setAlarmSeverity("DRIVER_COMMUNICATION_ERROR", chaos::common::alarm::MultiSeverityAlarmLevelHigh);
+	setStateVariableSeverity(StateVariableTypeAlarm,"DRIVER_COMMUNICATION_ERROR", chaos::common::alarm::MultiSeverityAlarmLevelHigh);
 else
-	setAlarmSeverity("DRIVER_COMMUNICATION_ERROR", chaos::common::alarm::MultiSeverityAlarmLevelClear);
+	setStateVariableSeverity(StateVariableTypeAlarm,"DRIVER_COMMUNICATION_ERROR", chaos::common::alarm::MultiSeverityAlarmLevelClear);
 
 if (mask & ::common::actuators::ACTUATOR_HALL_SENSOR_MISSING!= 0)
-	setAlarmSeverity("DRIVER_HALL_SENSOR_MISSING", chaos::common::alarm::MultiSeverityAlarmLevelHigh);
+	setStateVariableSeverity(StateVariableTypeAlarm,"DRIVER_HALL_SENSOR_MISSING", chaos::common::alarm::MultiSeverityAlarmLevelHigh);
 else
-	setAlarmSeverity("DRIVER_HALL_SENSOR_MISSING", chaos::common::alarm::MultiSeverityAlarmLevelClear);
+	setStateVariableSeverity(StateVariableTypeAlarm,"DRIVER_HALL_SENSOR_MISSING", chaos::common::alarm::MultiSeverityAlarmLevelClear);
 
 
 if (mask & ::common::actuators::ACTUATOR_OVER_CURRENT!= 0)
-	setAlarmSeverity("DRIVER_OVER_CURRENT", chaos::common::alarm::MultiSeverityAlarmLevelHigh);
+	setStateVariableSeverity(StateVariableTypeAlarm,"DRIVER_OVER_CURRENT", chaos::common::alarm::MultiSeverityAlarmLevelHigh);
 else
-	setAlarmSeverity("DRIVER_OVER_CURRENT", chaos::common::alarm::MultiSeverityAlarmLevelClear);
+	setStateVariableSeverity(StateVariableTypeAlarm,"DRIVER_OVER_CURRENT", chaos::common::alarm::MultiSeverityAlarmLevelClear);
 
 if (mask & ::common::actuators::ACTUATOR_I2T!= 0)
-	setAlarmSeverity("DRIVER_I2T_ALARM", chaos::common::alarm::MultiSeverityAlarmLevelHigh);
+	setStateVariableSeverity(StateVariableTypeAlarm,"DRIVER_I2T_ALARM", chaos::common::alarm::MultiSeverityAlarmLevelHigh);
 else
-	setAlarmSeverity("DRIVER_I2T_ALARM", chaos::common::alarm::MultiSeverityAlarmLevelClear);
+	setStateVariableSeverity(StateVariableTypeAlarm,"DRIVER_I2T_ALARM", chaos::common::alarm::MultiSeverityAlarmLevelClear);
 
 if (mask & ::common::actuators::ACTUATOR_OVERTEMP_MOTOR!= 0)
-	setAlarmSeverity("MOTOR_OVER_TEMPERATURE", chaos::common::alarm::MultiSeverityAlarmLevelHigh);
+	setStateVariableSeverity(StateVariableTypeAlarm,"MOTOR_OVER_TEMPERATURE", chaos::common::alarm::MultiSeverityAlarmLevelHigh);
 else
-	setAlarmSeverity("MOTOR_OVER_TEMPERATURE", chaos::common::alarm::MultiSeverityAlarmLevelClear);
+	setStateVariableSeverity(StateVariableTypeAlarm,"MOTOR_OVER_TEMPERATURE", chaos::common::alarm::MultiSeverityAlarmLevelClear);
 
 if (mask & ::common::actuators::ACTUATOR_OVERTEMP_DRIVE!= 0)
-	setAlarmSeverity("DRIVE_OVER_TEMPERATURE", chaos::common::alarm::MultiSeverityAlarmLevelHigh);
+	setStateVariableSeverity(StateVariableTypeAlarm,"DRIVE_OVER_TEMPERATURE", chaos::common::alarm::MultiSeverityAlarmLevelHigh);
 else
-	setAlarmSeverity("DRIVE_OVER_TEMPERATURE", chaos::common::alarm::MultiSeverityAlarmLevelClear);
+	setStateVariableSeverity(StateVariableTypeAlarm,"DRIVE_OVER_TEMPERATURE", chaos::common::alarm::MultiSeverityAlarmLevelClear);
 
 
 if (mask & ::common::actuators::ACTUATOR_OVERVOLTAGE!= 0)
-	setAlarmSeverity("OVER_VOLTAGE_ALARM", chaos::common::alarm::MultiSeverityAlarmLevelHigh);
+	setStateVariableSeverity(StateVariableTypeAlarm,"OVER_VOLTAGE_ALARM", chaos::common::alarm::MultiSeverityAlarmLevelHigh);
 else
-	setAlarmSeverity("OVER_VOLTAGE_ALARM", chaos::common::alarm::MultiSeverityAlarmLevelClear);
+	setStateVariableSeverity(StateVariableTypeAlarm,"OVER_VOLTAGE_ALARM", chaos::common::alarm::MultiSeverityAlarmLevelClear);
 
 if (mask & ::common::actuators::ACTUATOR_UNDERVOLTAGE!= 0)
-	setAlarmSeverity("UNDER_VOLTAGE_ALARM", chaos::common::alarm::MultiSeverityAlarmLevelHigh);
+	setStateVariableSeverity(StateVariableTypeAlarm,"UNDER_VOLTAGE_ALARM", chaos::common::alarm::MultiSeverityAlarmLevelHigh);
 else
-	setAlarmSeverity("UNDER_VOLTAGE_ALARM", chaos::common::alarm::MultiSeverityAlarmLevelClear);
+	setStateVariableSeverity(StateVariableTypeAlarm,"UNDER_VOLTAGE_ALARM", chaos::common::alarm::MultiSeverityAlarmLevelClear);
 
 if (mask & ::common::actuators::ACTUATOR_COMMANDERROR!= 0)
-	setAlarmSeverity("DRIVER_COMMAND_ERROR", chaos::common::alarm::MultiSeverityAlarmLevelHigh);
+	setStateVariableSeverity(StateVariableTypeAlarm,"DRIVER_COMMAND_ERROR", chaos::common::alarm::MultiSeverityAlarmLevelHigh);
 else
-	setAlarmSeverity("", chaos::common::alarm::MultiSeverityAlarmLevelClear);
+	setStateVariableSeverity(StateVariableTypeAlarm,"", chaos::common::alarm::MultiSeverityAlarmLevelClear);
 
 if (mask & ::common::actuators::ACTUATOR_ALARMS_READING_ERROR!= 0)
-	setAlarmSeverity("READING_ALARM_PROBLEM", chaos::common::alarm::MultiSeverityAlarmLevelHigh);
+	setStateVariableSeverity(StateVariableTypeAlarm,"READING_ALARM_PROBLEM", chaos::common::alarm::MultiSeverityAlarmLevelHigh);
 else
-	setAlarmSeverity("READING_ALARM_PROBLEM", chaos::common::alarm::MultiSeverityAlarmLevelClear);
+	setStateVariableSeverity(StateVariableTypeAlarm,"READING_ALARM_PROBLEM", chaos::common::alarm::MultiSeverityAlarmLevelClear);
 
 
 }

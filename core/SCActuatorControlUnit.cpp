@@ -43,6 +43,7 @@ using namespace chaos::common::batch_command;
 
 using namespace chaos::cu::control_manager::slow_command;
 using namespace chaos::cu::driver_manager::driver;
+using namespace chaos::cu::control_manager;
 
 
 #define SCCUAPP INFO_LOG(SCActuatorControlUnit) << "[" << getDeviceID() << "] "
@@ -339,44 +340,44 @@ addAttributeToDataSet("positionWarningTHR",
             &::driver::actuator::SCActuatorControlUnit::setPower,
             "powerOn");
 /***************************ALARMS******************************************/
-addAlarm("position_out_of_set",
+addStateVariable(StateVariableTypeAlarm,"position_out_of_set",
             "Notify when a position has drifted away from set");
 
 
-addAlarm("homing_operation_failed",
+addStateVariable(StateVariableTypeAlarm,"homing_operation_failed",
             "Notify when a homing operation has failed");
 
-addAlarm("position_value_not_reached",
+addStateVariable(StateVariableTypeAlarm,"position_value_not_reached",
             "Notify when a moving operation has failed to reach the final set point ");
 
-addAlarm("command_error",
+addStateVariable(StateVariableTypeAlarm,"command_error",
             "Notify when a command action fails");
 /***************************ALARMS******************************************/
-addAlarm("DRIVER_COMMAND_ERROR",
+addStateVariable(StateVariableTypeAlarm,"DRIVER_COMMAND_ERROR",
             "Notify when a driver returns a generic command error");
-addAlarm("DRIVER_COMMUNICATION_ERROR",
+addStateVariable(StateVariableTypeAlarm,"DRIVER_COMMUNICATION_ERROR",
             "Notify when a comunication error has raised from the driver");
-addAlarm("DRIVER_SHORT_CIRCUIT_PROTECTION",
+addStateVariable(StateVariableTypeAlarm,"DRIVER_SHORT_CIRCUIT_PROTECTION",
             "Notify when the driver is in protection for short-circuit");
-addAlarm("DRIVER_INVALID_SETUP_DATA",
+addStateVariable(StateVariableTypeAlarm,"DRIVER_INVALID_SETUP_DATA",
             "Notify when the driver received a bad data setup");
-addAlarm("DRIVER_CONTROL_ERROR",
+addStateVariable(StateVariableTypeAlarm,"DRIVER_CONTROL_ERROR",
             "Notify when the driver sends a generic  control error");
-addAlarm("DRIVER_HALL_SENSOR_MISSING",
+addStateVariable(StateVariableTypeAlarm,"DRIVER_HALL_SENSOR_MISSING",
             "Notify when the driver sends a hall sensor missing alarm");
-addAlarm("DRIVER_OVER_CURRENT",
+addStateVariable(StateVariableTypeAlarm,"DRIVER_OVER_CURRENT",
             "Notify when the driver has an over current alarm");
-addAlarm("DRIVER_I2T_ALARM",
+addStateVariable(StateVariableTypeAlarm,"DRIVER_I2T_ALARM",
             "Notify when the driver raise a I2T  alarm");
-addAlarm("MOTOR_OVER_TEMPERATURE",
+addStateVariable(StateVariableTypeAlarm,"MOTOR_OVER_TEMPERATURE",
             "Notify when the motor is in over temperature");
-addAlarm("DRIVE_OVER_TEMPERATURE",
+addStateVariable(StateVariableTypeAlarm,"DRIVE_OVER_TEMPERATURE",
             "Notify when the drive is in over temperature");
-addAlarm("OVER_VOLTAGE_ALARM",
+addStateVariable(StateVariableTypeAlarm,"OVER_VOLTAGE_ALARM",
             "Notify when there is an over voltage on the system");
-addAlarm("UNDER_VOLTAGE_ALARM",
+addStateVariable(StateVariableTypeAlarm,"UNDER_VOLTAGE_ALARM",
             "Notify when there is an under voltage on the system");
-addAlarm("READING_ALARM_PROBLEM",
+addStateVariable(StateVariableTypeAlarm,"READING_ALARM_PROBLEM",
             "Notify when the driver cannot execute the reading of alarms");
 }
 
