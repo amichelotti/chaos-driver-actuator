@@ -54,7 +54,7 @@ void own::CmdACTHoming::setHandler(c_data::CDataWrapper *data)
         *p_stopCommandInExecution=false;
         chaos::common::data::RangeValueInfo attr_info;
         getDeviceDatabase()->getAttributeRangeValueInfo("homing_type", attr_info);
-        setStateVariableSeverity(StateVariableTypeAlarm,"homing_operation_failed", chaos::common::alarm::MultiSeverityAlarmLevelClear);
+        setStateVariableSeverity(StateVariableTypeAlarmDEV,"homing_operation_failed", chaos::common::alarm::MultiSeverityAlarmLevelClear);
         
         // Controllo natura dato in input
         SCLDBG_ << "check data";
@@ -119,7 +119,7 @@ void own::CmdACTHoming::setHandler(c_data::CDataWrapper *data)
         if(err = actuator_drv->homing(*axID,(::common::actuators::AbstractActuator::homingType) homType) < 0) 
         {
             SCLERR_<<"## error setting homing operation of type "<<homType;
-            setStateVariableSeverity(StateVariableTypeAlarm,"homing_operation_failed", chaos::common::alarm::MultiSeverityAlarmLevelHigh);
+            setStateVariableSeverity(StateVariableTypeAlarmDEV,"homing_operation_failed", chaos::common::alarm::MultiSeverityAlarmLevelHigh);
             setWorkState(false);
             BC_FAULT_RUNNING_PROPERTY;
             return;
@@ -149,7 +149,7 @@ void own::CmdACTHoming::acquireHandler() {
     if((err = actuator_drv->homing(*axID,(::common::actuators::AbstractActuator::homingType) homingTypeVar)) < 0)
     {
         SCLERR_<<"## error setting homing operation of type "<<homingTypeVar;
-        setStateVariableSeverity(StateVariableTypeAlarm,"homing_operation_failed", chaos::common::alarm::MultiSeverityAlarmLevelHigh);
+        setStateVariableSeverity(StateVariableTypeAlarmDEV,"homing_operation_failed", chaos::common::alarm::MultiSeverityAlarmLevelHigh);
         setWorkState(false);
         BC_FAULT_RUNNING_PROPERTY;
         return;
@@ -176,7 +176,7 @@ void own::CmdACTHoming::ccHandler() {
         *p_stopCommandInExecution=false;
         setWorkState(false);
         metadataLogging(chaos::common::metadata_logging::StandardLoggingChannel::LogLevelError,("Error Homing not completed" ));
-        setStateVariableSeverity(StateVariableTypeAlarm,"homing_operation_failed", chaos::common::alarm::MultiSeverityAlarmLevelHigh);
+        setStateVariableSeverity(StateVariableTypeAlarmDEV,"homing_operation_failed", chaos::common::alarm::MultiSeverityAlarmLevelHigh);
         SCLDBG_ << "Exit from homing because of actutator is not in motion";
         BC_FAULT_RUNNING_PROPERTY;
     }
@@ -186,7 +186,7 @@ if (((*o_status_id) & ::common::actuators::ACTUATOR_POWER_SUPPLIED)==0)
                 if (err=actuator_drv->stopMotion(*axID)!= 0)
                 {
                      SCLERR_<<"## error while stopping motion";
-                setStateVariableSeverity(StateVariableTypeAlarm,"homing_operation_failed", chaos::common::alarm::MultiSeverityAlarmLevelHigh);
+                setStateVariableSeverity(StateVariableTypeAlarmDEV,"homing_operation_failed", chaos::common::alarm::MultiSeverityAlarmLevelHigh);
                         setWorkState(false);
                         BC_FAULT_RUNNING_PROPERTY;
                         return;
@@ -215,7 +215,7 @@ bool own::CmdACTHoming::timeoutHandler() {
     int err;
     if((err = actuator_drv->stopMotion(*axID)) != 0) {
         SCLERR_<<"## time out ";
-        setStateVariableSeverity(StateVariableTypeAlarm,"homing_operation_failed", chaos::common::alarm::MultiSeverityAlarmLevelHigh);
+        setStateVariableSeverity(StateVariableTypeAlarmDEV,"homing_operation_failed", chaos::common::alarm::MultiSeverityAlarmLevelHigh);
         setWorkState(false);
         BC_FAULT_RUNNING_PROPERTY;
         return false;
