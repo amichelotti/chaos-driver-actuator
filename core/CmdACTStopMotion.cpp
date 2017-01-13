@@ -49,7 +49,7 @@ AbstractActuatorCommand::setHandler(data);
         
 	axID = getAttributeCache()->getROPtr<uint32_t>(DOMAIN_INPUT, "axisID");
         
-        setStateVariableSeverity(StateVariableTypeAlarmDEV,"command_error", chaos::common::alarm::MultiSeverityAlarmLevelClear);
+        setStateVariableSeverity(StateVariableTypeAlarmCU,"command_error", chaos::common::alarm::MultiSeverityAlarmLevelClear);
         
         SCLDBG_ << "Stop Motion " ;
         
@@ -69,7 +69,7 @@ AbstractActuatorCommand::setHandler(data);
             SCLERR_ << "Stop motion command error";
             
             metadataLogging(chaos::common::metadata_logging::StandardLoggingChannel::LogLevelInfo,boost::str( boost::format("performing reset alarms: operation failed")) );
-            setStateVariableSeverity(StateVariableTypeAlarmDEV,"command_error", chaos::common::alarm::MultiSeverityAlarmLevelHigh);
+            setStateVariableSeverity(StateVariableTypeAlarmCU,"command_error", chaos::common::alarm::MultiSeverityAlarmLevelHigh);
             BC_FAULT_RUNNING_PROPERTY;
             return;    
 	}
@@ -110,7 +110,7 @@ void own::CmdACTStopMotion::ccHandler() {
             
             //metadataLogging(chaos::common::metadata_logging::StandardLoggingChannel::LogLevelInfo,boost::str( boost::format("performing stop motion command: operation failed because of alarms detection")));
             metadataLogging(chaos::common::metadata_logging::StandardLoggingChannel::LogLevelWarning,"performing stop motion command: operation failed because of alarms detection"); 
-            setStateVariableSeverity(StateVariableTypeAlarmDEV,"command_error", chaos::common::alarm::MultiSeverityAlarmLevelHigh);
+            setStateVariableSeverity(StateVariableTypeAlarmCU,"command_error", chaos::common::alarm::MultiSeverityAlarmLevelHigh);
             setWorkState(false);
 	    BC_FAULT_RUNNING_PROPERTY;
 	}

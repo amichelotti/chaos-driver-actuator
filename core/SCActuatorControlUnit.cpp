@@ -112,11 +112,22 @@ bool ::driver::actuator::SCActuatorControlUnit::setPower(const std::string &name
 bool ::driver::actuator::SCActuatorControlUnit::moveAt(const std::string &name,double value,uint32_t size){
           int err= -1;
           int *axis;
+	  uint64_t cmd_id;
+
 	  SCCUAPP << "HANDLER Move at" ;
-	  axis =(int*) getAttributeCache()->getROPtr<uint32_t>(DOMAIN_INPUT, "axisID");
+ 	  std::auto_ptr<CDataWrapper> cmd_pack(new CDataWrapper());
+          cmd_pack->addDoubleValue(CMD_ACT_MM_OFFSET, value);
+
+    //send command
+    submitBatchCommand(CMD_ACT_MOVE_ABSOLUTE_ALIAS,
+            cmd_pack.release(),
+            cmd_id,
+            0,
+            50,
+            SubmissionRuleType::SUBMIT_NORMAL);
           SCCUAPP << "move to:"<<value ;
-          err = actuator_drv->moveAbsoluteMillimeters(*axID,value);
-         return (err==chaos::ErrorCode::EC_NO_ERROR);
+
+         return true;
 }
 
 /*
@@ -340,17 +351,17 @@ addAttributeToDataSet("positionWarningTHR",
             &::driver::actuator::SCActuatorControlUnit::setPower,
             "powerOn");
 /***************************ALARMS******************************************/
-addStateVariable(StateVariableTypeAlarmDEV,"position_out_of_set",
+addStateVariable(StateVariableTypeAlarmCU,"position_out_of_set",
             "Notify when a position has drifted away from set");
 
 
-addStateVariable(StateVariableTypeAlarmDEV,"homing_operation_failed",
+addStateVariable(StateVariableTypeAlarmCU,"homing_operation_failed",
             "Notify when a homing operation has failed");
 
-addStateVariable(StateVariableTypeAlarmDEV,"position_value_not_reached",
+addStateVariable(StateVariableTypeAlarmCU,"position_value_not_reached",
             "Notify when a moving operation has failed to reach the final set point ");
 
-addStateVariable(StateVariableTypeAlarmDEV,"command_error",
+addStateVariable(StateVariableTypeAlarmCU,"command_error",
             "Notify when a command action fails");
 /***************************ALARMS******************************************/
 addStateVariable(StateVariableTypeAlarmDEV,"DRIVER_COMMAND_ERROR",

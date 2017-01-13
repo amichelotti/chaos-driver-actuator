@@ -130,7 +130,7 @@ void CmdACTDefault::acquireHandler() {
                     if ((now-OutOfSetWarningTimestamp) > *positionTHR_TIM)
                     {
                         CMDCUERR_ << "WARNING OUT OF SET " << *o_position << " ";
-                        setStateVariableSeverity(StateVariableTypeAlarmDEV,"position_out_of_set", chaos::common::alarm::MultiSeverityAlarmLevelWarning);
+                        setStateVariableSeverity(StateVariableTypeAlarmCU,"position_out_of_set", chaos::common::alarm::MultiSeverityAlarmLevelWarning);
                         metadataLogging(chaos::common::metadata_logging::StandardLoggingChannel::LogLevelWarning,"The position set point has drifted out the defined threshold" );     
                   
                     }
@@ -140,7 +140,7 @@ void CmdACTDefault::acquireHandler() {
             else
             {
                 OutOfSetWarningStatus=false;
-                setStateVariableSeverity(StateVariableTypeAlarmDEV,"position_out_of_set", chaos::common::alarm::MultiSeverityAlarmLevelClear);
+                setStateVariableSeverity(StateVariableTypeAlarmCU,"position_out_of_set", chaos::common::alarm::MultiSeverityAlarmLevelClear);
             }
         }
 

@@ -50,7 +50,7 @@ namespace driver {
 		//! The alias of the homing command 
 		const char * const CMD_ACT_HOMING_ALIAS = "homing";
 		//! The alias of the homing type parameter
-		const char * const CMD_ACT_HOMINGTYPE = "homing type";
+		const char * const CMD_ACT_HOMINGTYPE = "homing_type";
 		
 		//! The alias of the "move rel" command of the type
 		const char * const CMD_ACT_MOVE_RELATIVE_ALIAS = "mov_rel";
