@@ -533,11 +533,18 @@ void ::driver::actuator::SCActuatorControlUnit::unitDeinit() throw(CException) {
 bool ::driver::actuator::SCActuatorControlUnit::unitRestoreToSnapshot(chaos::cu::control_manager::AbstractSharedDomainCache *const snapshot_cache) throw(chaos::CException) {
   RESTORE_LAPP << "Check if restore cache has the needed data";
  //check if in the restore cache we have all information we need
-  if (!snapshot_cache->getSharedDomain(DOMAIN_OUTPUT).hasAttribute("status_id")) return false;
-  if (!snapshot_cache->getSharedDomain(DOMAIN_OUTPUT).hasAttribute("position")) return false;
+ // if (!snapshot_cache->getSharedDomain(DOMAIN_OUTPUT).hasAttribute("status_id")) return false;
+  RESTORE_LAPP << "Restore Check if  cache for position";
+//  if (!snapshot_cache->getSharedDomain(DOMAIN_OUTPUT).hasAttribute("position")) return false;
 
-  RESTORE_LAPP << "Start the restore of the powersupply";
+  RESTORE_LAPP << "Start the restore of the actuator";
   uint64_t start_restore_time = chaos::common::utility::TimingUtil::getTimeStamp();
+  if (snapshot_cache == NULL) 
+  {
+	RESTORE_LAPP << "cache nulla" ;
+  }
+    double restore_position_sp = *snapshot_cache->getAttributeValue(DOMAIN_OUTPUT, "position")->getValuePtr<double>();
+  RESTORE_LAPP << "Restore Trying to set position at " << restore_position_sp;
  
   try {
     bool cmd_result = true;
@@ -545,7 +552,6 @@ bool ::driver::actuator::SCActuatorControlUnit::unitRestoreToSnapshot(chaos::cu:
     double *now_position = getAttributeCache()->getRWPtr<double>(DOMAIN_OUTPUT, "position");
     int32_t *now_status_id = getAttributeCache()->getRWPtr<int32_t>(DOMAIN_OUTPUT, "status_id");
 
-    double restore_position_sp = *snapshot_cache->getAttributeValue(DOMAIN_OUTPUT, "position")->getValuePtr<double>();
 
 /*
     int32_t restore_status_id = *snapshot_cache->getAttributeValue(DOMAIN_OUTPUT, "status_id")->getValuePtr<int32_t>();
