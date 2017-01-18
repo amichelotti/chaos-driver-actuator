@@ -45,6 +45,8 @@ namespace driver {
 		//! The alias of the "reset" command of the type
 		const char * const CMD_ACT_RESET_ALIAS = "rset";
 
+		//! The alias of the "Hard reset" command of the type
+		const char * const CMD_ACT_HARDRESET_ALIAS = "HardReset";
 		//! The alias of the "stop motion" command of the type
 		const char * const CMD_ACT_STOPMOTION_ALIAS = "stopMotion";
 		//! The alias of the homing command 

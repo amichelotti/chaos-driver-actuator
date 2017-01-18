@@ -90,7 +90,7 @@ bool own::CmdACTPoweron::timeoutHandler() {
 	setWorkState(false);
  	if((err = actuator_drv->getState(*axID,&state, state_str)))
         {
-                LOG_AND_TROW(SCLERR_, 1, boost::str(boost::format("Error fetching state readout with code %1%") % err));
+                //LOG_AND_TROW(SCLERR_, 1, boost::str(boost::format("Error fetching state readout with code %1%") % err));
         }
         else
         {

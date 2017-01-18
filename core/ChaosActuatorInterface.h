@@ -57,7 +57,8 @@ namespace chaos {
                 OP_GET_HWVERSION,
                 OP_GET_ALARM_DESC,
 		OP_SET_MAX_SPEED,
-                OP_GET_FEATURE
+                OP_GET_FEATURE,
+		OP_HARD_RESET
             } ChaosActuatorOpcode;
             
             typedef struct {
@@ -128,6 +129,7 @@ namespace chaos {
                 int getPosition(int32_t axisID,readingTypes readingType,double *deltaPosition_mm);
                 
                 int resetAlarms(int32_t axisID,uint64_t alrm);
+                int hardreset();
                 
                 
                 /**

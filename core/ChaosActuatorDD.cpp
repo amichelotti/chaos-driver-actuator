@@ -139,6 +139,10 @@ cu_driver::MsgManagmentResultType::MsgManagmentResult ChaosActuatorDD::execOpcod
             ACDBG<<"Reset alarms to:"<<in->alarm_mask << std::endl;
             out->result = motor->resetAlarms(in->axis,in->alarm_mask);
             break;
+        case OP_HARD_RESET:
+            ACDBG<<"HARD Reset " << std::endl;
+            out->result = motor->hardreset();
+            break;
         case OP_GET_ALARMS: {
 	    std::string desc;
             out->result = motor->getAlarms(in->axis,&out->alarm_mask,desc);

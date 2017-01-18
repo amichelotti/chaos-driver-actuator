@@ -34,6 +34,7 @@
 #include "CmdACTPoweron.h"
 #include "CmdACTresetAlarms.h"
 #include "CmdACTSetParameter.h"
+#include "CmdACTHardReset.h"
 
 
 using namespace chaos;
@@ -144,6 +145,7 @@ void ::driver::actuator::SCActuatorControlUnit::unitDefineActionAndDataset() thr
   installCommand(BATCH_COMMAND_GET_DESCRIPTION(CmdACTHoming));
   installCommand(BATCH_COMMAND_GET_DESCRIPTION(CmdACTPoweron));
   installCommand(BATCH_COMMAND_GET_DESCRIPTION(CmdACTresetAlarms));
+  installCommand(BATCH_COMMAND_GET_DESCRIPTION(CmdACTHardReset));
   installCommand(BATCH_COMMAND_GET_DESCRIPTION(CmdACTSetParameter));
   //setup the dataset
   
@@ -543,7 +545,11 @@ bool ::driver::actuator::SCActuatorControlUnit::unitRestoreToSnapshot(chaos::cu:
   {
 	RESTORE_LAPP << "cache nulla" ;
   }
-    double restore_position_sp = *snapshot_cache->getAttributeValue(DOMAIN_OUTPUT, "position")->getValuePtr<double>();
+  else
+  {
+	RESTORE_LAPP << "lo snapshot è " << snapshot_cache;
+  }
+    double restore_position_sp = *snapshot_cache->getAttributeValue(DOMAIN_INPUT, "position")->getValuePtr<double>();
   RESTORE_LAPP << "Restore Trying to set position at " << restore_position_sp;
  
   try {
