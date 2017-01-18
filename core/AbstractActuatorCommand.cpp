@@ -33,6 +33,8 @@ AbstractActuatorCommand::AbstractActuatorCommand() {
   actuator_drv = NULL;
 }
 AbstractActuatorCommand::~AbstractActuatorCommand() {
+   setWorkState(false);
+
   if(actuator_drv)
     delete (actuator_drv);
   actuator_drv = NULL;
