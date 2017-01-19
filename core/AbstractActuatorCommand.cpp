@@ -33,13 +33,18 @@ AbstractActuatorCommand::AbstractActuatorCommand() {
   actuator_drv = NULL;
 }
 AbstractActuatorCommand::~AbstractActuatorCommand() {
-   setWorkState(false);
+
 
   if(actuator_drv)
     delete (actuator_drv);
   actuator_drv = NULL;
 }
 
+void AbstractActuatorCommand::endHandler() {
+	CMDCUDBG_<<"Close Command:'"<<getAlias()<<"'";
+	setWorkState(false);
+
+}
 void AbstractActuatorCommand::setHandler(c_data::CDataWrapper *data) {
 	CMDCUDBG_ << "setting ";
         int *tmpInt;

@@ -427,35 +427,32 @@ void ::driver::actuator::SCActuatorControlUnit::unitInit() throw(CException) {
 
   //chaos::cu::driver_manager::driver::DriverAccessor *actuator_accessor = getAccessoInstanceByIndex(0);
   if (actuator_accessor == NULL) {
-    throw chaos::CException(-1, "Cannot retrieve the requested driver", __FUNCTION__);
+    throw chaos::CFatalException(-1, "Cannot retrieve the requested driver", __FUNCTION__);
   }
   actuator_drv = new chaos::driver::actuator::ChaosActuatorInterface(actuator_accessor);
   if (actuator_drv == NULL) {
-    throw chaos::CException(-2, "Cannot allocate driver resources", __FUNCTION__);
+    throw chaos::CFatalException(-2, "Cannot allocate driver resources", __FUNCTION__);
   }
-  std::string *initString =new std::string();
   char* ptStr=NULL, *auxStr=NULL;
   axID=getAttributeCache()->getROPtr<uint32_t>(DOMAIN_INPUT, "axisID");
   ptStr=(char*)getAttributeCache()->getROPtr<char*>(DOMAIN_INPUT, "ConfigString");
-  auxStr=(char*)getAttributeCache()->getROPtr<char*>(DOMAIN_INPUT, "auxiliaryConfigParameters");
-  initString->assign(ptStr);
-  if (initString->c_str() == NULL)
-  {
-	initString->assign("14,/home/chaos/chaos-distrib/etc/common_actuators_technosoft/1setup001.t.zip");
-	DPRINT("assigned by default");
-  }
-  
+  if(ptStr==NULL || *ptStr ==0){
+	    throw chaos::CFatalException(-3, "You must provide a configuration string " + control_unit_instance, __FUNCTION__);
 
-    DPRINT("configuring driver from Control Unit ");
-    DPRINT("config string is %s",initString->c_str() );
+  }
+  auxStr=(char*)getAttributeCache()->getROPtr<char*>(DOMAIN_INPUT, "auxiliaryConfigParameters");
+
+
+  SCCUDBG<<"configuring driver from Control Unit ";
+  SCCUDBG<<"config string is '"<<ptStr<<"'";
     // perfomed in driver initialization
-  if (actuator_drv->configAxis((void*)initString->c_str()) != 0) {
-    throw chaos::CException(-3, "Cannot initialize actuator " + control_unit_instance, __FUNCTION__);
+  if ((err=actuator_drv->configAxis((void*)ptStr)) != 0) {
+    throw chaos::CFatalException(err, "Cannot configure axis " + getDeviceID(), __FUNCTION__);
   }
   // performing power on
-    DPRINT("power on to Control Unit");
-  if (actuator_drv->poweron(*axID,1) != 0) {
-    throw chaos::CException(-3, "Cannot poweron actuator " + control_unit_instance, __FUNCTION__);
+  SCCUDBG<<"power on to Control Unit";
+  if ((err=actuator_drv->poweron(*axID,1) != 0)) {
+    throw chaos::CFatalException(err, "Cannot poweron actuator " + getDeviceID(), __FUNCTION__);
   }
   //parsing di auxiliary
     {
@@ -482,8 +479,8 @@ void ::driver::actuator::SCActuatorControlUnit::unitInit() throw(CException) {
     }
     }
 
-  if (actuator_drv->getState(*axID,&state_id, state_str) != 0) {
-    throw chaos::CException(-6, "Error getting the state of the actuator, possibily off", __FUNCTION__);
+  if ((err=actuator_drv->getState(*axID,&state_id, state_str)) != 0) {
+    throw chaos::CFatalException(err, "Error getting the state of the actuator, possibily off", __FUNCTION__);
   }
   
   *status_id = state_id;
@@ -501,9 +498,10 @@ void ::driver::actuator::SCActuatorControlUnit::unitInit() throw(CException) {
 		*o_position = tmp_float;
                 *o_positionSP=tmp_float;
     } else {
-		throw chaos::CException(-9, "Error getting initial position of the actuator", __FUNCTION__);
+		throw chaos::CFatalException(err, "Error getting initial position of the actuator", __FUNCTION__);
 	}
   
+   metadataLogging(chaos::common::metadata_logging::StandardLoggingChannel::LogLevelInfo,boost::str( boost::format("Initialization of axis '%1% done configuration '%2%' ") %*axID % ptStr) );
 
 }
 
