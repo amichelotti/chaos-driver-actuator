@@ -249,6 +249,10 @@ void ::driver::actuator::SCActuatorControlUnit::unitDefineActionAndDataset() thr
                         DataType::TYPE_DOUBLE,
                         DataType::Bidirectional);
   
+  addAttributeToDataSet("LastHomingTime",
+                        "timestamp with the last homing",
+                        DataType::TYPE_INT64,
+                        DataType::Output);
   addAttributeToDataSet("alarms",
                         "Alarms",
                         DataType::TYPE_INT64,
@@ -411,11 +415,9 @@ void ::driver::actuator::SCActuatorControlUnit::unitInit() throw(CException) {
   RangeValueInfo attr_info;
 
    int32_t *status_id = getAttributeCache()->getRWPtr<int32_t>(DOMAIN_OUTPUT, "status_id");
-   SCCUAPP << "unitInit() dopo status_id";
    
    
    double *o_positionSP = (double*)getAttributeCache()->getRWPtr<double>(DOMAIN_INPUT, "position"); 
-   SCCUAPP << "unitInit() dopo o_positionSP";
    
    double *o_position = getAttributeCache()->getRWPtr<double>(DOMAIN_OUTPUT, "position");
 

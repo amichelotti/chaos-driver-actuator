@@ -312,7 +312,7 @@ int ChaosActuatorInterface::stopMotion(int32_t axisID){
 }
 int ChaosActuatorInterface::hardreset(){
     WRITE_OP_TIM(OP_HARD_RESET,0);
-
+}
 int ChaosActuatorInterface::homing(int32_t axisID,homingType mode){
     WRITE_OP_AX_INT_TIM(OP_HOMING,axisID,mode,0);
 }

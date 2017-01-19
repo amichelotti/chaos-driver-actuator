@@ -39,11 +39,11 @@ BATCH_COMMAND_CLOSE_DESCRIPTION()
 void own::CmdACTHardReset::setHandler(c_data::CDataWrapper *data) {
 	int err;
 	AbstractActuatorCommand::setHandler(data);
-	SCLDBG_ << "Hard Reset set handler "<< alarmMask ;
+	SCLDBG_ << "HardReset set handler " ;
         
 
         SCLDBG_ << "HardReset before sending to interface " ;
-        if((err = actuator_drv->HardReset()) != 0) {
+        if((err = actuator_drv->hardreset()) != 0) {
                 //LOG_AND_TROW(SCLERR_, 1, boost::str(boost::format("Error %1% resetting alarms") % err));
             SCLERR_ << "HardReset failed";
             metadataLogging(chaos::common::metadata_logging::StandardLoggingChannel::LogLevelInfo,boost::str( boost::format("performing reset alarms: operation failed")) );
