@@ -64,6 +64,7 @@ void AbstractActuatorCommand::setHandler(c_data::CDataWrapper *data) {
         tmpInt =  (int*) getAttributeCache()->getROPtr<int32_t>(DOMAIN_INPUT, "readingType") ; 
         readTyp=(::common::actuators::AbstractActuator::readingTypes) *tmpInt; 
         
+        
 	i_speed = ( double*) getAttributeCache()->getROPtr<double>(DOMAIN_INPUT, "speed");
         highspeed_homing= ( double*) getAttributeCache()->getROPtr<double>(DOMAIN_INPUT, "highspeedhoming");
 	//i_command_timeout = getAttributeCache()->getROPtr<uint32_t>(DOMAIN_INPUT, "command_timeout");
@@ -228,6 +229,10 @@ void AbstractActuatorCommand::acquireHandler(){// ******** Aggiunta questa defin
     } else {
         CMDCUERR_ <<boost::str( boost::format("Error calling driver on get state readout with code %1%") % err);
     }
+        int *tmpInt;
+        tmpInt =  (int*) getAttributeCache()->getROPtr<int32_t>(DOMAIN_INPUT, "readingType") ; 
+        readTyp=(::common::actuators::AbstractActuator::readingTypes) *tmpInt; 
+	CMDCUDBG_ << "ALEDEBUG reading type "<<readTyp << " " << *tmpInt;
         
     if ((err = actuator_drv->getPosition(*axID,readTyp,&position))==0) {
         //LOG_AND_TROW(SCLERR_, 1, boost::str(boost::format("Error fetching position with code %1%") % err));

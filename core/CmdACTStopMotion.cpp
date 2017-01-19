@@ -53,14 +53,6 @@ AbstractActuatorCommand::setHandler(data);
         
         SCLDBG_ << "Stop Motion " ;
         
-        if(*o_stby=0){
-        // we are in standby only the SP is set
-            SCLDBG_ << "we are in standby we cannot start stop command: ";
-            
-            setWorkState(false);
-            BC_END_RUNNING_PROPERTY;
-            return;
-        } 
         p_setTimeout = getAttributeCache()->getROPtr<uint32_t>(DOMAIN_INPUT, "setTimeout"); 
         
         setFeatures(chaos_batch::features::FeaturesFlagTypes::FF_SET_COMMAND_TIMEOUT, *p_setTimeout);
