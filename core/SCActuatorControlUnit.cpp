@@ -563,16 +563,14 @@ bool ::driver::actuator::SCActuatorControlUnit::unitRestoreToSnapshot(chaos::cu:
 
   RESTORE_LAPP << "Start the restore of the actuator";
   uint64_t start_restore_time = chaos::common::utility::TimingUtil::getTimeStamp();
-  if (snapshot_cache == NULL) 
-  {
-	RESTORE_LAPP << "cache nulla" ;
+  if (snapshot_cache == NULL) {
+	RESTORE_LERR << "cache nulla" ;
+	return false;
   }
-  else
-  {
-	RESTORE_LAPP << "lo snapshot è " << snapshot_cache;
-  }
+
     double restore_position_sp = *snapshot_cache->getAttributeValue(DOMAIN_INPUT, "position")->getValuePtr<double>();
   RESTORE_LAPP << "Restore Trying to set position at " << restore_position_sp;
+  metadataLogging(chaos::common::metadata_logging::StandardLoggingChannel::LogLevelInfo,CHAOS_FORMAT("start restore \"%1%\" (axis %2%) to position %3% ",%getDeviceID() %*axID %restore_position_sp));
  
   try {
     bool cmd_result = true;
@@ -614,16 +612,15 @@ bool ::driver::actuator::SCActuatorControlUnit::unitRestoreToSnapshot(chaos::cu:
     }
 */
 
-    usleep(100000);
-    RESTORE_LAPP << "Apply new setpoint " << restore_position_sp;
     if (!setPosition(restore_position_sp)) {
-      LOG_AND_TROW_FORMATTED(RESTORE_LERR,
-                             6,
-                             "Actuator is not gone to restore 'position setpoint %1%' state",
-                             %restore_position_sp);
+    	  metadataLogging(chaos::common::metadata_logging::StandardLoggingChannel::LogLevelError,CHAOS_FORMAT("Error restoring \"%1%\" (axis %2%) to position %3% ",%getDeviceID() %*axID %restore_position_sp));
+
+    	  return false;
     }
     uint64_t restore_duration_in_ms = chaos::common::utility::TimingUtil::getTimeStamp() - start_restore_time;
-    RESTORE_LAPP << "[metric] Restore successfully achieved in " << restore_duration_in_ms << " milliseconds";
+	metadataLogging(chaos::common::metadata_logging::StandardLoggingChannel::LogLevelInfo,CHAOS_FORMAT("Restored \"%1%\" (axis %2%) to position %3% in %4%",%getDeviceID() %*axID %restore_position_sp %restore_duration_in_ms));
+
+    return true;
   } catch (CException &ex) {
     uint64_t restore_duration_in_ms = chaos::common::utility::TimingUtil::getTimeStamp() - start_restore_time;
     RESTORE_LAPP << "[metric] Restore has fault in " << restore_duration_in_ms << " milliseconds";
@@ -636,11 +633,11 @@ bool ::driver::actuator::SCActuatorControlUnit::unitRestoreToSnapshot(chaos::cu:
 
 //-----------utility methdo for the restore operation---------
 
-bool ::driver::actuator::SCActuatorControlUnit::setPosition(bool sync) {
+bool ::driver::actuator::SCActuatorControlUnit::setPosition(double val,bool sync) {
   uint64_t cmd_id;
   bool result = true;
   std::auto_ptr<CDataWrapper> cmd_pack(new CDataWrapper());
-  cmd_pack->addInt32Value(CMD_ACT_MM_OFFSET, 1);
+  cmd_pack->addDoubleValue(CMD_ACT_MM_OFFSET, val);
   //send command
   submitBatchCommand(CMD_ACT_MOVE_ABSOLUTE_ALIAS,
                      cmd_pack.release(),
