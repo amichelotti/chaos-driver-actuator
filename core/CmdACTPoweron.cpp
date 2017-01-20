@@ -55,13 +55,7 @@ void own::CmdACTPoweron::setHandler(c_data::CDataWrapper *data) {
 			return;
 	}
 
-<<<<<<< HEAD
-	
-SCLDBG_   << "Launching poweron in set handler power on in axid "<< *axID << " value " << onState;
-	if((err = actuator_drv->stopMotion(*axID)) != 0) {
-            SCLDBG_ << "Error while stopping motion of the actuator ";
-}
-=======
+
 	onState = data->getInt32Value(CMD_ACT_POWERON_VALUE);
 
 	setStateVariableSeverity(StateVariableTypeAlarmCU,"command_error", chaos::common::alarm::MultiSeverityAlarmLevelClear);
@@ -70,7 +64,6 @@ SCLDBG_   << "Launching poweron in set handler power on in axid "<< *axID << " v
 
 
 	SCLDBG_   << "Launching poweron in set handler power on in axid "<< *axID << " value " << onState;
->>>>>>> ad4d5c4adecb05e62c91e18d11dde09204322b03
 	if((err = actuator_drv->poweron(*axID,onState)) != 0) {
 		metadataLogging(chaos::common::metadata_logging::StandardLoggingChannel::LogLevelError,CHAOS_FORMAT("axis %1% cannot perform set state (poweron) to ",%*axID %onState));
 		setStateVariableSeverity(StateVariableTypeAlarmCU,"command_error", chaos::common::alarm::MultiSeverityAlarmLevelHigh);
