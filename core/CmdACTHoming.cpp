@@ -159,6 +159,7 @@ void own::CmdACTHoming::ccHandler() {
 	if (homResult == 0){
 		uint64_t elapsed_msec = chaos::common::utility::TimingUtil::getTimeStamp() - getSetTime();
 		SCLDBG_ << "Homing operation completed in "<< elapsed_msec <<" milliseconds";
+		*o_lasthoming = chaos::common::utility::TimingUtil::getTimeStamp();
 		metadataLogging(chaos::common::metadata_logging::StandardLoggingChannel::LogLevelInfo,"Homing completed");
 
 		BC_END_RUNNING_PROPERTY;

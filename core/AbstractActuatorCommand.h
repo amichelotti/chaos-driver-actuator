@@ -46,6 +46,7 @@ protected:
 	uint64_t	*o_alarms;
 	char		*o_alarm_str;
 	double          *o_position;
+	uint64_t     *o_lasthoming;
 	double *i_position;
 	::common::actuators::AbstractActuator::readingTypes readTyp;
 

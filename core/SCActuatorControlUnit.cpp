@@ -387,6 +387,8 @@ addStateVariable(StateVariableTypeAlarmCU,"homing_operation_failed",
 addStateVariable(StateVariableTypeAlarmCU,"command_error",
             "Notify when a command action fails");
 /***************************ALARMS******************************************/
+addStateVariable(StateVariableTypeAlarmDEV,"EMERGENCY_LOCK_ENABLED",
+            "Notify when the emergency lock is active");
 addStateVariable(StateVariableTypeAlarmDEV,"DRIVER_COMMAND_ERROR",
             "Notify when a driver returns a generic command error");
 addStateVariable(StateVariableTypeAlarmDEV,"DRIVER_COMMUNICATION_ERROR",
@@ -435,7 +437,7 @@ void ::driver::actuator::SCActuatorControlUnit::unitInit() throw(CException) {
    
    
    double *o_positionSP = (double*)getAttributeCache()->getRWPtr<double>(DOMAIN_INPUT, "position"); 
-   
+   uint64_t *homingDone = getAttributeCache()->getRWPtr<uint64_t>(DOMAIN_OUTPUT, "LastHomingTime");
    double *o_position = getAttributeCache()->getRWPtr<double>(DOMAIN_OUTPUT, "position");
 
     const bool* s_bypass=getAttributeCache()->getROPtr<bool>(DOMAIN_INPUT, "bypass");
@@ -466,6 +468,7 @@ void ::driver::actuator::SCActuatorControlUnit::unitInit() throw(CException) {
   if ((err=actuator_drv->configAxis((void*)ptStr)) != 0) {
     throw chaos::CFatalException(err, "Cannot configure axis " + getDeviceID(), __FUNCTION__);
   }
+  *homingDone=0;
   // performing power on
 /*
   SCCUDBG<<"power on to Control Unit";
@@ -499,7 +502,7 @@ void ::driver::actuator::SCActuatorControlUnit::unitInit() throw(CException) {
     }
 
   if ((err=actuator_drv->getState(*axID,&state_id, state_str)) != 0) {
-    throw chaos::CFatalException(err, "Error getting the state of the actuator, possibily off", __FUNCTION__);
+    throw chaos::CFatalException(err, "Error getting the state of the actuator", __FUNCTION__);
   }
   
   *status_id = state_id;

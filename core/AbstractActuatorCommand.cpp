@@ -127,6 +127,8 @@ void AbstractActuatorCommand::setHandler(c_data::CDataWrapper *data) {
 	//p_stopCommandInExecution = getAttributeCache()->getROPtr<bool>(DOMAIN_INPUT, "stopCommandInExecution");
 
 	p_stopCommandInExecution = getAttributeCache()->getRWPtr<bool>(DOMAIN_OUTPUT, "stopHoming");
+	o_lasthoming = getAttributeCache()->getRWPtr<uint64_t>(DOMAIN_OUTPUT, "LastHomingTime");
+
 
 	axID = getAttributeCache()->getROPtr<uint32_t>(DOMAIN_INPUT, "axisID");
 	tmpInt =  (int*) getAttributeCache()->getROPtr<int32_t>(DOMAIN_INPUT, "readingType") ;
@@ -178,6 +180,11 @@ void AbstractActuatorCommand::DecodeAndRaiseAlarms(uint64_t mask)
 		setStateVariableSeverity(StateVariableTypeAlarmDEV,"DRIVER_COMMUNICATION_ERROR", chaos::common::alarm::MultiSeverityAlarmLevelHigh);
 	else
 		setStateVariableSeverity(StateVariableTypeAlarmDEV,"DRIVER_COMMUNICATION_ERROR", chaos::common::alarm::MultiSeverityAlarmLevelClear);
+
+	if ((mask & ::common::actuators::ACTUATOR_ALARMS_EMERGENCY_ERROR)!= 0)
+		setStateVariableSeverity(StateVariableTypeAlarmDEV,"EMERGENCY_LOCK_ENABLED", chaos::common::alarm::MultiSeverityAlarmLevelHigh);
+	else
+		setStateVariableSeverity(StateVariableTypeAlarmDEV,"EMERGENCY_LOCK_ENABLED", chaos::common::alarm::MultiSeverityAlarmLevelClear);
 	if ((mask & ::common::actuators::ACTUATOR_SHORT_CIRCUIT)!= 0)
 		setStateVariableSeverity(StateVariableTypeAlarmDEV,"DRIVER_SHORT_CIRCUIT_PROTECTION", chaos::common::alarm::MultiSeverityAlarmLevelHigh);
 	else
@@ -249,7 +256,7 @@ void AbstractActuatorCommand::DecodeAndRaiseAlarms(uint64_t mask)
 
 
 }
-void AbstractActuatorCommand::acquireHandler(){// ******** Aggiunta questa definizione!!! ********
+void AbstractActuatorCommand::acquireHandler(){
 
 	int err;
 

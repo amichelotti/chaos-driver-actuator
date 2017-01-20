@@ -197,7 +197,7 @@ bool own::CmdACTMoveRelative::timeoutHandler() {
 
 	if(delta_position_reached <= *p_resolution) {
 
-		SCLDBG_ << "[metric] Setpoint reached on timeout with set point " << *i_position<< " readout position" << *o_position << " resolution" << *p_resolution << " warning threshold " << *p_warningThreshold << " in " << elapsed_msec << " milliseconds";
+		SCLDBG_ << "[metric] Setpoint reached on timeout with set point " << *i_position<< " readout position" << *o_position << " resolution" << *p_resolution <<  " in " << elapsed_msec << " milliseconds";
 		//the command is endedn because we have reached the affinitut delta set
 
 		BC_END_RUNNING_PROPERTY;
