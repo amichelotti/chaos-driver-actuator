@@ -31,7 +31,6 @@ namespace driver {
 			int  homResult;
 			int32_t homingTypeVar;  // ok
 		 	uint64_t scheduleTime;	
-			::common::actuators::AbstractActuator::readingTypes readTyp;
 			//double	*o_position;
 			//const uint32_t *axID;
 
