@@ -54,6 +54,7 @@ void own::CmdACTPoweron::setHandler(c_data::CDataWrapper *data) {
 			BC_FAULT_RUNNING_PROPERTY;
 			return;
 	}
+
 	onState = data->getInt32Value(CMD_ACT_POWERON_VALUE);
 
 	setStateVariableSeverity(StateVariableTypeAlarmCU,"command_error", chaos::common::alarm::MultiSeverityAlarmLevelClear);
