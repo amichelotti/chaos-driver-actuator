@@ -120,7 +120,7 @@ void own::CmdACTHoming::setHandler(c_data::CDataWrapper *data)
 	}
 
 	homingTypeVar = homType;
-	metadataLogging(chaos::common::metadata_logging::StandardLoggingChannel::LogLevelInfo,boost::str( boost::format("axis %1% performing command homing of type:%1% timeout %2%") %*axID % homType % computed_timeout) );
+	metadataLogging(chaos::common::metadata_logging::StandardLoggingChannel::LogLevelInfo,boost::str( boost::format("axis %1% performing command homing of type:%2% timeout %3%") %*axID % homType % computed_timeout) );
 	setFeatures(chaos_batch::features::FeaturesFlagTypes::FF_SET_SCHEDULER_DELAY, (uint64_t)1000000); //*********** (uint64_t)100000 deve diventare un parametro ************
 	BC_NORMAL_RUNNING_PROPERTY;
 }

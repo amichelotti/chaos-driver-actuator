@@ -66,7 +66,7 @@ protected:
 	bool unitRestoreToSnapshot(chaos::cu::control_manager::AbstractSharedDomainCache * const snapshot_cache) throw(CException);
 
 	//-----------utility methdo for the restore operation---------
-	bool setPosition(bool sync = true);
+	bool setPosition(double pos,bool sync = true);
 
 	//-----------utility methdo for the restore operation---------
 	bool moveAt(const std::string &name,double value,uint32_t size);
