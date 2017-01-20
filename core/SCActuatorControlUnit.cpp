@@ -102,10 +102,18 @@ int ::driver::actuator::SCActuatorControlUnit::decodeType(const std::string& str
 bool ::driver::actuator::SCActuatorControlUnit::setPower(const std::string &name,bool value,uint32_t size){
           int err= -1;
           int *axis;
+	  uint64_t cmd_id;
 	  SCCUAPP << "HANDLER set Power" ;
 	  axis =(int*) getAttributeCache()->getROPtr<uint32_t>(DOMAIN_INPUT, "axisID");
-
-          err = actuator_drv->poweron(*axID,value);
+ 	  std::auto_ptr<CDataWrapper> cmd_pack(new CDataWrapper());
+          cmd_pack->addInt32Value(CMD_ACT_POWERON_VALUE, 1);
+    //send command
+            submitBatchCommand(CMD_ACT_POWERON_ALIAS,
+            cmd_pack.release(),
+            cmd_id,
+            0,
+            50,
+            SubmissionRuleType::SUBMIT_NORMAL);
          return (err==chaos::ErrorCode::EC_NO_ERROR);
 }
 
@@ -450,10 +458,12 @@ void ::driver::actuator::SCActuatorControlUnit::unitInit() throw(CException) {
     throw chaos::CFatalException(err, "Cannot configure axis " + getDeviceID(), __FUNCTION__);
   }
   // performing power on
+/*
   SCCUDBG<<"power on to Control Unit";
   if ((err=actuator_drv->poweron(*axID,1) != 0)) {
     throw chaos::CFatalException(err, "Cannot poweron actuator " + getDeviceID(), __FUNCTION__);
   }
+*/
   //parsing di auxiliary
     {
     char* param=NULL;
