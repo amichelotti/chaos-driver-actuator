@@ -49,6 +49,9 @@ void own::CmdACTPoweron::setHandler(c_data::CDataWrapper *data) {
 
 	
 SCLDBG_   << "Launching poweron in set handler power on in axid "<< *axID << " value " << onState;
+	if((err = actuator_drv->stopMotion(*axID)) != 0) {
+            SCLDBG_ << "Error while stopping motion of the actuator ";
+}
 	if((err = actuator_drv->poweron(*axID,onState)) != 0) {
             SCLDBG_ << "Error while power on the actuator ";
 	
