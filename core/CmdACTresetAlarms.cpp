@@ -75,14 +75,7 @@ void own::CmdACTresetAlarms::setHandler(c_data::CDataWrapper *data) {
         
 	SCLDBG_ << "ALEDEBUG Reset Alarms set handler "<< alarmMask ;
         
-     /*   if(*o_stby){
-            // we are in standby only the SP is set
-            SCLDBG_ << "we are in standby we cannot start reset alarms operation: ";
-            setWorkState(false);
-            BC_END_RUNNING_PROPERTY;
-            return;
-        } 
-*/
+
 
             SCLERR_ << "resetAlarms before sending to interface " << *axID << actuator_drv;
         if((err = actuator_drv->resetAlarms(*axID,alarmMask)) != 0) {
@@ -108,7 +101,6 @@ void own::CmdACTresetAlarms::acquireHandler() {
 // empty correlation handler
 void own::CmdACTresetAlarms::ccHandler() {
 	SCLDBG_ << "ALEDEBUG Reset Alarms CC handler ";
-        setWorkState(false);
         BC_END_RUNNING_PROPERTY;
 	return;
 }

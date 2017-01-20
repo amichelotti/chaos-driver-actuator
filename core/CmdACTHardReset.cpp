@@ -39,7 +39,9 @@ BATCH_COMMAND_CLOSE_DESCRIPTION()
 void own::CmdACTHardReset::setHandler(c_data::CDataWrapper *data) {
 	int err;
 	AbstractActuatorCommand::setHandler(data);
-	SCLDBG_ << "HardReset set handler " ;
+    setWorkState(true);
+
+    SCLDBG_ << "HardReset set handler " ;
         
 
         SCLDBG_ << "HardReset before sending to interface " ;
@@ -52,7 +54,6 @@ void own::CmdACTHardReset::setHandler(c_data::CDataWrapper *data) {
         }	
             SCLERR_ << "HardReset after sending to interface";
 	//actuator_drv->accessor->base_opcode_priority=100;
-        setWorkState(true);
         BC_NORMAL_RUNNING_PROPERTY;
 	return;
 }
