@@ -360,12 +360,21 @@ addAttributeToDataSet("positionWarningTHR",
 addStateVariable(StateVariableTypeAlarmCU,"position_out_of_set",
             "Notify when a position has drifted away from set");
 
+addStateVariable(StateVariableTypeAlarmCU,"position_value_not_reached",
+            "Notify when a moving operation has failed to reach the final set point ");
+
+
+addStateVariable(StateVariableTypeAlarmCU,"powerOn_out_of_set",
+            "Notify when a poweOn state in out of set");
+
+addStateVariable(StateVariableTypeAlarmCU,"powerOn_value_not_reached",
+            "Notify when a powerOn has failed to reach the final set point ");
+
 
 addStateVariable(StateVariableTypeAlarmCU,"homing_operation_failed",
             "Notify when a homing operation has failed");
 
-addStateVariable(StateVariableTypeAlarmCU,"position_value_not_reached",
-            "Notify when a moving operation has failed to reach the final set point ");
+
 
 addStateVariable(StateVariableTypeAlarmCU,"command_error",
             "Notify when a command action fails");

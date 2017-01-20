@@ -43,9 +43,11 @@ BATCH_COMMAND_CLOSE_DESCRIPTION()
 // set handler
 void own::CmdACTresetAlarms::setHandler(c_data::CDataWrapper *data) {
 	int err;
+    setWorkState(true);
+
 	AbstractActuatorCommand::setHandler(data);
        
- 	
+
         
         if(!data ||
             !data->hasKey(CMD_ACT_ALRM)) {
@@ -92,7 +94,6 @@ void own::CmdACTresetAlarms::setHandler(c_data::CDataWrapper *data) {
         }	
             SCLERR_ << "resetAlarms after sending to interface";
 	//actuator_drv->accessor->base_opcode_priority=100;
-        setWorkState(true);
         BC_NORMAL_RUNNING_PROPERTY;
 	return;
 }

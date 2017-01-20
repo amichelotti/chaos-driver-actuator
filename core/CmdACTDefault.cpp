@@ -102,7 +102,7 @@ void CmdACTDefault::acquireHandler() {
         
         
         //acquire the current readout
-        AbstractActuatorCommand::acquireHandler();
+    AbstractActuatorCommand::acquireHandler();
 	
 	
 //	tmpInt =  getAttributeCache()->getROPtr<int32_t>(DOMAIN_INPUT, "readingType") ;

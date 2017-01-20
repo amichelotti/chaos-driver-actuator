@@ -36,8 +36,8 @@ using namespace chaos::cu::control_manager;
 
 
 BATCH_COMMAND_OPEN_DESCRIPTION_ALIAS(driver::actuator::,CmdACTMoveAbsolute,CMD_ACT_MOVE_ABSOLUTE_ALIAS,
-                                                          "Move from current position to an absolute position (mm)",
-                                                          "0cf52f76-55eb-4rt3-8712-3d54484043d8")
+		"Move from current position to an absolute position (mm)",
+		"0cf52f76-55eb-4rt3-8712-3d54484043d8")
 BATCH_COMMAND_ADD_DOUBLE_PARAM(CMD_ACT_MM_OFFSET, "position mm",chaos::common::batch_command::BatchCommandAndParameterDescriptionkey::BC_PARAMETER_FLAG_MANDATORY)
 BATCH_COMMAND_CLOSE_DESCRIPTION()
 
@@ -48,223 +48,160 @@ BATCH_COMMAND_CLOSE_DESCRIPTION()
 //uint64_t computed_timeout;
 
 void own::CmdACTMoveAbsolute::setHandler(c_data::CDataWrapper *data) {
-//    chaos::common::data::RangeValueInfo position_sp_attr_info;
-//    chaos::common::data::RangeValueInfo attributeInfo;
-    AbstractActuatorCommand::setHandler(data);
-    
-    double max_position=0,min_position=0;
-    int err = 0;
+	//    chaos::common::data::RangeValueInfo position_sp_attr_info;
+	//    chaos::common::data::RangeValueInfo attributeInfo;
 
-    float positionToReach = 0.f;
-    chaos::common::data::RangeValueInfo attr_info;
-    
-    double currentPosition;
-    
-//    axID = getAttributeCache()->getROPtr<uint32_t>(DOMAIN_INPUT, "axisID");
-//    o_position = getAttributeCache()->getRWPtr<double>(DOMAIN_OUTPUT, "position");
-//    o_position_sp = getAttributeCache()->getRWPtr<double>(DOMAIN_OUTPUT, "position_sp");
-//    i_speed = (double*) getAttributeCache()->getROPtr<double>(DOMAIN_INPUT, "speed");		
-//    i_command_timeout = getAttributeCache()->getROPtr<uint32_t>(DOMAIN_INPUT, "command_timeout");
-//    __i_delta_setpoint = getAttributeCache()->getROPtr<double>(DOMAIN_INPUT, "__delta_setpoint");
-//    __i_setpoint_affinity = getAttributeCache()->getROPtr<double>(DOMAIN_INPUT, "__setpoint_affinity");
-//    tmpInt = (int*) getAttributeCache()->getROPtr<int32_t>(DOMAIN_INPUT, "readingType") ;
-//    readTyp=(::common::actuators::AbstractActuator::readingTypes) *tmpInt;
-         
-    getDeviceDatabase()->getAttributeRangeValueInfo("position", attr_info);
-    setStateVariableSeverity(StateVariableTypeAlarmCU,"command_error", chaos::common::alarm::MultiSeverityAlarmLevelClear);
-    
-    // REQUIRE MIN MAX SET IN THE MDS
-    if (attr_info.maxRange.size()) {
-        max_position = atof(attr_info.maxRange.c_str());
-        SCLDBG_ << "max_position max=" << max_position;
+	double currentPosition;
+	int err = 0;
 
-    } else {
-        SCLERR_ << "Not defined maximum 'position_sp' attribute, quitting command";
-        metadataLogging(chaos::common::metadata_logging::StandardLoggingChannel::LogLevelError,"not defined maximum 'position_sp' attribute, quitting command" );
-        BC_FAULT_RUNNING_PROPERTY;// ********** aggiunto **************
-        return;
-    }
+	float positionToReach = 0.f;
+	AbstractActuatorCommand::setHandler(data);
 
-    // REQUIRE MIN MAX POSITION IN THE MDS
-    if (attr_info.minRange.size()) {
-        min_position = atof(attr_info.minRange.c_str());
-        SCLDBG_ << "min_position min=" << min_position;
-    } else {
-        SCLERR_ << "not defined minimum 'position_sp' attribute, quitting command";
-        metadataLogging(chaos::common::metadata_logging::StandardLoggingChannel::LogLevelError,"not defined minimum 'position_sp' attribute, quitting command" );     
-        BC_FAULT_RUNNING_PROPERTY;
-        return;
-    }
-    
-    // ********************* a cosa servono **********************
-    //SCLDBG_<<"minimum working value:"<<*p_minimumWorkingValue;
-    //SCLDBG_<<"maximum, working value:"<<*p_maximumWorkingValue;
-    
-    SCLDBG_ << "check data";
-    
-    if(!data ||
-	!data->hasKey(CMD_ACT_MM_OFFSET)) {
-        SCLERR_ << "Position millimeters parameter not present";
-        BC_FAULT_RUNNING_PROPERTY;
-	return;
-    }
-/*
+	setWorkState(true);
+	if(performCheck()!=0){
+		BC_FAULT_RUNNING_PROPERTY;
+		return;
+	}
+
+	//    axID = getAttributeCache()->getROPtr<uint32_t>(DOMAIN_INPUT, "axisID");
+	//    o_position = getAttributeCache()->getRWPtr<double>(DOMAIN_OUTPUT, "position");
+	//    o_position_sp = getAttributeCache()->getRWPtr<double>(DOMAIN_OUTPUT, "position_sp");
+	//    i_speed = (double*) getAttributeCache()->getROPtr<double>(DOMAIN_INPUT, "speed");
+	//    i_command_timeout = getAttributeCache()->getROPtr<uint32_t>(DOMAIN_INPUT, "command_timeout");
+	//    __i_delta_setpoint = getAttributeCache()->getROPtr<double>(DOMAIN_INPUT, "__delta_setpoint");
+	//    __i_setpoint_affinity = getAttributeCache()->getROPtr<double>(DOMAIN_INPUT, "__setpoint_affinity");
+	//    tmpInt = (int*) getAttributeCache()->getROPtr<int32_t>(DOMAIN_INPUT, "readingType") ;
+	//    readTyp=(::common::actuators::AbstractActuator::readingTypes) *tmpInt;
+
+	setStateVariableSeverity(StateVariableTypeAlarmCU,"command_error", chaos::common::alarm::MultiSeverityAlarmLevelClear);
+	setStateVariableSeverity(StateVariableTypeAlarmCU,"position_value_not_reached", chaos::common::alarm::MultiSeverityAlarmLevelClear);
+
+
+
+	// ********************* a cosa servono **********************
+	//SCLDBG_<<"minimum working value:"<<*p_minimumWorkingValue;
+	//SCLDBG_<<"maximum, working value:"<<*p_maximumWorkingValue;
+
+
+	if(!data ||
+			!data->hasKey(CMD_ACT_MM_OFFSET)) {
+		SCLERR_ << "Position millimeters parameter not present";
+		metadataLogging(chaos::common::metadata_logging::StandardLoggingChannel::LogLevelError,"Position millimeters parameter is missing");
+
+		BC_FAULT_RUNNING_PROPERTY;
+		return;
+	}
+	/*
     if(!data->isDoubleValue(CMD_ACT_MM_OFFSET)) {
 	SCLERR_ << "Position millimeters parameter is not a Double data type";
 	BC_FAULT_RUNNING_PROPERTY;
 	return;
     }
   i*/      
-    positionToReach = static_cast<float>(data->getDoubleValue(CMD_ACT_MM_OFFSET));
-    if(isnan(positionToReach)==true){
-        SCLERR_ << "Position parameter is not a valid double number (nan?)";
-        BC_FAULT_RUNNING_PROPERTY;
-        return;
-    }
-    
-    // Controllo setpoint finale: se tale valore appartiene al range [min_position-tolmin,max_position+tolmax]
-    double tolmax = std::abs(max_position*0.3);
-    double tolmin = std::abs(min_position*0.3);
-    
-    if (((positionToReach) > (max_position+tolmax)) || ((positionToReach)< (min_position-tolmin)))
-    {
-        SCLERR_ << "Finale position "<<positionToReach<< " out of range ( " << min_position << ","<< max_position <<") the command won't be executed";
-        metadataLogging(chaos::common::metadata_logging::StandardLoggingChannel::LogLevelError,CHAOS_FORMAT("Final set point %1% outside the maximum/minimum 'position_sp' = tolerance \"max_position\":%2% \"min_position\":%3%" , % positionToReach % max_position % min_position));
-        BC_FAULT_RUNNING_PROPERTY;
-        return;
-    }
-        
-    // Ma lo spostamento da effettuare e' maggiore dello spostamento minimo *p_resolution?
-  
-    double position;
-    if ((err = actuator_drv->getPosition(*axID,readTyp,&position))==0) {
-        *o_position = position;
-    } else {
-            SCLERR_ <<boost::str( boost::format("Error calling driver on get Position readout with code %1%") % err);
-    }
-   
-    currentPosition=*o_position;    
-    double deltaPosition = std::abs(positionToReach-currentPosition);
-    if(deltaPosition<*p_resolution){
-        SCLDBG_ << "operation inibited because of resolution:" << *p_resolution;
-        metadataLogging(chaos::common::metadata_logging::StandardLoggingChannel::LogLevelWarning,CHAOS_FORMAT("operation inibited because of resolution %1% , position set point %2%",%*p_resolution %positionToReach ));
-        *i_position=positionToReach;
-        getAttributeCache()->setInputDomainAsChanged();
-        BC_END_RUNNING_PROPERTY;
-        return;
-    }    
+	positionToReach = static_cast<float>(data->getDoubleValue(CMD_ACT_MM_OFFSET));
+	if(isnan(positionToReach)==true){
+		metadataLogging(chaos::common::metadata_logging::StandardLoggingChannel::LogLevelError,"Position parameter is not a valid double number (nan?)" );
 
-    SCLDBG_ << "compute timeout for moving Absolute = " << positionToReach;
-	
-    //numero di secondi, dopo lo moltiplichiamo per 1 milione (volendo da micro)
-    uint64_t computed_timeout; // timeout will be expressed in [ms]
-    if (*i_speed!= 0)
-    {
-        computed_timeout  = uint64_t((deltaPosition / *i_speed)*1000000000) + DEFAULT_MOVE_TIMETOL_OFFSET_MS; 
-        computed_timeout = std::max(computed_timeout,(uint64_t)*p_setTimeout);
-    
-    }   else computed_timeout=(uint64_t)*p_setTimeout;
-    
-    //setFeatures(chaos_batch::features::FeaturesFlagTypes::FF_SET_COMMAND_TIMEOUT, computed_timeout)
-    SCLDBG_ << "Calculated timeout is = " << computed_timeout;
-    setFeatures(chaos_batch::features::FeaturesFlagTypes::FF_SET_COMMAND_TIMEOUT, computed_timeout);
-    
-    //slow_acquisition_index = false;
-    *i_position=positionToReach;
-    setWorkState(true);
-    getAttributeCache()->setInputDomainAsChanged();
-    setStateVariableSeverity(StateVariableTypeAlarmCU,"position_value_not_reached", chaos::common::alarm::MultiSeverityAlarmLevelClear);
-    
-    SCLDBG_ << "o_position_sp is = " << *i_position;
-    
-    if(*o_stby==0){
-        // we are in standby only the SP is set
-        SCLDBG_ << "we are in standby we cannot start moving to: "<<*i_position;
-        setWorkState(false);
-        BC_END_RUNNING_PROPERTY;
-        return;
-    } 
-    
-    SCLDBG_ << "Move to position " << positionToReach << "reading type " << readTyp;
-    
-    if((err = actuator_drv->moveAbsoluteMillimeters(*axID,positionToReach)) != 0) {
-        SCLERR_<<"## error setting moving absolute of "<<positionToReach;
-        setStateVariableSeverity(StateVariableTypeAlarmCU,"command_error", chaos::common::alarm::MultiSeverityAlarmLevelHigh);
-        setWorkState(false);
-        BC_FAULT_RUNNING_PROPERTY;
-        return;
-    }
-    metadataLogging(chaos::common::metadata_logging::StandardLoggingChannel::LogLevelInfo,boost::str( boost::format("performing command move absolute :%1% timeout %2%") % positionToReach % computed_timeout) );
-    BC_NORMAL_RUNNING_PROPERTY;
+		BC_FAULT_RUNNING_PROPERTY;
+		return;
+	}
+
+	// Controllo setpoint finale: se tale valore appartiene al range [min_position-tolmin,max_position+tolmax]
+	double tolmax = std::abs(max_position*0.3);
+	double tolmin = std::abs(min_position*0.3);
+
+	if (((positionToReach) > (max_position+tolmax)) || ((positionToReach)< (min_position-tolmin)))
+	{
+		SCLERR_ << "Finale position "<<positionToReach<< " out of range ( " << min_position << ","<< max_position <<") the command won't be executed";
+		metadataLogging(chaos::common::metadata_logging::StandardLoggingChannel::LogLevelError,CHAOS_FORMAT("Final set point %1% outside the maximum/minimum 'position_sp' = tolerance \"max_position\":%2% \"min_position\":%3%" , % positionToReach % max_position % min_position));
+		BC_FAULT_RUNNING_PROPERTY;
+		return;
+	}
+	AbstractActuatorCommand::acquireHandler();
+
+	// Ma lo spostamento da effettuare e' maggiore dello spostamento minimo *p_resolution?
+
+
+
+	currentPosition=*o_position;
+	double deltaPosition = std::abs(positionToReach-currentPosition);
+	if(deltaPosition<*p_resolution){
+		metadataLogging(chaos::common::metadata_logging::StandardLoggingChannel::LogLevelWarning,CHAOS_FORMAT("operation inibited because of resolution %1% , position set point %2%",%*p_resolution %positionToReach ));
+		*i_position=positionToReach;
+		getAttributeCache()->setInputDomainAsChanged();
+		BC_END_RUNNING_PROPERTY;
+		return;
+	}
+
+	SCLDBG_ << "compute timeout for moving Absolute = " << positionToReach;
+
+	//numero di secondi, dopo lo moltiplichiamo per 1 milione (volendo da micro)
+	uint64_t computed_timeout; // timeout will be expressed in [ms]
+	if (*i_speed!= 0)
+	{
+		computed_timeout  = uint64_t((deltaPosition / *i_speed)*1000000) + DEFAULT_MOVE_TIMETOL_OFFSET_MS;
+		computed_timeout = std::max(computed_timeout,(uint64_t)*p_setTimeout);
+
+	}   else computed_timeout=(uint64_t)*p_setTimeout;
+
+	//setFeatures(chaos_batch::features::FeaturesFlagTypes::FF_SET_COMMAND_TIMEOUT, computed_timeout)
+	SCLDBG_ << "Calculated timeout is = " << computed_timeout;
+	setFeatures(chaos_batch::features::FeaturesFlagTypes::FF_SET_COMMAND_TIMEOUT, computed_timeout);
+
+	//slow_acquisition_index = false;
+	*i_position=positionToReach;
+	getAttributeCache()->setInputDomainAsChanged();
+
+	SCLDBG_ << "o_position_sp is = " << *i_position;
+
+	if(*o_stby==0){
+		// we are in standby only the SP is set
+		metadataLogging(chaos::common::metadata_logging::StandardLoggingChannel::LogLevelWarning,CHAOS_FORMAT("we are in standby we cannot start move to '%1%'",%*i_position));
+
+		BC_END_RUNNING_PROPERTY;
+		return;
+	}
+
+	SCLDBG_ << "Move to position " << positionToReach << "reading type " << readTyp;
+
+	if((err = actuator_drv->moveAbsoluteMillimeters(*axID,positionToReach)) != 0) {
+		metadataLogging(chaos::common::metadata_logging::StandardLoggingChannel::LogLevelError,CHAOS_FORMAT("axis %1% cannot perform absolute move to '%2%'",%*axID %positionToReach));
+		setStateVariableSeverity(StateVariableTypeAlarmCU,"command_error", chaos::common::alarm::MultiSeverityAlarmLevelHigh);
+		BC_FAULT_RUNNING_PROPERTY;
+		return;
+	}
+	metadataLogging(chaos::common::metadata_logging::StandardLoggingChannel::LogLevelInfo,boost::str( boost::format("performing command move absolute :%1% timeout %2%") % positionToReach % computed_timeout) );
+	BC_NORMAL_RUNNING_PROPERTY;
 }
 
 void own::CmdACTMoveAbsolute::acquireHandler() {   //************ modificato in maniera analoga al file CmdACTMoveRelative.cpp **********
 	//acquire the current readout
-        AbstractActuatorCommand::acquireHandler();
+	AbstractActuatorCommand::acquireHandler();
 	//force output dataset as changed
-	getAttributeCache()->setOutputDomainAsChanged();
+	//	getAttributeCache()->setOutputDomainAsChanged();
 }
 
 void own::CmdACTMoveAbsolute::ccHandler() {
-    //check if we are in the delta of the setpoint to end the command
-    double delta_position_reached = std::abs(*i_position - *o_position);
-    //SCLDBG_ << "ccH MoveABsolute Readout: "<< *o_position <<" SetPoint: "<< *o_position_sp <<" Delta to reach: " << delta_position_reached << " computed Timeout " << computed_timeout ;
-    SCLDBG_ << "Readout: "<< *o_position <<" SetPoint: "<< *i_position <<" Delta to reach: " << delta_position_reached;
- 	if (((*o_status_id) & ::common::actuators::ACTUATOR_INMOTION)==0)
-        {
-                setWorkState(false);
-                BC_END_RUNNING_PROPERTY;
-        }
-if (((*o_status_id) & ::common::actuators::ACTUATOR_POWER_SUPPLIED)==0)
-        {
-                int err;
-                if (err=actuator_drv->stopMotion(*axID)!= 0)
-                {
-                     SCLERR_<<"## error while stopping motion";
-                        setStateVariableSeverity(StateVariableTypeAlarmCU,"command_error", chaos::common::alarm::MultiSeverityAlarmLevelHigh);
-                        setWorkState(false);
-                        BC_FAULT_RUNNING_PROPERTY;
-                        return;
+	checkEndMove();
 
-                }
-                setWorkState(false);
-                BC_END_RUNNING_PROPERTY;
-
-        }
-
-
-    if(delta_position_reached <= *p_resolution) 
-    {
-	uint64_t elapsed_msec = chaos::common::utility::TimingUtil::getTimeStamp() - getSetTime();
-	//the command is endedn because we have reached the affinitut delta set
-	SCLDBG_ << "[metric ]Set point reached with - delta: "<< delta_position_reached <<" sp: "<< *i_position <<" affinity check " << *p_resolution << " mm in " << elapsed_msec << " milliseconds";
-	setWorkState(false);
-        BC_END_RUNNING_PROPERTY;
-    }
-    if(*o_alarms) {
-        SCLERR_ << "We got alarms on actuator/slit so we end the command";
-        setWorkState(false);
-	BC_END_RUNNING_PROPERTY;
-    }
 }
 
 bool own::CmdACTMoveAbsolute::timeoutHandler() {
-    uint64_t elapsed_msec = chaos::common::utility::TimingUtil::getTimeStamp() - getSetTime();
-    double delta_position_reached = std::abs(*i_position - *o_position);
-    
-    metadataLogging(chaos::common::metadata_logging::StandardLoggingChannel::LogLevelWarning,CHAOS_FORMAT("timeout, delta position remaining %1%",%delta_position_reached));
-    
-    SCLDBG_ << "  TIM MoveABsolute Readout: "<< *o_position <<" SetPoint: "<< *i_position<<" Delta to reach: " << delta_position_reached;
-    SCLDBG_ << "  TIM MoveABsolute  resolution: " << *p_resolution;
-    if(delta_position_reached <= *p_resolution) {
-        SCLDBG_ << "[metric] Setpoint reached on timeout with set point " << *i_position<< " readout position" << *o_position << " resolution" << *p_resolution << " in " << elapsed_msec << " milliseconds";
-	
-    }else {
+	uint64_t elapsed_msec = chaos::common::utility::TimingUtil::getTimeStamp() - getSetTime();
+	double delta_position_reached = std::abs(*i_position - *o_position);
 
-        SCLERR_ << "[metric] Setpoint not reached on timeout with readout position " << *o_position << " in " << elapsed_msec << " milliseconds";
-        setStateVariableSeverity(StateVariableTypeAlarmCU,"position_value_not_reached", chaos::common::alarm::MultiSeverityAlarmLevelWarning);
-    }
-    setWorkState(false);
-    BC_END_RUNNING_PROPERTY;
-    return false;
+	metadataLogging(chaos::common::metadata_logging::StandardLoggingChannel::LogLevelWarning,CHAOS_FORMAT("timeout, delta position remaining %1%",%delta_position_reached));
+
+	SCLDBG_ << "  TIM MoveABsolute Readout: "<< *o_position <<" SetPoint: "<< *i_position<<" Delta to reach: " << delta_position_reached;
+	SCLDBG_ << "  TIM MoveABsolute  resolution: " << *p_resolution;
+	if(delta_position_reached <= *p_resolution) {
+		SCLDBG_ << "[metric] Setpoint reached on timeout with set point " << *i_position<< " readout position" << *o_position << " resolution" << *p_resolution << " in " << elapsed_msec << " milliseconds";
+
+	}else {
+
+		SCLERR_ << "[metric] Setpoint not reached on timeout with readout position " << *o_position << " in " << elapsed_msec << " milliseconds";
+		setStateVariableSeverity(StateVariableTypeAlarmCU,"position_value_not_reached", chaos::common::alarm::MultiSeverityAlarmLevelWarning);
+	}
+	BC_END_RUNNING_PROPERTY;
+	return false;
 }
