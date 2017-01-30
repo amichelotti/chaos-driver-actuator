@@ -32,6 +32,8 @@ namespace chaos_batch = chaos::common::batch_command;
 BATCH_COMMAND_OPEN_DESCRIPTION_ALIAS(driver::actuator::,CmdACTHardReset,CMD_ACT_HARDRESET_ALIAS,
 			"Hard Reset on the driver of the actuator",
 			"25e1c0fe-775e-40e4-9b96-ae7e797c1487")
+BATCH_COMMAND_ADD_INT32_PARAM(CMD_ACT_HARDRESET_MODE,"mode of the hard reset",chaos::common::batch_command::BatchCommandAndParameterDescriptionkey::BC_PARAMETER_FLAG_MANDATORY)
+
 BATCH_COMMAND_CLOSE_DESCRIPTION()
 
 
@@ -40,10 +42,26 @@ void own::CmdACTHardReset::setHandler(c_data::CDataWrapper *data) {
 	int err;
 	AbstractActuatorCommand::setHandler(data);
 	SCLDBG_ << "HardReset set handler " ;
+        if(!data ||
+                !data->hasKey(CMD_ACT_HARDRESET_MODE)) {
+                metadataLogging(chaos::common::metadata_logging::StandardLoggingChannel::LogLevelWarning,"mode parameter of hard reset  not specified ");
+                BC_FAULT_RUNNING_PROPERTY;
+                return;
+        }
+
+        if(!data->isInt32Value(CMD_ACT_HARDRESET_MODE)) {
+                metadataLogging(chaos::common::metadata_logging::StandardLoggingChannel::LogLevelWarning,"mode parameter is not an integer data type");
+                BC_FAULT_RUNNING_PROPERTY;
+                return;
+        }
+
+
+	int32_t resetMode = data->getInt32Value(CMD_ACT_HARDRESET_MODE);
+
         
 
         SCLDBG_ << "HardReset before sending to interface " ;
-        if((err = actuator_drv->hardreset()) != 0) {
+        if((err = actuator_drv->hardreset(*axID)) != 0) {
                 //LOG_AND_TROW(SCLERR_, 1, boost::str(boost::format("Error %1% resetting alarms") % err));
             SCLERR_ << "HardReset failed";
             metadataLogging(chaos::common::metadata_logging::StandardLoggingChannel::LogLevelInfo,boost::str( boost::format("performing reset alarms: operation failed")) );
