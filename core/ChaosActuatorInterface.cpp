@@ -310,8 +310,8 @@ int ChaosActuatorInterface::moveAbsoluteMillimeters(int32_t axisID,double mm) {
 int ChaosActuatorInterface::stopMotion(int32_t axisID){
     WRITE_OP_AX_TIM(OP_STOP_MOTION,axisID,0);
 }
-int ChaosActuatorInterface::hardreset(){
-    WRITE_OP_TIM(OP_HARD_RESET,0);
+int ChaosActuatorInterface::hardreset(int32_t axisID,int32_t mode){
+    WRITE_OP_AX_INT_TIM(OP_HARD_RESET,axisID,mode,0);
 }
 int ChaosActuatorInterface::homing(int32_t axisID,homingType mode){
     WRITE_OP_AX_INT_TIM(OP_HOMING,axisID,mode,0);

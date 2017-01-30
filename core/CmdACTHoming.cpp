@@ -38,11 +38,6 @@ BATCH_COMMAND_ADD_INT32_PARAM(CMD_ACT_HOMINGTYPE,"homing Type",chaos::common::ba
 BATCH_COMMAND_CLOSE_DESCRIPTION()
 
 
-// return the implemented handler
-//uint8_t own::CmdACTHoming::implementedHandler(){
-//  return      AbstractActuatorCommand::implementedHandler()|chaos_batch::HandlerType::HT_Acquisition;
-//}
-// empty set handler
 void own::CmdACTHoming::setHandler(c_data::CDataWrapper *data) 
 {
 	AbstractActuatorCommand::setHandler(data);

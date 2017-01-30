@@ -129,7 +129,7 @@ namespace chaos {
                 int getPosition(int32_t axisID,readingTypes readingType,double *deltaPosition_mm);
                 
                 int resetAlarms(int32_t axisID,uint64_t alrm);
-                int hardreset();
+                int hardreset(int32_t axisID,int32_t mode);
                 
                 
                 /**

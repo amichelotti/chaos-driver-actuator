@@ -58,10 +58,13 @@ void own::CmdACTHardReset::setHandler(c_data::CDataWrapper *data) {
 
 	int32_t resetMode = data->getInt32Value(CMD_ACT_HARDRESET_MODE);
 
+    setWorkState(true);
+
+    SCLDBG_ << "HardReset set handler " ;
         
 
         SCLDBG_ << "HardReset before sending to interface " ;
-        if((err = actuator_drv->hardreset(*axID)) != 0) {
+        if((err = actuator_drv->hardreset(*axID,resetMode)) != 0) {
                 //LOG_AND_TROW(SCLERR_, 1, boost::str(boost::format("Error %1% resetting alarms") % err));
             SCLERR_ << "HardReset failed";
             metadataLogging(chaos::common::metadata_logging::StandardLoggingChannel::LogLevelInfo,boost::str( boost::format("performing reset alarms: operation failed")) );
@@ -70,7 +73,6 @@ void own::CmdACTHardReset::setHandler(c_data::CDataWrapper *data) {
         }	
             SCLERR_ << "HardReset after sending to interface";
 	//actuator_drv->accessor->base_opcode_priority=100;
-        setWorkState(true);
         BC_NORMAL_RUNNING_PROPERTY;
 	return;
 }

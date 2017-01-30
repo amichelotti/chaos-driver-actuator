@@ -54,6 +54,7 @@ namespace driver {
 		//! The alias of the homing type parameter
 		const char * const CMD_ACT_HOMINGTYPE = "homing_type";
 		
+		const char * const CMD_ACT_HARDRESET_MODE = "hard_reset_mode";
 		//! The alias of the "move rel" command of the type
 		const char * const CMD_ACT_MOVE_RELATIVE_ALIAS = "mov_rel";
 		//! The alias of the "move absolute" command of the type

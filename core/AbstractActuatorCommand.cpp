@@ -269,7 +269,8 @@ void AbstractActuatorCommand::acquireHandler(){
 
 	CMDCUDBG_ << "AbstractActuatorCommand::acquireHandler() " ;
 	//acquire the current readout
-	CMDCUDBG_ << "fetch current readout";
+	CMDCUDBG_ << "fetch  readout";
+
 
 	if((err = actuator_drv->getAlarms(*axID,&tmp_uint64,descStr))==0){
 		*o_alarms = tmp_uint64;
@@ -280,6 +281,9 @@ void AbstractActuatorCommand::acquireHandler(){
 	}else{
 		CMDCUERR_<<boost::str( boost::format("Error calling driver on get alarms readout with code %1%") % err);
 		metadataLogging(chaos::common::metadata_logging::StandardLoggingChannel::LogLevelError,CHAOS_FORMAT("axis %1% error getting alarms, err:%2%'",%*axID  %err));
+		setStateVariableSeverity(StateVariableTypeAlarmCU,"command_error", chaos::common::alarm::MultiSeverityAlarmLevelHigh);
+
+		return;
 
 	}
 
@@ -305,7 +309,8 @@ void AbstractActuatorCommand::acquireHandler(){
 		strncpy(o_status_str, descStr.c_str(), 256);
 	} else {
 		CMDCUERR_ <<boost::str( boost::format("Error calling driver on get state readout with code %1%") % err);
-
+		setStateVariableSeverity(StateVariableTypeAlarmCU,"command_error", chaos::common::alarm::MultiSeverityAlarmLevelHigh);
+		return;
 	}
 
 
@@ -316,10 +321,13 @@ void AbstractActuatorCommand::acquireHandler(){
 		//*o_position = position;
 		CMDCUERR_ <<boost::str( boost::format("Error calling driver on get Position readout with code %1%") % err);
 		metadataLogging(chaos::common::metadata_logging::StandardLoggingChannel::LogLevelError,CHAOS_FORMAT("axis %1% error getting position, using type %2%, err:%3%'",%*axID %readTyp %err));
+		setStateVariableSeverity(StateVariableTypeAlarmCU,"command_error", chaos::common::alarm::MultiSeverityAlarmLevelHigh);
+
+		return;;
 
 	}
 
-	//force output dataset as changed
+
 
 
 }
