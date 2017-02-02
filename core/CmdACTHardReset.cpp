@@ -72,6 +72,7 @@ void own::CmdACTHardReset::setHandler(c_data::CDataWrapper *data) {
             return;
         }	
             SCLERR_ << "HardReset after sending to interface";
+	*o_lasthoming=0;
 	//actuator_drv->accessor->base_opcode_priority=100;
         BC_NORMAL_RUNNING_PROPERTY;
 	return;

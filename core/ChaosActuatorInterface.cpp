@@ -308,6 +308,7 @@ int ChaosActuatorInterface::moveAbsoluteMillimeters(int32_t axisID,double mm) {
 }
 
 int ChaosActuatorInterface::stopMotion(int32_t axisID){
+    //DPRINT("ALEDEBUG STOP MOTION IN INTERFACE\n");
     WRITE_OP_AX_TIM(OP_STOP_MOTION,axisID,0);
 }
 int ChaosActuatorInterface::hardreset(int32_t axisID,bool mode){

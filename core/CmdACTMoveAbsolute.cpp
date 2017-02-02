@@ -107,10 +107,8 @@ void own::CmdACTMoveAbsolute::setHandler(c_data::CDataWrapper *data) {
 	}
 
 	// Controllo setpoint finale: se tale valore appartiene al range [min_position-tolmin,max_position+tolmax]
-	double tolmax = std::abs(max_position*0.3);
-	double tolmin = std::abs(min_position*0.3);
 
-	if (((positionToReach) > (max_position+tolmax)) || ((positionToReach)< (min_position-tolmin)))
+	if ((positionToReach > max_position) || (positionToReach< min_position))
 	{
 		SCLERR_ << "Finale position "<<positionToReach<< " out of range ( " << min_position << ","<< max_position <<") the command won't be executed";
 		metadataLogging(chaos::common::metadata_logging::StandardLoggingChannel::LogLevelError,CHAOS_FORMAT("Final set point %1% outside the maximum/minimum 'position_sp' = tolerance \"max_position\":%2% \"min_position\":%3%" , % positionToReach % max_position % min_position));
@@ -125,13 +123,6 @@ void own::CmdACTMoveAbsolute::setHandler(c_data::CDataWrapper *data) {
 
 	currentPosition=*o_position;
 	double deltaPosition = std::abs(positionToReach-currentPosition);
-	if(deltaPosition<*p_resolution){
-		metadataLogging(chaos::common::metadata_logging::StandardLoggingChannel::LogLevelWarning,CHAOS_FORMAT("operation inibited because of resolution %1% , position set point %2%",%*p_resolution %positionToReach ));
-		*i_position=positionToReach;
-		getAttributeCache()->setInputDomainAsChanged();
-		BC_END_RUNNING_PROPERTY;
-		return;
-	}
 
 	SCLDBG_ << "compute timeout for moving Absolute = " << positionToReach;
 
@@ -144,15 +135,10 @@ void own::CmdACTMoveAbsolute::setHandler(c_data::CDataWrapper *data) {
 
 	}   else computed_timeout=(uint64_t)*p_setTimeout;
 
-	//setFeatures(chaos_batch::features::FeaturesFlagTypes::FF_SET_COMMAND_TIMEOUT, computed_timeout)
 	SCLDBG_ << "Calculated timeout is = " << computed_timeout;
 	setFeatures(chaos_batch::features::FeaturesFlagTypes::FF_SET_COMMAND_TIMEOUT, computed_timeout);
 
 	//slow_acquisition_index = false;
-	*i_position=positionToReach;
-	getAttributeCache()->setInputDomainAsChanged();
-
-	SCLDBG_ << "o_position_sp is = " << *i_position;
 
 	if(*o_stby==0){
 		// we are in standby only the SP is set
@@ -164,6 +150,9 @@ void own::CmdACTMoveAbsolute::setHandler(c_data::CDataWrapper *data) {
 
 	SCLDBG_ << "Move to position " << positionToReach << "reading type " << readTyp;
 
+	*i_position=positionToReach;
+	getAttributeCache()->setInputDomainAsChanged();
+	SCLDBG_ << "o_position_sp is = " << *i_position;
 	if((err = actuator_drv->moveAbsoluteMillimeters(*axID,positionToReach)) != 0) {
 		metadataLogging(chaos::common::metadata_logging::StandardLoggingChannel::LogLevelError,CHAOS_FORMAT("axis %1% cannot perform absolute move to '%2%'",%*axID %positionToReach));
 		setStateVariableSeverity(StateVariableTypeAlarmCU,"command_error", chaos::common::alarm::MultiSeverityAlarmLevelHigh);

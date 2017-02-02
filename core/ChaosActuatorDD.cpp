@@ -162,6 +162,7 @@ cu_driver::MsgManagmentResultType::MsgManagmentResult ChaosActuatorDD::execOpcod
             break;
        
         case OP_STOP_MOTION:
+            ACDBG<<"Before Stop Motion :" << std::endl;
             out->result = motor->stopMotion(in->axis);
             ACDBG<<"Stop Motion, result:"<< out->result;
             break;

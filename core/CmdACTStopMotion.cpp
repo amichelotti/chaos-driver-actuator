@@ -49,7 +49,9 @@ void own::CmdACTStopMotion::setHandler(c_data::CDataWrapper *data) {
 
 	SCLDBG_ << "Stop Motion " ;
 
-	setFeatures(chaos_batch::features::FeaturesFlagTypes::FF_SET_COMMAND_TIMEOUT, *p_setTimeout);
+	//setFeatures(chaos_batch::features::FeaturesFlagTypes::FF_SET_COMMAND_TIMEOUT, *p_setTimeout);
+        if (actuator_drv != 0)
+		SCLDBG_ << "driver pointer not null "<< actuator_drv << " axID "<< *axID;
 	if((err = actuator_drv->stopMotion(*axID)) != 0) {
 
 		metadataLogging(chaos::common::metadata_logging::StandardLoggingChannel::LogLevelError,boost::str( boost::format("error stopping motion")) );

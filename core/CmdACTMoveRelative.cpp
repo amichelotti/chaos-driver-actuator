@@ -98,27 +98,13 @@ void own::CmdACTMoveRelative::setHandler(c_data::CDataWrapper *data) {
 		return;
 	}
 
-	// Controllo setpoint finale: se tale valore appartiene al range [min_position-tolmin,max_position+tolmax]
-	double tolmax = std::abs(max_position*0.3);
-	double tolmin = std::abs(min_position*0.3);
 	AbstractActuatorCommand::acquireHandler();
 
 	currentPosition=*o_position;
 	double newPosition=currentPosition+offset_mm;
-	if((newPosition) > (max_position+tolmax)|| (newPosition)< (min_position-tolmin)){ // nota: *o_position aggiornata inizialmente da AbstractActuatorCommand::acquireHandler();
+	if((newPosition > max_position)|| (newPosition< min_position)){ // nota: *o_position aggiornata inizialmente da AbstractActuatorCommand::acquireHandler();
 		metadataLogging(chaos::common::metadata_logging::StandardLoggingChannel::LogLevelError,CHAOS_FORMAT("Final set point %1% outside the maximum/minimum 'position' = tolerance \"max_position\":%2% \"min_position\":%3%" , % (currentPosition + offset_mm) % max_position % min_position));
 		BC_FAULT_RUNNING_PROPERTY;
-		return;
-	}
-
-	// Ma lo spostamento da effettuare e' maggiore dello spostamento minimo *p_resolution?
-	// ****************** Nota: *p_resolution sostituisce il vecchio *__i_delta_setpoint *********************
-	if(std::abs(offset_mm)<*p_resolution){
-		SCLDBG_ << "operation inibited because of resolution:" << *p_resolution;
-		metadataLogging(chaos::common::metadata_logging::StandardLoggingChannel::LogLevelWarning,CHAOS_FORMAT("operation inibited because of resolution %1% , delta position %2%",%*p_resolution %offset_mm ));
-		*i_position=newPosition;
-		getAttributeCache()->setInputDomainAsChanged();
-		BC_END_RUNNING_PROPERTY;
 		return;
 	}
 
@@ -136,21 +122,9 @@ void own::CmdACTMoveRelative::setHandler(c_data::CDataWrapper *data) {
 	SCLDBG_ << "Calculated timeout is = " << computed_timeout;
 	setFeatures(chaos_batch::features::FeaturesFlagTypes::FF_SET_COMMAND_TIMEOUT, computed_timeout);
 
-	//	if(*__i_setpoint_affinity) {
-	//		affinity_set_delta = *__i_setpoint_affinity;
-	//	} else {
-	//		affinity_set_delta = 1;
-	//	}
-	//	SCLDBG_ << "The setpoint affinity value is of +-" << affinity_set_delta << " of millimeters";
-	// ************* Nota: affinity_set_delta veniva gestito nelle funzioni cchandler() e nel timeouthandler() *****************
 
 
-	//assign new position setpoint
-	//slow_acquisition_index = false;
-	*i_position=newPosition; //**************** nota: *i_position rimpiazza *o_position_sp *************************
-	getAttributeCache()->setInputDomainAsChanged();
 	setStateVariableSeverity(StateVariableTypeAlarmCU,"position_value_not_reached", chaos::common::alarm::MultiSeverityAlarmLevelClear);
-	SCLDBG_ << "o_position_sp is = " << *i_position;
 
 	if(*o_stby==0){
 			// we are in standby only the SP is set
@@ -161,6 +135,9 @@ void own::CmdACTMoveRelative::setHandler(c_data::CDataWrapper *data) {
 		}
 	SCLDBG_ << "Move to position " << newPosition << "reading type " << readTyp;
 
+	*i_position=newPosition; 
+	getAttributeCache()->setInputDomainAsChanged();
+	SCLDBG_ << "o_position_sp is = " << *i_position;
 	if((err = actuator_drv->moveRelativeMillimeters(*axID,offset_mm)) != 0) {
 		metadataLogging(chaos::common::metadata_logging::StandardLoggingChannel::LogLevelError,CHAOS_FORMAT("axis %1% cannot perform relative move to '%2%' mm",%*axID %offset_mm));
 		setStateVariableSeverity(StateVariableTypeAlarmCU,"command_error", chaos::common::alarm::MultiSeverityAlarmLevelHigh);

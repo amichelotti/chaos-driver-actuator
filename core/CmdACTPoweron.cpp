@@ -80,6 +80,7 @@ void own::CmdACTPoweron::acquireHandler() {
 }
 // empty correlation handler
 void own::CmdACTPoweron::ccHandler() {
+	SCLDBG_ << "power on command on axisID " << axID;
 	if((((*o_status_id)&::common::actuators::ACTUATOR_POWER_SUPPLIED)?1:0)==onState){
 		BC_END_RUNNING_PROPERTY;
 	}
