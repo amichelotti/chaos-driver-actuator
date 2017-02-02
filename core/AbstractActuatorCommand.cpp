@@ -137,14 +137,6 @@ void AbstractActuatorCommand::setHandler(c_data::CDataWrapper *data) {
 
 	i_speed = ( double*) getAttributeCache()->getROPtr<double>(DOMAIN_INPUT, "speed");
 	highspeed_homing= ( double*) getAttributeCache()->getROPtr<double>(DOMAIN_INPUT, "highspeedhoming");
-	//i_command_timeout = getAttributeCache()->getROPtr<uint32_t>(DOMAIN_INPUT, "command_timeout");
-	__i_delta_setpoint = getAttributeCache()->getROPtr<double>(DOMAIN_INPUT, "__delta_setpoint");
-	__i_setpoint_affinity = getAttributeCache()->getROPtr<double>(DOMAIN_INPUT, "__setpoint_affinity");
-	//p_minimumWorkingValue = getAttributeCache()->getROPtr<double>(DOMAIN_INPUT, "minimumWorkingValue");
-	p_minimumWorkingValue=0;
-	p_maximumWorkingValue=0;
-	//p_maximumWorkingValue = getAttributeCache()->getROPtr<double>(DOMAIN_INPUT, "maximumWorkingValue");
-	//p_warningThreshold = getAttributeCache()->getROPtr<double>(DOMAIN_INPUT, "warningThreshold");
 
 	p_setTimeout = getAttributeCache()->getROPtr<uint32_t>(DOMAIN_INPUT, "setTimeout");
 
@@ -350,7 +342,5 @@ void AbstractActuatorCommand::getState(int32_t axisID,int& current_state, std::s
 }
 
 void AbstractActuatorCommand::setWorkState(bool working_flag) {
-	//	int64_t *o_dev_state = getAttributeCache()->getRWPtr<int64_t>(DOMAIN_OUTPUT, "dev_state"); // *************** commentato *****************
-	//	*o_dev_state = working_flag; // *************** commentato *****************
 	setBusyFlag(working_flag);
 }

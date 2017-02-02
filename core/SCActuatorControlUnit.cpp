@@ -301,22 +301,6 @@ addAttributeToDataSet("auxiliaryConfigParameters",
                         DataType::TYPE_INT32,
                         DataType::Input);
  
-  addAttributeToDataSet("__delta_setpoint",
-                        "Delta of the setpoint",
-                        DataType::TYPE_DOUBLE,
-                        DataType::Input);
-
-  addAttributeToDataSet("__setpoint_affinity",
-                        "Delta of the setpoint",
-                        DataType::TYPE_DOUBLE,
-                        DataType::Input);
-  
-  addAttributeToDataSet("__setpoint_affinity",
-                        "Delta of the setpoint",
-                        DataType::TYPE_DOUBLE,
-                        DataType::Input);
-
-  
   addAttributeToDataSet("resolution",
                         "resolution on position",
                         DataType::TYPE_DOUBLE,

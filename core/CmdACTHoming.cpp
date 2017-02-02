@@ -102,6 +102,7 @@ void own::CmdACTHoming::setHandler(c_data::CDataWrapper *data)
 	if(*o_stby==0){
 		// we are in standby only the SP is set
 		metadataLogging(chaos::common::metadata_logging::StandardLoggingChannel::LogLevelWarning,"cannot perform homing because in PowerOff");
+		setWorkState(false);
 		BC_FAULT_RUNNING_PROPERTY;
 		return;
 	}
@@ -116,7 +117,7 @@ void own::CmdACTHoming::setHandler(c_data::CDataWrapper *data)
 
 	homingTypeVar = homType;
 	metadataLogging(chaos::common::metadata_logging::StandardLoggingChannel::LogLevelInfo,boost::str( boost::format("axis %1% performing command homing of type:%2% timeout %3%") %*axID % homType % computed_timeout) );
-	setFeatures(chaos_batch::features::FeaturesFlagTypes::FF_SET_SCHEDULER_DELAY, (uint64_t)1000000); //*********** (uint64_t)100000 deve diventare un parametro ************
+	setFeatures(chaos_batch::features::FeaturesFlagTypes::FF_SET_SCHEDULER_DELAY, (uint64_t)500000); //*********** (uint64_t)100000 deve diventare un parametro ************
 	BC_NORMAL_RUNNING_PROPERTY;
 }
 
@@ -126,7 +127,7 @@ void own::CmdACTHoming::acquireHandler() {
 	//int state;
 	//std::string state_str;
 	//double position;
-	SCLDBG_ << "Start Acquire Handler " ;
+	SCLDBG_ << "Start Homing Acquire Handler " ;
 
 	//acquire the current readout
 	AbstractActuatorCommand::acquireHandler(); // ********* Necessario per aggiornare solo stato e posizione in questo specifico caso ***************
@@ -156,6 +157,9 @@ void own::CmdACTHoming::ccHandler() {
 		SCLDBG_ << "Homing operation completed in "<< elapsed_msec <<" milliseconds";
 		*o_lasthoming = chaos::common::utility::TimingUtil::getTimeStamp();
 		metadataLogging(chaos::common::metadata_logging::StandardLoggingChannel::LogLevelInfo,"Homing completed");
+                *i_position=0;
+ 		getAttributeCache()->setInputDomainAsChanged();
+		getAttributeCache()->setOutputDomainAsChanged();
 
 		BC_END_RUNNING_PROPERTY;
 		return;

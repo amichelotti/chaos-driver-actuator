@@ -53,14 +53,11 @@ protected:
 	bool		*o_stby;
 	bool		*o_pswitch;
 	bool            *o_nswitch;
-	//double	*o_position_sp; // ********* AGGIUNTO ************
 	double *i_speed; // ********* AGGIUNTO ************
 	double *highspeed_homing;  // ********* AGGIUNTO ************
 	const uint32_t	*i_command_timeout;// ********* AGGIUNTO ************
-	const double	*__i_delta_setpoint;// ********* AGGIUNTO ************
-	const double	*__i_setpoint_affinity;// ********* AGGIUNTO ************
 
-	const double*p_minimumWorkingValue,*p_maximumWorkingValue,*p_resolution,*p_warningThreshold;  // ********* AGGIUNTO ************
+	const double *p_resolution,*p_warningThreshold;  // ********* AGGIUNTO ************
 
 	const uint32_t *axID;       // ********* AGGIUNTO axID ************
 	const bool      *s_bypass;
