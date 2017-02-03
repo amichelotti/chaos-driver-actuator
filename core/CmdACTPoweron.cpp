@@ -39,11 +39,6 @@ BATCH_COMMAND_ADD_INT32_PARAM(CMD_ACT_POWERON_VALUE,"on state",chaos::common::ba
 BATCH_COMMAND_CLOSE_DESCRIPTION()
 
 
-// return the implemented handler
-//uint8_t own::CmdACTPoweron::implementedHandler(){
-//	return      AbstractActuatorCommand::implementedHandler()|chaos_batch::HandlerType::HT_Acquisition;
-//}
-// empty set handler
 void own::CmdACTPoweron::setHandler(c_data::CDataWrapper *data) {
 	int err;
 	AbstractActuatorCommand::setHandler(data);
@@ -61,6 +56,10 @@ void own::CmdACTPoweron::setHandler(c_data::CDataWrapper *data) {
 	setStateVariableSeverity(StateVariableTypeAlarmCU,"command_error", chaos::common::alarm::MultiSeverityAlarmLevelClear);
 	setStateVariableSeverity(StateVariableTypeAlarmCU,"powerOn_out_of_set", chaos::common::alarm::MultiSeverityAlarmLevelClear);
 	setStateVariableSeverity(StateVariableTypeAlarmCU,"powerOn_value_not_reached", chaos::common::alarm::MultiSeverityAlarmLevelClear);
+
+   	uint64_t computed_timeout=std::max(5000000,(uint64_t)*p_setTimeout);
+ 	SCLDBG_ << "Calculated timeout is = " << computed_timeout;
+        setFeatures(chaos_batch::features::FeaturesFlagTypes::FF_SET_COMMAND_TIMEOUT, computed_timeout);
 
 
 	SCLDBG_   << "Launching poweron in set handler power on in axid "<< *axID << " value " << onState;
