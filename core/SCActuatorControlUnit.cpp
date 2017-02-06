@@ -552,10 +552,25 @@ bool ::driver::actuator::SCActuatorControlUnit::unitRestoreToSnapshot(chaos::cu:
 	return false;
   }
 
-    bool restore_power_sp = *snapshot_cache->getAttributeValue(DOMAIN_OUTPUT, "powerOn")->getValuePtr<bool>();
-  RESTORE_LAPP << "Restore Trying to set power at " << restore_power_sp;
+  if (!snapshot_cache->getSharedDomain(DOMAIN_INPUT).hasAttribute("powerOn"))
+  {
+	  RESTORE_LERR << " missing powerOn to restore" ;
+	  if (!snapshot_cache->getSharedDomain(DOMAIN_INPUT).hasAttribute("speed"))
+		  RESTORE_LERR << "ALEDEBUG missing speed";
+	  if (!snapshot_cache->getSharedDomain(DOMAIN_INPUT).hasAttribute("resolution"))
+		  RESTORE_LERR << "ALEDEBUG missing resolution";
+	  return false;
+
+  }
+
+
     double restore_position_sp = *snapshot_cache->getAttributeValue(DOMAIN_INPUT, "position")->getValuePtr<double>();
   RESTORE_LAPP << "Restore Trying to set position at " << restore_position_sp;
+  bool restore_power_sp = *snapshot_cache->getAttributeValue(DOMAIN_INPUT, "powerOn")->getValuePtr<bool>();
+  RESTORE_LAPP << "Restore Trying to set power at " << restore_power_sp;
+
+
+
   metadataLogging(chaos::common::metadata_logging::StandardLoggingChannel::LogLevelInfo,CHAOS_FORMAT("start restore \"%1%\" (axis %2%) to position %3% ",%getDeviceID() %*axID %restore_position_sp));
  
   try {
