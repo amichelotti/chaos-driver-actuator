@@ -57,7 +57,7 @@ void own::CmdACTPoweron::setHandler(c_data::CDataWrapper *data) {
 	setStateVariableSeverity(StateVariableTypeAlarmCU,"powerOn_out_of_set", chaos::common::alarm::MultiSeverityAlarmLevelClear);
 	setStateVariableSeverity(StateVariableTypeAlarmCU,"powerOn_value_not_reached", chaos::common::alarm::MultiSeverityAlarmLevelClear);
 
-   	uint64_t computed_timeout=std::max(5000000,(uint64_t)*p_setTimeout);
+   	uint64_t computed_timeout=std::max((uint64_t)5000000,(uint64_t)*p_setTimeout);
  	SCLDBG_ << "Calculated timeout is = " << computed_timeout;
         setFeatures(chaos_batch::features::FeaturesFlagTypes::FF_SET_COMMAND_TIMEOUT, computed_timeout);
 

@@ -78,25 +78,12 @@ void own::CmdACTHoming::setHandler(c_data::CDataWrapper *data)
 
 	if (*highspeed_homing!= 0)
 	{
-		computed_timeout  = uint64_t((std::abs(*o_position) / *highspeed_homing)*1000000000000) + DEFAULT_MOVE_TIMETOL_OFFSET_MS;
+	computed_timeout  = uint64_t((100 / *highspeed_homing)*1000000) + DEFAULT_MOVE_TIMETOL_OFFSET_MS;
 		computed_timeout = std::max(computed_timeout,(uint64_t)*p_setTimeout);
 
 	}   else computed_timeout=(uint64_t)*p_setTimeout;
 
 	setFeatures(chaos_batch::features::FeaturesFlagTypes::FF_SET_COMMAND_TIMEOUT, computed_timeout);
-	setFeatures(chaos_batch::features::FeaturesFlagTypes::FF_SET_SCHEDULER_DELAY, (uint64_t)100000); //*********** (uint64_t)100000 deve diventare un parametro ************
-
-	//        slow_acquisition_index = false;       *************** da inserire? **************
-	//        *i_position=positionToReach;
-	//        getAttributeCache()->setInputDomainAsChanged();
-
-	//        if(*o_stby){
-	//            // we are in standby only the SP is set
-	//            SCLDBG_ << "we are in standby we cannot start homing operation of type: "<<homType;
-	//            setWorkState(false);
-	//            BC_END_RUNNING_PROPERTY;
-	//            return;
-	//        }
 
 	SCLDBG_ << "Start homing operation of type " << homType;
 	if(*o_stby==0){
@@ -190,11 +177,6 @@ void own::CmdACTHoming::ccHandler() {
 	}
 
 
-	//    if(*o_alarms) {
-	//        SCLERR_ << "We got alarms on actuator/slit so we end the command";
-	//        setWorkState(false);
-	//	BC_END_RUNNING_PROPERTY;
-	//    }
 }
 
 // empty timeout handler
@@ -206,11 +188,11 @@ bool own::CmdACTHoming::timeoutHandler() {
 	// inviare un comando di stop di movimentazione.
 	int err;
 	if((err = actuator_drv->stopMotion(*axID)) != 0) {
-		setStateVariableSeverity(StateVariableTypeAlarmCU,"homing_operation_failed", chaos::common::alarm::MultiSeverityAlarmLevelHigh);
-		metadataLogging(chaos::common::metadata_logging::StandardLoggingChannel::LogLevelError,"Stopping motion, because timeout during homing");
 
 
 	}
+	setStateVariableSeverity(StateVariableTypeAlarmCU,"homing_operation_failed", chaos::common::alarm::MultiSeverityAlarmLevelHigh);
+	metadataLogging(chaos::common::metadata_logging::StandardLoggingChannel::LogLevelError,"Stopping motion, because timeout during homing");
 
 	BC_FAULT_RUNNING_PROPERTY;
 	return false;

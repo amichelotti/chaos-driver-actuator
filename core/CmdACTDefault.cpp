@@ -57,15 +57,18 @@ uint8_t CmdACTDefault::implementedHandler() {
 void CmdACTDefault::setHandler(c_data::CDataWrapper *data) {
 	
         const int *tmpInt;
+        BackupData=data;
          
         lastState=-1;
         lastPosition=-1;
         lastAlarms=0;
+	alreadyLogged=0;
         
         
         
 	CMDCU_ << "Set Handler";
 	AbstractActuatorCommand::setHandler(data);
+	BackupAxID=*axID;
 	setStateVariableSeverity(StateVariableTypeAlarmCU,"command_error", chaos::common::alarm::MultiSeverityAlarmLevelClear);
 	CMDCU_ << "After parental Set Handler";
 	//set the default scheduling to one seconds
@@ -102,6 +105,13 @@ void CmdACTDefault::acquireHandler() {
         
         
         //acquire the current readout
+    //axID= getAttributeCache()->getROPtr<uint32_t>(DOMAIN_INPUT, "axisID");
+
+    if (*axID != BackupAxID)
+    {
+	AbstractActuatorCommand::setHandler(BackupData);
+	BackupAxID=*axID;
+    }
 
     AbstractActuatorCommand::acquireHandler();
 	
@@ -132,7 +142,11 @@ void CmdACTDefault::acquireHandler() {
                     {
                         CMDCUERR_ << "WARNING OUT OF SET " << *o_position << " ";
                         setStateVariableSeverity(StateVariableTypeAlarmCU,"position_out_of_set", chaos::common::alarm::MultiSeverityAlarmLevelWarning);
+			if (alreadyLogged == 0)
+			{
                         metadataLogging(chaos::common::metadata_logging::StandardLoggingChannel::LogLevelWarning,"The position set point has drifted out the defined threshold" );     
+			alreadyLogged=1;
+			}
                   
                     }
                 }
@@ -142,6 +156,7 @@ void CmdACTDefault::acquireHandler() {
             {
                 OutOfSetWarningStatus=false;
                 setStateVariableSeverity(StateVariableTypeAlarmCU,"position_out_of_set", chaos::common::alarm::MultiSeverityAlarmLevelClear);
+		alreadyLogged=0;
             }
         }
 

@@ -76,7 +76,7 @@ void own::CmdACTSetParameter::setHandler(c_data::CDataWrapper *data) {
         } 
         
 	if((err = actuator_drv->setParameter(*axID,parName,value)) != 0) {
-		LOG_AND_TROW(SCLERR_, 1, boost::str(boost::format("Error %1% setting parameter %2") % err % parName));
+ 		metadataLogging(chaos::common::metadata_logging::StandardLoggingChannel::LogLevelError,"set parameter command not acknowledged" ); // ********** aggiunto **************
 	}
 }
 // empty acquire handler
