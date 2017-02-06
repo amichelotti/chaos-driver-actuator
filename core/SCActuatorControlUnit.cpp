@@ -552,6 +552,8 @@ bool ::driver::actuator::SCActuatorControlUnit::unitRestoreToSnapshot(chaos::cu:
 	return false;
   }
 
+    bool restore_power_sp = *snapshot_cache->getAttributeValue(DOMAIN_OUTPUT, "powerOn")->getValuePtr<bool>();
+  RESTORE_LAPP << "Restore Trying to set power at " << restore_power_sp;
     double restore_position_sp = *snapshot_cache->getAttributeValue(DOMAIN_INPUT, "position")->getValuePtr<double>();
   RESTORE_LAPP << "Restore Trying to set position at " << restore_position_sp;
   metadataLogging(chaos::common::metadata_logging::StandardLoggingChannel::LogLevelInfo,CHAOS_FORMAT("start restore \"%1%\" (axis %2%) to position %3% ",%getDeviceID() %*axID %restore_position_sp));
@@ -595,11 +597,24 @@ bool ::driver::actuator::SCActuatorControlUnit::unitRestoreToSnapshot(chaos::cu:
       }
     }
 */
+    if (!setPowerOn(true)) {
+    	  metadataLogging(chaos::common::metadata_logging::StandardLoggingChannel::LogLevelError,CHAOS_FORMAT("Error applying power on during restore \"%1%\" (axis %2%) to position %3% ",%getDeviceID() %*axID %restore_position_sp));
+ 	  return false;
+    } 
 
     if (!setPosition(restore_position_sp)) {
     	  metadataLogging(chaos::common::metadata_logging::StandardLoggingChannel::LogLevelError,CHAOS_FORMAT("Error restoring \"%1%\" (axis %2%) to position %3% ",%getDeviceID() %*axID %restore_position_sp));
 
     	  return false;
+    }
+    if (restore_power_sp == false) 
+    {
+	if (!setPowerOn(restore_power_sp)) 
+	{
+    	  metadataLogging(chaos::common::metadata_logging::StandardLoggingChannel::LogLevelError,CHAOS_FORMAT("Error restoring power on during restore \"%1%\" (axis %2%) to value %3% ",%getDeviceID() %*axID %restore_power_sp));
+ 	  return false;
+	  
+	}
     }
     uint64_t restore_duration_in_ms = chaos::common::utility::TimingUtil::getTimeStamp() - start_restore_time;
 	metadataLogging(chaos::common::metadata_logging::StandardLoggingChannel::LogLevelInfo,CHAOS_FORMAT("Restored \"%1%\" (axis %2%) to position %3% in %4%",%getDeviceID() %*axID %restore_position_sp %restore_duration_in_ms));
@@ -635,7 +650,23 @@ bool ::driver::actuator::SCActuatorControlUnit::setPosition(double val,bool sync
   return result;
 }
 
-
+bool  ::driver::actuator::SCActuatorControlUnit::setPowerOn(bool value,bool sync) {
+	uint64_t cmd_id;
+	bool result = true;
+  	std::auto_ptr<CDataWrapper> cmd_pack(new CDataWrapper());
+  	cmd_pack->addInt32Value(CMD_ACT_POWERON_VALUE, value);
+  	//send command
+  	submitBatchCommand(CMD_ACT_POWERON_ALIAS,
+                     cmd_pack.release(),
+                     cmd_id,
+                     0,
+                     50,
+                     SubmissionRuleType::SUBMIT_AND_STACK);
+  	if (sync) {
+    		result = waitOnCommandID(cmd_id);
+  	}
+	return result;
+}
 
 
 bool ::driver::actuator::SCActuatorControlUnit::waitOnCommandID(uint64_t cmd_id) {
