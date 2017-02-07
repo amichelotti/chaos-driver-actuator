@@ -56,6 +56,7 @@ void own::CmdACTMoveAbsolute::setHandler(c_data::CDataWrapper *data) {
 
 	float positionToReach = 0.f;
 	AbstractActuatorCommand::setHandler(data);
+	readTyp=(::common::actuators::AbstractActuator::readingTypes) *tmpInt;
 
 	setWorkState(true);
 	if(performCheck()!=0){
@@ -125,7 +126,15 @@ void own::CmdACTMoveAbsolute::setHandler(c_data::CDataWrapper *data) {
 	double deltaPosition = std::abs(positionToReach-currentPosition);
 
 	SCLDBG_ << "compute timeout for moving Absolute = " << positionToReach;
-
+	std::string retStr="NULLA";
+    if ((err = actuator_drv->getParameter(*axID,"speed",retStr)) != 0)
+    {
+    	SCLDBG_ << "ALEDEBUG failed to read speed from driver";
+    }
+    else
+    {
+    	SCLDBG_ << "ALEDEBUG driver said speed is" << retStr;
+    }
 	//numero di secondi, dopo lo moltiplichiamo per 1 milione (volendo da micro)
 	uint64_t computed_timeout; // timeout will be expressed in [ms]
 	if (*i_speed!= 0)

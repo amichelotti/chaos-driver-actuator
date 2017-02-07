@@ -191,6 +191,14 @@ idata.axis=ax;\
 accessor->send(&message);\
 return ret.result;
 /***************************/
+#define WRITE_OP_AX_STRING_RETSTRING_TIM(op,ax,pstring,pstring2,timeout) \
+PREPARE_OP_RET_INT_TIMEOUT(op,timeout); \
+strncpy(idata.str,pstring.c_str(),MAX_STR_SIZE); \
+pstring2=ret.str; \
+idata.axis=ax;\
+accessor->send(&message);\
+return ret.result;
+/***************************/
 
 #define READ_OP_INT_TIM(op,pival,timeout) \
 PREPARE_OP_RET_INT_TIMEOUT(op,timeout); \
@@ -356,6 +364,11 @@ uint64_t ChaosActuatorInterface::getFeatures() {
 }
 int ChaosActuatorInterface::setParameter(int32_t axisID,const std::string parName,const std::string value) {
 	WRITE_OP_AX_STRING_STRING_TIM(OP_SETPARAMETER,axisID,parName.c_str(),value.c_str(),0);
+}
+
+
+int ChaosActuatorInterface::getParameter(int axisID,std::string parName,std::string& resultString) {
+	WRITE_OP_AX_STRING_RETSTRING_TIM(OP_GETPARAMETER,axisID,parName,resultString,0);
 }
 
 

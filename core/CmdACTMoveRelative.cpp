@@ -52,6 +52,7 @@ void own::CmdACTMoveRelative::setHandler(c_data::CDataWrapper *data) {
 	//chaos::common::data::RangeValueInfo position_sp_attr_info;   // ************* Commentato *************
 	//chaos::common::data::RangeValueInfo attributeInfo;           // ************* Commentato *************
 	AbstractActuatorCommand::setHandler(data);
+
 	// ********** aggiunto ************** Ha aggiornato anche position....
 
 	int err = 0;

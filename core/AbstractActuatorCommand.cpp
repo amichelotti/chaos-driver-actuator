@@ -110,7 +110,7 @@ int AbstractActuatorCommand::performCheck(){
 	return 0;
 }
 void AbstractActuatorCommand::setHandler(c_data::CDataWrapper *data) {
-	int *tmpInt;
+
 
 
 	o_nswitch=getAttributeCache()->getRWPtr<bool>(DOMAIN_OUTPUT, "NegativeLimitSwitchActive");
@@ -305,7 +305,7 @@ void AbstractActuatorCommand::acquireHandler(){
 		return;
 	}
 
-
+	readTyp=(::common::actuators::AbstractActuator::readingTypes) *tmpInt;
 	if ((err = actuator_drv->getPosition(*axID,readTyp,&position))==0) {
 		//LOG_AND_TROW(SCLERR_, 1, boost::str(boost::format("Error fetching position with code %1%") % err));
 		*o_position = position;

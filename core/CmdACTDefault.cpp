@@ -144,7 +144,7 @@ void CmdACTDefault::acquireHandler() {
                         setStateVariableSeverity(StateVariableTypeAlarmCU,"position_out_of_set", chaos::common::alarm::MultiSeverityAlarmLevelWarning);
 			if (alreadyLogged == 0)
 			{
-                        metadataLogging(chaos::common::metadata_logging::StandardLoggingChannel::LogLevelWarning,"The position set point has drifted out the defined threshold" );     
+                        metadataLogging(chaos::common::metadata_logging::StandardLoggingChannel::LogLevelWarning,CHAOS_FORMAT("The position set point has drifted out the defined threshold  \"position\":%1% \"position set point\":%2% \"threshold\":%3%" , %(*o_position) %(*pos_sp)  % (*positionTHR) ));
 			alreadyLogged=1;
 			}
                   
