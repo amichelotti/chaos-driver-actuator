@@ -167,6 +167,113 @@ void ::driver::actuator::SCActuatorControlUnit::unitDefineActionAndDataset() thr
   if (actuator_drv == NULL) {
     throw chaos::CException(-2, "Cannot allocate driver resources", __FUNCTION__);
   }
+  addAttributeToDataSet("axisID",
+                          "axis ID for the motor",
+                          DataType::TYPE_INT32,
+                          DataType::Input);
+
+     addAttributeToDataSet("readingType",
+                          "readingType",
+                          DataType::TYPE_INT32,
+                          DataType::Input);
+
+     addAttributeToDataSet("dev_state",
+                          "Bit field device state",
+                          DataType::TYPE_INT64,
+                          DataType::Output);
+
+    addAttributeToDataSet("position",
+                          "position",
+                          DataType::TYPE_DOUBLE,
+                          DataType::Bidirectional);
+
+    addAttributeToDataSet("LastHomingTime",
+                          "timestamp with the last homing",
+                          DataType::TYPE_INT64,
+                          DataType::Output);
+    addAttributeToDataSet("alarms",
+                          "Alarms",
+                          DataType::TYPE_INT64,
+                          DataType::Output);
+
+    addAttributeToDataSet("alarmStr",
+                          "alarm description string",
+                          DataType::TYPE_STRING,
+                          DataType::Output, 256);
+
+    addAttributeToDataSet("status_id",
+                          "status_id",
+                          DataType::TYPE_INT32,
+                          DataType::Output);
+
+    addAttributeToDataSet("status",
+                          "status",
+                          DataType::TYPE_STRING,
+                          DataType::Output, 256);
+
+  addAttributeToDataSet("ConfigString",
+                          "ConfigString",
+                          DataType::TYPE_STRING,
+                          DataType::Input, 256);
+
+  addAttributeToDataSet("auxiliaryConfigParameters",
+                          "parameter:value;parameter:value;",
+                          DataType::TYPE_STRING,
+                          DataType::Input, 512);
+
+    addAttributeToDataSet("driver_timeout",
+                          "Driver timeout in milliseconds",
+                          DataType::TYPE_INT32,
+                          DataType::Input);
+
+   addAttributeToDataSet("setTimeout",
+                          "Command timeout in milliseconds",
+                          DataType::TYPE_INT32,
+                          DataType::Input);
+
+    addAttributeToDataSet("resolution",
+                          "resolution on position",
+                          DataType::TYPE_DOUBLE,
+                          DataType::Input);
+
+    addAttributeToDataSet("positionWarningTHR_Timeout",
+                          "Tolerance time for Threshold warning on Position",
+                          DataType::TYPE_DOUBLE,
+                          DataType::Input);
+
+  addAttributeToDataSet("positionWarningTHR",
+                          "Position warning threshold",
+                          DataType::TYPE_DOUBLE,
+                          DataType::Input);
+
+     addAttributeToDataSet("bypass",
+                            "exclude HW changes",
+                            DataType::TYPE_BOOLEAN,
+                            DataType::Input);
+
+     addAttributeToDataSet("powerOn",
+                            "stdby management",
+                            DataType::TYPE_BOOLEAN,
+                            DataType::Bidirectional);
+
+     addAttributeToDataSet("PositiveLimitSwitchActive",
+                            "if on, positive limit switch are currently pressed",
+                            DataType::TYPE_BOOLEAN,
+                            DataType::Output);
+
+     addAttributeToDataSet("NegativeLimitSwitchActive",
+                            "if on, negative limit switch are currently pressed",
+                            DataType::TYPE_BOOLEAN,
+                            DataType::Output);
+
+     addAttributeToDataSet("stopHoming",
+                            "homing to be stopped flag",
+                            DataType::TYPE_BOOLEAN,
+                            DataType::Output);
+
+
+
+
   std::string dataset;
   actuator_drv->sendDataset(dataset) ;
   SCCUAPP << "getting dataset from driver " << dataset;
@@ -178,7 +285,8 @@ void ::driver::actuator::SCActuatorControlUnit::unitDefineActionAndDataset() thr
   if(!json_reader.parse(dataset, json_parameter)) {
   SCCUAPP << "Bad Json parameter " << json_parameter;
   }
-  else {
+  else
+  {
     const Json::Value& dataset_description = json_parameter["attributes"];
     for (Json::ValueConstIterator it = dataset_description.begin(); it != dataset_description.end();it++)
     {
@@ -237,109 +345,7 @@ void ::driver::actuator::SCActuatorControlUnit::unitDefineActionAndDataset() thr
 
   }
 
-   addAttributeToDataSet("axisID",
-                        "axis ID for the motor",
-                        DataType::TYPE_INT32,
-                        DataType::Input);
-
-   addAttributeToDataSet("readingType",
-                        "readingType",
-                        DataType::TYPE_INT32,
-                        DataType::Input);
- 
-   addAttributeToDataSet("dev_state",
-                        "Bit field device state",
-                        DataType::TYPE_INT64,
-                        DataType::Output);
-
-  addAttributeToDataSet("position",
-                        "position",
-                        DataType::TYPE_DOUBLE,
-                        DataType::Bidirectional);
-  
-  addAttributeToDataSet("LastHomingTime",
-                        "timestamp with the last homing",
-                        DataType::TYPE_INT64,
-                        DataType::Output);
-  addAttributeToDataSet("alarms",
-                        "Alarms",
-                        DataType::TYPE_INT64,
-                        DataType::Output);
-
-  addAttributeToDataSet("alarmStr",
-                        "alarm description string",
-                        DataType::TYPE_STRING,
-                        DataType::Output, 256);
-
-  addAttributeToDataSet("status_id",
-                        "status_id",
-                        DataType::TYPE_INT32,
-                        DataType::Output);
-
-  addAttributeToDataSet("status",
-                        "status",
-                        DataType::TYPE_STRING,
-                        DataType::Output, 256);
-
-addAttributeToDataSet("ConfigString",
-                        "ConfigString",
-                        DataType::TYPE_STRING,
-                        DataType::Input, 256);
-
-addAttributeToDataSet("auxiliaryConfigParameters",
-                        "parameter:value;parameter:value;",
-                        DataType::TYPE_STRING,
-                        DataType::Input, 512);
-  
-  addAttributeToDataSet("driver_timeout",
-                        "Driver timeout in milliseconds",
-                        DataType::TYPE_INT32,
-                        DataType::Input);
-  
- addAttributeToDataSet("setTimeout",
-                        "Command timeout in milliseconds",
-                        DataType::TYPE_INT32,
-                        DataType::Input);
- 
-  addAttributeToDataSet("resolution",
-                        "resolution on position",
-                        DataType::TYPE_DOUBLE,
-                        DataType::Input);
-  
-  addAttributeToDataSet("positionWarningTHR_Timeout",
-                        "Tolerance time for Threshold warning on Position",
-                        DataType::TYPE_DOUBLE,
-                        DataType::Input);
-  
-addAttributeToDataSet("positionWarningTHR",
-                        "Position warning threshold",
-                        DataType::TYPE_DOUBLE,
-                        DataType::Input);
-  
-   addAttributeToDataSet("bypass",
-                          "exclude HW changes",
-                          DataType::TYPE_BOOLEAN,
-                          DataType::Input);
    
-   addAttributeToDataSet("powerOn",
-                          "stdby management",
-                          DataType::TYPE_BOOLEAN,
-                          DataType::Bidirectional);
-   
-   addAttributeToDataSet("PositiveLimitSwitchActive",
-                          "if on, positive limit switch are currently pressed",
-                          DataType::TYPE_BOOLEAN,
-                          DataType::Output);
-
-   addAttributeToDataSet("NegativeLimitSwitchActive",
-                          "if on, negative limit switch are currently pressed",
-                          DataType::TYPE_BOOLEAN,
-                          DataType::Output);
-
-   addAttributeToDataSet("stopHoming",
-                          "homing to be stopped flag",
-                          DataType::TYPE_BOOLEAN,
-                          DataType::Output);
  
  addHandlerOnInputAttributeName< ::driver::actuator::SCActuatorControlUnit, double >(this,
             &::driver::actuator::SCActuatorControlUnit::moveAt,

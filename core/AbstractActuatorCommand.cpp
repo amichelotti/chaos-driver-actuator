@@ -260,8 +260,6 @@ void AbstractActuatorCommand::acquireHandler(){
 
 
 	CMDCUDBG_ << "AbstractActuatorCommand::acquireHandler() " ;
-	//acquire the current readout
-	CMDCUDBG_ << "fetch  readout";
 
 
 	if((err = actuator_drv->getAlarms(*axID,&tmp_uint64,descStr))==0){
