@@ -108,15 +108,26 @@ void own::CmdACTMoveRelative::setHandler(c_data::CDataWrapper *data) {
 		BC_FAULT_RUNNING_PROPERTY;
 		return;
 	}
-
+	std::string retStr="NULLA";
+	double realSpeed=0;
+	if ((err = actuator_drv->getParameter(*axID,"speed",retStr)) != 0)
+	{
+	    	//SCLDBG_ << "ALEDEBUG failed to read speed from driver";
+	   	metadataLogging(chaos::common::metadata_logging::StandardLoggingChannel::LogLevelWarning,"Warning cannot know the real speed of motor. Using DB value instead");
+	   	realSpeed=(*i_speed);
+    }
+    else
+    {
+    	SCLDBG_ << "ALEDEBUG driver said speed is " << retStr << endl;
+    	realSpeed=atof(retStr.c_str());
+    }
 	SCLDBG_ << "Compute timeout for moving relative = " << offset_mm;
 
 	uint64_t computed_timeout; // timeout will be expressed in [ms]
-	if (*i_speed != 0)
+	if (realSpeed != 0)
 	{
-		computed_timeout  = uint64_t((offset_mm / *i_speed)*1000000) + DEFAULT_MOVE_TIMETOL_OFFSET_MS;
-		//i_speed is expressed in [mm/s]
-								   computed_timeout=std::max(computed_timeout,(uint64_t)*p_setTimeout);
+		computed_timeout  = uint64_t((offset_mm / realSpeed)*1000000) + DEFAULT_MOVE_TIMETOL_OFFSET_MS;
+		computed_timeout=std::max(computed_timeout,(uint64_t)*p_setTimeout);
 	}
 	else computed_timeout=(uint64_t)*p_setTimeout;
 

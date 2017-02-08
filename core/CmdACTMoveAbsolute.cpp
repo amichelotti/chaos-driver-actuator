@@ -127,19 +127,24 @@ void own::CmdACTMoveAbsolute::setHandler(c_data::CDataWrapper *data) {
 
 	SCLDBG_ << "compute timeout for moving Absolute = " << positionToReach;
 	std::string retStr="NULLA";
+	double realSpeed=0;
     if ((err = actuator_drv->getParameter(*axID,"speed",retStr)) != 0)
     {
-    	SCLDBG_ << "ALEDEBUG failed to read speed from driver";
+    	//SCLDBG_ << "ALEDEBUG failed to read speed from driver";
+    	metadataLogging(chaos::common::metadata_logging::StandardLoggingChannel::LogLevelWarning,"Warning cannot know the real speed of motor. Using DB value instead");
+    	realSpeed=(*i_speed);
+
     }
     else
     {
-    	SCLDBG_ << "ALEDEBUG driver said speed is" << retStr;
+    	SCLDBG_ << "ALEDEBUG driver said speed is " << retStr << endl;
+    	realSpeed=atof(retStr.c_str());
     }
 	//numero di secondi, dopo lo moltiplichiamo per 1 milione (volendo da micro)
 	uint64_t computed_timeout; // timeout will be expressed in [ms]
-	if (*i_speed!= 0)
+	if (realSpeed != 0)
 	{
-		computed_timeout  = uint64_t((deltaPosition / *i_speed)*1000000) + DEFAULT_MOVE_TIMETOL_OFFSET_MS;
+		computed_timeout  = uint64_t((deltaPosition / realSpeed)*1000000) + DEFAULT_MOVE_TIMETOL_OFFSET_MS;
 		computed_timeout = std::max(computed_timeout,(uint64_t)*p_setTimeout);
 
 	}   else computed_timeout=(uint64_t)*p_setTimeout;

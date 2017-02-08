@@ -205,7 +205,7 @@ cu_driver::MsgManagmentResultType::MsgManagmentResult ChaosActuatorDD::execOpcod
         case OP_SENDDATASET:{
         std::string dataset;
 	out->result=motor->sendDataset(dataset);
-	ACDBG << "ALEDEBUG: Received dataset " <<  dataset;
+	//ACDBG << "ALEDEBUG: Received dataset " <<  dataset;
         strncpy(out->str,dataset.c_str(),JSON_MAX_SIZE);
 	break;
 	}
@@ -222,7 +222,9 @@ cu_driver::MsgManagmentResultType::MsgManagmentResult ChaosActuatorDD::execOpcod
         case OP_GETPARAMETER: {
         	std::string tempString;
         	out->result=motor->getParameter(in->axis,in->str,tempString);
+
         	strncpy(out->str,tempString.c_str(),JSON_MAX_SIZE);
+        	ACDBG << "ALEDEBUG (DD) asked for " << in->str << " received " <<out->str;
         	break;
         }
             

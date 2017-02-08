@@ -423,7 +423,7 @@ void ::driver::actuator::SCActuatorControlUnit::unitInit() throw(CException) {
    double *o_positionSP = (double*)getAttributeCache()->getRWPtr<double>(DOMAIN_INPUT, "position"); 
    uint64_t *homingDone = getAttributeCache()->getRWPtr<uint64_t>(DOMAIN_OUTPUT, "LastHomingTime");
    double *o_position = getAttributeCache()->getRWPtr<double>(DOMAIN_OUTPUT, "position");
-
+   axID=getAttributeCache()->getROPtr<uint32_t>(DOMAIN_INPUT, "axisID");
     const bool* s_bypass=getAttributeCache()->getROPtr<bool>(DOMAIN_INPUT, "bypass");
 
       chaos::cu::driver_manager::driver::DriverAccessor *actuator_accessor = *s_bypass&&(getAccessoInstanceByIndex(1))?getAccessoInstanceByIndex(1):getAccessoInstanceByIndex(0);
@@ -437,7 +437,7 @@ void ::driver::actuator::SCActuatorControlUnit::unitInit() throw(CException) {
     throw chaos::CFatalException(-2, "Cannot allocate driver resources", __FUNCTION__);
   }
   char* ptStr=NULL, *auxStr=NULL;
-  axID=getAttributeCache()->getROPtr<uint32_t>(DOMAIN_INPUT, "axisID");
+
   ptStr=(char*)getAttributeCache()->getROPtr<char*>(DOMAIN_INPUT, "ConfigString");
   if(ptStr==NULL || *ptStr ==0){
 	    throw chaos::CFatalException(-3, "You must provide a configuration string " + control_unit_instance, __FUNCTION__);

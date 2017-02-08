@@ -75,10 +75,37 @@ void own::CmdACTHoming::setHandler(c_data::CDataWrapper *data)
 	//.......................
 	AbstractActuatorCommand::acquireHandler(); // Per aggiornare al momento piu opportuno *o_position, *readTyp
 	currentPosition=* o_position;
-
-	if (*highspeed_homing!= 0)
+	std::string retStr="NULLA";
+	double realSpeed=0;
+	double lengthSlit=100;
+	if ((err = actuator_drv->getParameter(*axID,"highspeed_homing",retStr)) != 0)
 	{
-	computed_timeout  = uint64_t((100 / *highspeed_homing)*1000000) + DEFAULT_MOVE_TIMETOL_OFFSET_MS;
+	    	//SCLDBG_ << "ALEDEBUG failed to read speed from driver";
+	   	metadataLogging(chaos::common::metadata_logging::StandardLoggingChannel::LogLevelWarning,"Warning cannot know the real highspeedhoming of motor. Using DB value instead");
+	   	realSpeed=(*highspeed_homing);
+
+	}
+	else
+	{
+		SCLDBG_ << "ALEDEBUG driver said highspeed_homing is " << retStr << endl;
+		realSpeed=atof(retStr.c_str());
+	}
+	if ((err = actuator_drv->getParameter(*axID,"range_slit[mm]",retStr)) != 0)
+	{
+			//SCLDBG_ << "ALEDEBUG failed to read speed from driver";
+		metadataLogging(chaos::common::metadata_logging::StandardLoggingChannel::LogLevelWarning,"Warning cannot know the real range of the slit. Using default value of 100");
+	}
+	else
+	{
+		SCLDBG_ << "ALEDEBUG driver said range of slit is " << retStr << " mm " << endl;
+		lengthSlit=atof(retStr.c_str());
+	}
+
+
+
+	if (realSpeed!= 0)
+	{
+	computed_timeout  = uint64_t((lengthSlit / realSpeed)*1000000) + DEFAULT_MOVE_TIMETOL_OFFSET_MS;
 		computed_timeout = std::max(computed_timeout,(uint64_t)*p_setTimeout);
 
 	}   else computed_timeout=(uint64_t)*p_setTimeout;
