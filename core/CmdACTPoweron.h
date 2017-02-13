@@ -29,6 +29,7 @@ namespace driver {
 
 		 protected:
 			 int32_t onState;
+ 			bool *i_stby;
 			//const uint32_t *axID;
 			//implemented handler
 			//uint8_t implementedHandler();
