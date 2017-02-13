@@ -42,6 +42,7 @@ BATCH_COMMAND_CLOSE_DESCRIPTION()
 void own::CmdACTPoweron::setHandler(c_data::CDataWrapper *data) {
 	int err;
 	AbstractActuatorCommand::setHandler(data);
+
 	setWorkState(true);
 
 	if(!data ||!data->hasKey(CMD_ACT_POWERON_VALUE)) {
@@ -81,6 +82,7 @@ void own::CmdACTPoweron::acquireHandler() {
 void own::CmdACTPoweron::ccHandler() {
 	SCLDBG_ << "power on command on axisID " << axID;
 	if((((*o_status_id)&::common::actuators::ACTUATOR_POWER_SUPPLIED)?1:0)==onState){
+		*o_stby=(onState==1);
 		BC_END_RUNNING_PROPERTY;
 	}
 }

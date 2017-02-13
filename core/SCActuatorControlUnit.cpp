@@ -276,7 +276,7 @@ void ::driver::actuator::SCActuatorControlUnit::unitDefineActionAndDataset() thr
 
   std::string dataset;
   actuator_drv->sendDataset(dataset) ;
-  SCCUAPP << "getting dataset from driver " << dataset;
+  SCCUAPP << "DATASETVARIABLE getting dataset from driver " << dataset;
   Json::Value                                 json_parameter;
   Json::Reader                                json_reader;
 

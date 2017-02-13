@@ -20,7 +20,7 @@ namespace chaos_driver=::chaos::cu::driver_manager::driver;
 namespace chaos {
     namespace driver {
 #define MAX_STR_SIZE 256
-#define JSON_MAX_SIZE 4096 
+#define JSON_MAX_SIZE 8192 
         namespace actuator {
             typedef enum {
                 OP_INIT = chaos_driver::OpcodeType::OP_USER, // init low level driver
