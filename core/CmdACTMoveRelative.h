@@ -54,6 +54,7 @@ namespace driver {
 			
 			// Set handler
 			void setHandler(c_data::CDataWrapper *data);
+			void endHandler();
 
 			//custom acquire method
 			void acquireHandler();
