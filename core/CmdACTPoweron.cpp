@@ -82,10 +82,13 @@ void own::CmdACTPoweron::acquireHandler() {
 }
 // empty correlation handler
 void own::CmdACTPoweron::ccHandler() {
-	SCLDBG_ << "power on command on axisID " << *axID;
 	if((((*o_status_id)&::common::actuators::ACTUATOR_POWER_SUPPLIED)?1:0)==onState){
+	         SCLDBG_ << " cchandler power on command on axisID " << *axID << " onstate "<< onState;
+
 		*o_stby=(onState==1);
 		*i_stby=(onState==1);
+ 		getAttributeCache()->setInputDomainAsChanged();
+
 		BC_END_RUNNING_PROPERTY;
 	}
 }
@@ -94,8 +97,10 @@ bool own::CmdACTPoweron::timeoutHandler() {
 	AbstractActuatorCommand::acquireHandler();
 
 	if((((*o_status_id)&::common::actuators::ACTUATOR_POWER_SUPPLIED)?1:0)==onState){
+	SCLDBG_ << "power on ok in timeout command on axisID " << *axID;
 			*o_stby=(onState==1);
 			*i_stby=(onState==1);
+ 		getAttributeCache()->setInputDomainAsChanged();
 			BC_END_RUNNING_PROPERTY;
 			return false;
 	}
