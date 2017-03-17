@@ -561,9 +561,6 @@ bool ::driver::actuator::SCActuatorControlUnit::unitRestoreToSnapshot(chaos::cu:
   {
 	  RESTORE_LERR << " missing powerOn to restore" ;
 	  if (!snapshot_cache->getSharedDomain(DOMAIN_INPUT).hasAttribute("speed"))
-		  RESTORE_LERR << "ALEDEBUG missing speed";
-	  if (!snapshot_cache->getSharedDomain(DOMAIN_INPUT).hasAttribute("resolution"))
-		  RESTORE_LERR << "ALEDEBUG missing resolution";
 	  return false;
 
   }
