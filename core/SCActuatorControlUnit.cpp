@@ -581,47 +581,20 @@ bool ::driver::actuator::SCActuatorControlUnit::unitRestoreToSnapshot(chaos::cu:
     double *now_position = getAttributeCache()->getRWPtr<double>(DOMAIN_OUTPUT, "position");
     int32_t *now_status_id = getAttributeCache()->getRWPtr<int32_t>(DOMAIN_OUTPUT, "status_id");
 
-
-/*
-    int32_t restore_status_id = *snapshot_cache->getAttributeValue(DOMAIN_OUTPUT, "status_id")->getValuePtr<int32_t>();
-    if (*now_status_id != restore_status_id) {
-      RESTORE_LAPP << "Change the status from:" << *now_status_id << " to:" << restore_status_id;
-      //we need to change the sate
-      switch (restore_status_id) {
-        case 0x2:
-          RESTORE_LAPP << "Put powersupply in on state to restore his status";
-          if (!powerON()) {
-            LOG_AND_TROW(RESTORE_LERR, 4, "Power supply is not gone to restore 'power on' state");
-          }
-          break;
-        case 0x8:
-          //set the powersupply on stand-by
-          SCCUAPP << "Put powersupply in standby state to restore his status";
-          if (setCurrent(0.0)) {
-            if (powerStandby()) {
-              RESTORE_LAPP << "Powersupply is gone in standby";
-            } else {
-              LOG_AND_TROW(RESTORE_LERR, 5, "Power supply is not gone in standby");
-            }
-          } else {
-            LOG_AND_TROW(RESTORE_LERR, 6, "Power supply is not gone to 0 ampere");
-          }
-          break;
-
-        default:
-          return false;
-          break;
-      }
-    }
-*/
+    //setBusyFlag(true,1);
+    setBusyFlag(true);
     if (!setPowerOn(true)) {
     	  metadataLogging(chaos::common::metadata_logging::StandardLoggingChannel::LogLevelError,CHAOS_FORMAT("Error applying power on during restore \"%1%\" (axis %2%) to position %3% ",%getDeviceID() %*axID %restore_position_sp));
+	  //setBusyFlag(false,-1);
+	  setBusyFlag(false);
  	  return false;
     } 
 
     if (!setPosition(restore_position_sp)) {
     	  metadataLogging(chaos::common::metadata_logging::StandardLoggingChannel::LogLevelError,CHAOS_FORMAT("Error restoring \"%1%\" (axis %2%) to position %3% ",%getDeviceID() %*axID %restore_position_sp));
 
+	  setBusyFlag(false);
+	  //setBusyFlag(false,-1);
     	  return false;
     }
     if (restore_power_sp == false) 
@@ -629,6 +602,8 @@ bool ::driver::actuator::SCActuatorControlUnit::unitRestoreToSnapshot(chaos::cu:
 	if (!setPowerOn(restore_power_sp)) 
 	{
     	  metadataLogging(chaos::common::metadata_logging::StandardLoggingChannel::LogLevelError,CHAOS_FORMAT("Error restoring power on during restore \"%1%\" (axis %2%) to value %3% ",%getDeviceID() %*axID %restore_power_sp));
+	  //setBusyFlag(false);
+	  setBusyFlag(false);
  	  return false;
 	  
 	}
@@ -636,8 +611,12 @@ bool ::driver::actuator::SCActuatorControlUnit::unitRestoreToSnapshot(chaos::cu:
     uint64_t restore_duration_in_ms = chaos::common::utility::TimingUtil::getTimeStamp() - start_restore_time;
 	metadataLogging(chaos::common::metadata_logging::StandardLoggingChannel::LogLevelInfo,CHAOS_FORMAT("Restored \"%1%\" (axis %2%) to position %3% in %4%",%getDeviceID() %*axID %restore_position_sp %restore_duration_in_ms));
 
+    //setBusyFlag(false,-1);
+    setBusyFlag(false);
     return true;
   } catch (CException &ex) {
+    //setBusyFlag(false,-1);
+    setBusyFlag(false);
     uint64_t restore_duration_in_ms = chaos::common::utility::TimingUtil::getTimeStamp() - start_restore_time;
     RESTORE_LAPP << "[metric] Restore has fault in " << restore_duration_in_ms << " milliseconds";
     throw ex;
