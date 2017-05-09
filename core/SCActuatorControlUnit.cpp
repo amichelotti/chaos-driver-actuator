@@ -552,9 +552,8 @@ void ::driver::actuator::SCActuatorControlUnit::unitDeinit() throw(CException) {
 bool ::driver::actuator::SCActuatorControlUnit::unitRestoreToSnapshot(chaos::cu::control_manager::AbstractSharedDomainCache *const snapshot_cache) throw(chaos::CException) {
   RESTORE_LAPP << "Check if restore cache has the needed data";
  //check if in the restore cache we have all information we need
- // if (!snapshot_cache->getSharedDomain(DOMAIN_OUTPUT).hasAttribute("status_id")) return false;
   RESTORE_LAPP << "Restore Check if  cache for position";
-//  if (!snapshot_cache->getSharedDomain(DOMAIN_OUTPUT).hasAttribute("position")) return false;
+  if (!snapshot_cache->getSharedDomain(DOMAIN_INPUT).hasAttribute("position")) return false;
 
   RESTORE_LAPP << "Start the restore of the actuator";
   uint64_t start_restore_time = chaos::common::utility::TimingUtil::getTimeStamp();
@@ -563,7 +562,7 @@ bool ::driver::actuator::SCActuatorControlUnit::unitRestoreToSnapshot(chaos::cu:
 	return false;
   }
 
-  if (!snapshot_cache->getSharedDomain(DOMAIN_INPUT).hasAttribute("powerOn"))
+  if (!snapshot_cache->getSharedDomain(DOMAIN_OUTPUT).hasAttribute("powerOn"))
   {
 	  RESTORE_LERR << " missing powerOn to restore" ;
 	  if (!snapshot_cache->getSharedDomain(DOMAIN_INPUT).hasAttribute("speed"))
@@ -574,7 +573,7 @@ bool ::driver::actuator::SCActuatorControlUnit::unitRestoreToSnapshot(chaos::cu:
 
     double restore_position_sp = *snapshot_cache->getAttributeValue(DOMAIN_INPUT, "position")->getValuePtr<double>();
   RESTORE_LAPP << "Restore Trying to set position at " << restore_position_sp;
-  bool restore_power_sp = *snapshot_cache->getAttributeValue(DOMAIN_INPUT, "powerOn")->getValuePtr<bool>();
+  bool restore_power_sp = *snapshot_cache->getAttributeValue(DOMAIN_OUTPUT, "powerOn")->getValuePtr<bool>();
   RESTORE_LAPP << "Restore Trying to set power at " << restore_power_sp;
 
 
@@ -595,6 +594,7 @@ bool ::driver::actuator::SCActuatorControlUnit::unitRestoreToSnapshot(chaos::cu:
 	  setBusyFlag(false);
  	  return false;
     } 
+    sleep(1);
 
     if (!setPosition(restore_position_sp)) {
     	  metadataLogging(chaos::common::metadata_logging::StandardLoggingChannel::LogLevelError,CHAOS_FORMAT("Error restoring \"%1%\" (axis %2%) to position %3% ",%getDeviceID() %*axID %restore_position_sp));
@@ -603,12 +603,12 @@ bool ::driver::actuator::SCActuatorControlUnit::unitRestoreToSnapshot(chaos::cu:
 	  //setBusyFlag(false,-1);
     	  return false;
     }
+    sleep(1);
     if (restore_power_sp == false) 
     {
 	if (!setPowerOn(restore_power_sp)) 
 	{
     	  metadataLogging(chaos::common::metadata_logging::StandardLoggingChannel::LogLevelError,CHAOS_FORMAT("Error restoring power on during restore \"%1%\" (axis %2%) to value %3% ",%getDeviceID() %*axID %restore_power_sp));
-	  //setBusyFlag(false);
 	  setBusyFlag(false);
  	  return false;
 	  
@@ -616,6 +616,7 @@ bool ::driver::actuator::SCActuatorControlUnit::unitRestoreToSnapshot(chaos::cu:
     }
     uint64_t restore_duration_in_ms = chaos::common::utility::TimingUtil::getTimeStamp() - start_restore_time;
 	metadataLogging(chaos::common::metadata_logging::StandardLoggingChannel::LogLevelInfo,CHAOS_FORMAT("Restored \"%1%\" (axis %2%) to position %3% in %4%",%getDeviceID() %*axID %restore_position_sp %restore_duration_in_ms));
+    setBusyFlag(false);
 
     //setBusyFlag(false,-1);
     setBusyFlag(false);
