@@ -496,6 +496,10 @@ void ::driver::actuator::SCActuatorControlUnit::unitInit() throw(CException) {
     }
     }
 
+  std::string strBool=(*inSteps==true)? "1" : "0";
+  if ((err=actuator_drv->setParameter(*axID,"USEIU",strBool)) != 0) {
+    throw chaos::CFatalException(err, "Error setting the unit measure  of the actuator", __FUNCTION__);
+}
   if ((err=actuator_drv->getState(*axID,&state_id, state_str)) != 0) {
     throw chaos::CFatalException(err, "Error getting the state of the actuator", __FUNCTION__);
   }
