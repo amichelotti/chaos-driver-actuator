@@ -250,6 +250,11 @@ void ::driver::actuator::SCActuatorControlUnit::unitDefineActionAndDataset() thr
                             DataType::TYPE_BOOLEAN,
                             DataType::Input);
 
+     addAttributeToDataSet("useSteps",
+                            "if true motor will be controlled with steps as measure unit",
+                            DataType::TYPE_BOOLEAN,
+                            DataType::Input);
+
      addAttributeToDataSet("powerOn",
                             "stdby management",
                             DataType::TYPE_BOOLEAN,
@@ -430,6 +435,7 @@ void ::driver::actuator::SCActuatorControlUnit::unitInit() throw(CException) {
    double *o_position = getAttributeCache()->getRWPtr<double>(DOMAIN_OUTPUT, "position");
    axID=getAttributeCache()->getROPtr<uint32_t>(DOMAIN_INPUT, "axisID");
     const bool* s_bypass=getAttributeCache()->getROPtr<bool>(DOMAIN_INPUT, "bypass");
+    const bool* inSteps=getAttributeCache()->getROPtr<bool>(DOMAIN_INPUT, "useSteps");
 
       chaos::cu::driver_manager::driver::DriverAccessor *actuator_accessor = *s_bypass&&(getAccessoInstanceByIndex(1))?getAccessoInstanceByIndex(1):getAccessoInstanceByIndex(0);
 
