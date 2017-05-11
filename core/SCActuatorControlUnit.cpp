@@ -253,7 +253,7 @@ void ::driver::actuator::SCActuatorControlUnit::unitDefineActionAndDataset() thr
      addAttributeToDataSet("useSteps",
                             "if true motor will be controlled with steps as measure unit",
                             DataType::TYPE_BOOLEAN,
-                            DataType::Input);
+                            DataType::Output);
 
      addAttributeToDataSet("powerOn",
                             "stdby management",
@@ -435,7 +435,7 @@ void ::driver::actuator::SCActuatorControlUnit::unitInit() throw(CException) {
    double *o_position = getAttributeCache()->getRWPtr<double>(DOMAIN_OUTPUT, "position");
    axID=getAttributeCache()->getROPtr<uint32_t>(DOMAIN_INPUT, "axisID");
     const bool* s_bypass=getAttributeCache()->getROPtr<bool>(DOMAIN_INPUT, "bypass");
-    const bool* inSteps=getAttributeCache()->getROPtr<bool>(DOMAIN_INPUT, "useSteps");
+    int32_t* inSteps=getAttributeCache()->getRWPtr<int32_t>(DOMAIN_OUTPUT, "useSteps");
 
       chaos::cu::driver_manager::driver::DriverAccessor *actuator_accessor = *s_bypass&&(getAccessoInstanceByIndex(1))?getAccessoInstanceByIndex(1):getAccessoInstanceByIndex(0);
 
@@ -489,17 +489,22 @@ void ::driver::actuator::SCActuatorControlUnit::unitInit() throw(CException) {
             if (ret)
                 SCCUERR << "bad configuration for parameter " <<param << " value "<<value;
             else
-                SCCUAPP << "Parameter "<<param<< "set to "<< value;
+            {
+		if (PAR == "useIU") *inSteps=atoi(value);
+                SCCUAPP << "Parameter "<<param<< " set to "<< value;
+            }
         }
         else break;
         param=strtok(NULL,":");
     }
     }
 
+/*
   std::string strBool=(*inSteps==true)? "1" : "0";
   if ((err=actuator_drv->setParameter(*axID,"USEIU",strBool)) != 0) {
     throw chaos::CFatalException(err, "Error setting the unit measure  of the actuator", __FUNCTION__);
-}
+}o
+*/
   if ((err=actuator_drv->getState(*axID,&state_id, state_str)) != 0) {
     throw chaos::CFatalException(err, "Error getting the state of the actuator", __FUNCTION__);
   }

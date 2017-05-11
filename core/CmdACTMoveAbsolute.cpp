@@ -130,7 +130,6 @@ void own::CmdACTMoveAbsolute::setHandler(c_data::CDataWrapper *data) {
 	double realSpeed=0;
     if ((err = actuator_drv->getParameter(*axID,"speed",retStr)) != 0)
     {
-    	//SCLDBG_ << "ALEDEBUG failed to read speed from driver";
     	metadataLogging(chaos::common::metadata_logging::StandardLoggingChannel::LogLevelWarning,"Warning cannot know the real speed of motor. Using DB value instead");
     	realSpeed=(*i_speed);
 
@@ -202,7 +201,7 @@ bool own::CmdACTMoveAbsolute::timeoutHandler() {
 
 	}else {
 
-		SCLERR_ << "[metric] Setpoint not reached on timeout with readout position " << *o_position << " in " << elapsed_msec << " milliseconds";
+		SCLERR_ << "[metric] Setpoint NOT reached on timeout with readout position " << *o_position << " in " << elapsed_msec << " milliseconds";
 		setStateVariableSeverity(StateVariableTypeAlarmCU,"position_value_not_reached", chaos::common::alarm::MultiSeverityAlarmLevelWarning);
 	}
 	BC_END_RUNNING_PROPERTY;
