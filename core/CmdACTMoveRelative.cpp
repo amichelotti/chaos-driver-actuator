@@ -124,7 +124,7 @@ void own::CmdACTMoveRelative::setHandler(c_data::CDataWrapper *data) {
     }
     else
     {
-    	SCLDBG_ << "ALEDEBUG driver said speed is " << retStr << endl;
+    	SCLDBG_ << "ALEDEBUG driver said speed is " << retStr;
     	realSpeed=atof(retStr.c_str());
     }
 	SCLDBG_ << "Compute timeout for moving relative = " << offset_mm;

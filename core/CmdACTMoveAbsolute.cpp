@@ -136,7 +136,7 @@ void own::CmdACTMoveAbsolute::setHandler(c_data::CDataWrapper *data) {
     }
     else
     {
-    	SCLDBG_ << "ALEDEBUG driver said speed is " << retStr << endl;
+    	SCLDBG_ << "ALEDEBUG driver said speed is " << retStr ;
     	realSpeed=atof(retStr.c_str());
     }
 	//numero di secondi, dopo lo moltiplichiamo per 1 milione (volendo da micro)

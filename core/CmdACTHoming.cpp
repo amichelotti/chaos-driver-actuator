@@ -87,7 +87,7 @@ void own::CmdACTHoming::setHandler(c_data::CDataWrapper *data)
 	}
 	else
 	{
-		SCLDBG_ << "ALEDEBUG driver said highspeed_homing is " << retStr << endl;
+		SCLDBG_ << "ALEDEBUG driver said highspeed_homing is " << retStr;
 		realSpeed=atof(retStr.c_str());
 	}
 	if ((err = actuator_drv->getParameter(*axID,"range_slit[mm]",retStr)) != 0)
@@ -97,7 +97,7 @@ void own::CmdACTHoming::setHandler(c_data::CDataWrapper *data)
 	}
 	else
 	{
-		SCLDBG_ << "ALEDEBUG driver said range of slit is " << retStr << " mm " << endl;
+		SCLDBG_ << "ALEDEBUG driver said range of slit is " << retStr << " mm ";
 		lengthSlit=atof(retStr.c_str());
 	}
 
