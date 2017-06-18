@@ -100,7 +100,7 @@ void own::CmdACTMoveAbsolute::setHandler(c_data::CDataWrapper *data) {
     }
   i*/      
 	positionToReach = static_cast<float>(data->getDoubleValue(CMD_ACT_MM_OFFSET));
-	if(isnan(positionToReach)==true){
+	if(std::isnan(positionToReach)==true){
 		metadataLogging(chaos::common::metadata_logging::StandardLoggingChannel::LogLevelError,"Position parameter is not a valid double number (nan?)" );
 
 		BC_FAULT_RUNNING_PROPERTY;

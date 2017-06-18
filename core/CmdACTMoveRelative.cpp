@@ -99,7 +99,7 @@ void own::CmdACTMoveRelative::setHandler(c_data::CDataWrapper *data) {
 	offset_mm = static_cast<float>(data->getDoubleValue(CMD_ACT_MM_OFFSET));
 	//SCLAPP_<<"offset_mm:"<<offset_mm;
 
-	if(isnan(offset_mm)==true){
+	if(std::isnan(offset_mm)==true){
 		metadataLogging(chaos::common::metadata_logging::StandardLoggingChannel::LogLevelError,"Offset millimeters parameter is not a valid double number (nan?)");
 		BC_FAULT_RUNNING_PROPERTY;
 		return;
