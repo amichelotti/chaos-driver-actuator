@@ -58,11 +58,12 @@ void own::CmdACTMoveAbsolute::setHandler(c_data::CDataWrapper *data) {
 	AbstractActuatorCommand::setHandler(data);
 	readTyp=(::common::actuators::AbstractActuator::readingTypes) *tmpInt;
 
-	setWorkState(true);
 	if(performCheck()!=0){
 		BC_FAULT_RUNNING_PROPERTY;
+		setWorkState(false);
 		return;
 	}
+	setWorkState(true);
 
 	//    axID = getAttributeCache()->getROPtr<uint32_t>(DOMAIN_INPUT, "axisID");
 	//    o_position = getAttributeCache()->getRWPtr<double>(DOMAIN_OUTPUT, "position");
@@ -88,7 +89,7 @@ void own::CmdACTMoveAbsolute::setHandler(c_data::CDataWrapper *data) {
 			!data->hasKey(CMD_ACT_MM_OFFSET)) {
 		SCLERR_ << "Position millimeters parameter not present";
 		metadataLogging(chaos::common::metadata_logging::StandardLoggingChannel::LogLevelError,"Position millimeters parameter is missing");
-
+		setWorkState(false);
 		BC_FAULT_RUNNING_PROPERTY;
 		return;
 	}
@@ -102,7 +103,7 @@ void own::CmdACTMoveAbsolute::setHandler(c_data::CDataWrapper *data) {
 	positionToReach = static_cast<float>(data->getDoubleValue(CMD_ACT_MM_OFFSET));
 	if(std::isnan(positionToReach)==true){
 		metadataLogging(chaos::common::metadata_logging::StandardLoggingChannel::LogLevelError,"Position parameter is not a valid double number (nan?)" );
-
+		setWorkState(false);
 		BC_FAULT_RUNNING_PROPERTY;
 		return;
 	}
@@ -113,6 +114,7 @@ void own::CmdACTMoveAbsolute::setHandler(c_data::CDataWrapper *data) {
 	{
 		SCLERR_ << "Finale position "<<positionToReach<< " out of range ( " << min_position << ","<< max_position <<") the command won't be executed";
 		metadataLogging(chaos::common::metadata_logging::StandardLoggingChannel::LogLevelError,CHAOS_FORMAT("Final set point %1% outside the maximum/minimum 'position_sp' = tolerance \"max_position\":%2% \"min_position\":%3%" , % positionToReach % max_position % min_position));
+		setWorkState(false);
 		BC_FAULT_RUNNING_PROPERTY;
 		return;
 	}
@@ -136,7 +138,6 @@ void own::CmdACTMoveAbsolute::setHandler(c_data::CDataWrapper *data) {
     }
     else
     {
-    	SCLDBG_ << "ALEDEBUG driver said speed is " << retStr ;
     	realSpeed=atof(retStr.c_str());
     }
 	//numero di secondi, dopo lo moltiplichiamo per 1 milione (volendo da micro)
@@ -157,6 +158,7 @@ void own::CmdACTMoveAbsolute::setHandler(c_data::CDataWrapper *data) {
 		// we are in standby only the SP is set
 		metadataLogging(chaos::common::metadata_logging::StandardLoggingChannel::LogLevelWarning,CHAOS_FORMAT("we are in standby we cannot start move to '%1%'",%*i_position));
 
+		setWorkState(false);
 		BC_END_RUNNING_PROPERTY;
 		return;
 	}
@@ -169,6 +171,7 @@ void own::CmdACTMoveAbsolute::setHandler(c_data::CDataWrapper *data) {
 	if((err = actuator_drv->moveAbsoluteMillimeters(*axID,positionToReach)) != 0) {
 		metadataLogging(chaos::common::metadata_logging::StandardLoggingChannel::LogLevelError,CHAOS_FORMAT("axis %1% cannot perform absolute move to '%2%'",%*axID %positionToReach));
 		setStateVariableSeverity(StateVariableTypeAlarmCU,"command_error", chaos::common::alarm::MultiSeverityAlarmLevelHigh);
+		setWorkState(false);
 		BC_FAULT_RUNNING_PROPERTY;
 		return;
 	}

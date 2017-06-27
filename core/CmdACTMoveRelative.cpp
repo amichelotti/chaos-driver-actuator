@@ -67,12 +67,12 @@ void own::CmdACTMoveRelative::setHandler(c_data::CDataWrapper *data) {
 	double currentPosition;
 	//std::string state_str;
 	float offset_mm = 0.f;
-	setWorkState(true);
 
 	if(performCheck()!=0){
 		BC_FAULT_RUNNING_PROPERTY;
 		return;
 	}
+	setWorkState(true);
 	// ********************* a cosa servono **********************
 	//SCLDBG_<<"minimum working value:"<<*p_minimumWorkingValue;
 	//SCLDBG_<<"maximum, working value:"<<*p_maximumWorkingValue;

@@ -103,9 +103,10 @@ bool ::driver::actuator::SCActuatorControlUnit::setPower(const std::string &name
           int err= -1;
           int *axis;
 	  uint64_t cmd_id;
+          int32_t vv= (value==true)? 1 : 0;
 	  SCCUAPP << "HANDLER set Power" ;
  	  std::auto_ptr<CDataWrapper> cmd_pack(new CDataWrapper());
-          cmd_pack->addInt32Value(CMD_ACT_POWERON_VALUE, value);
+          cmd_pack->addInt32Value(CMD_ACT_POWERON_VALUE, vv);
     //send command
             submitBatchCommand(CMD_ACT_POWERON_ALIAS,
             cmd_pack.release(),
