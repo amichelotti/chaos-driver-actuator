@@ -648,7 +648,7 @@ bool ::driver::actuator::SCActuatorControlUnit::unitRestoreToSnapshot(chaos::cu:
 bool ::driver::actuator::SCActuatorControlUnit::setPosition(double val,bool sync) {
   uint64_t cmd_id;
   bool result = true;
-  std::auto_ptr<CDataWrapper> cmd_pack(new CDataWrapper());
+  ChaosUniquePtr<CDataWrapper> cmd_pack(new CDataWrapper());
   cmd_pack->addDoubleValue(CMD_ACT_MM_OFFSET, val);
   //send command
   submitBatchCommand(CMD_ACT_MOVE_ABSOLUTE_ALIAS,
@@ -666,7 +666,7 @@ bool ::driver::actuator::SCActuatorControlUnit::setPosition(double val,bool sync
 bool  ::driver::actuator::SCActuatorControlUnit::setPowerOn(bool value,bool sync) {
 	uint64_t cmd_id;
 	bool result = true;
-  	std::auto_ptr<CDataWrapper> cmd_pack(new CDataWrapper());
+	ChaosUniquePtr<CDataWrapper> cmd_pack(new CDataWrapper());
   	cmd_pack->addInt32Value(CMD_ACT_POWERON_VALUE, value);
   	//send command
   	submitBatchCommand(CMD_ACT_POWERON_ALIAS,
@@ -683,7 +683,7 @@ bool  ::driver::actuator::SCActuatorControlUnit::setPowerOn(bool value,bool sync
 
 
 bool ::driver::actuator::SCActuatorControlUnit::waitOnCommandID(uint64_t cmd_id) {
-  std::auto_ptr<CommandState> cmd_state;
+	ChaosUniquePtr<chaos::common::batch_command::CommandState> cmd_state;
   do {
     cmd_state = getStateForCommandID(cmd_id);
     if (!cmd_state.get()) break;
