@@ -452,7 +452,7 @@ void ::driver::actuator::SCActuatorControlUnit::unitInit() throw(CException) {
 
   ptStr=(char*)getAttributeCache()->getROPtr<char*>(DOMAIN_INPUT, "ConfigString");
   if(ptStr==NULL || *ptStr ==0){
-	    throw chaos::CFatalException(-3, "You must provide a configuration string " + control_unit_instance, __FUNCTION__);
+    throw chaos::CFatalException(-3, "You must provide a configuration string " + getCUID(), __FUNCTION__);
 
   }
   auxStr=(char*)getAttributeCache()->getROPtr<char*>(DOMAIN_INPUT, "auxiliaryConfigParameters");
