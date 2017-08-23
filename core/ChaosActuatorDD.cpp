@@ -55,7 +55,10 @@ cu_driver::MsgManagmentResultType::MsgManagmentResult ChaosActuatorDD::execOpcod
     cu_driver::MsgManagmentResultType::MsgManagmentResult result = cu_driver::MsgManagmentResultType::MMR_EXECUTED;
     actuator_iparams_t *in = (actuator_iparams_t *)cmd->inputData;
     actuator_oparams_t *out = (actuator_oparams_t *)cmd->resultData;
-
+    if(motor==NULL){
+      ACERR<<"motor low level driver NULL, executing opcode:"<<cmd->opcode;
+      return result;
+    }
     switch(cmd->opcode){
         case OP_INIT:
              ACDBG<< "Initializing";
