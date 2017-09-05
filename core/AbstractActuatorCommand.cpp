@@ -62,9 +62,11 @@ void AbstractActuatorCommand::checkEndMove(){
 				return;
 		}
 
+//if (! *o_useUI)
+{
 		if ((((*o_status_id) & ::common::actuators::ACTUATOR_INMOTION)==0) ||(((*o_status_id) & ::common::actuators::ACTUATOR_POWER_SUPPLIED)==0)){
 			setStateVariableSeverity(StateVariableTypeAlarmCU,"position_value_not_reached", chaos::common::alarm::MultiSeverityAlarmLevelWarning);
-			metadataLogging(chaos::common::metadata_logging::StandardLoggingChannel::LogLevelError,CHAOS_FORMAT("motor axis %1% has stopped before reach setpoint, delta %2%",%*axID %delta_position_reached));
+			metadataLogging(chaos::common::metadata_logging::StandardLoggingChannel::LogLevelError,CHAOS_FORMAT("motor axis %1% has stopped before reach setpoint, delta %2% %3%",%*axID %delta_position_reached %(((*o_status_id) & ::common::actuators::ACTUATOR_INMOTION)==0)));
 			if (err=actuator_drv->stopMotion(*axID)!= 0){
 						metadataLogging(chaos::common::metadata_logging::StandardLoggingChannel::LogLevelError,CHAOS_FORMAT("cannot stop motion on axis '%1%'",%*axID));
 						setStateVariableSeverity(StateVariableTypeAlarmCU,"command_error", chaos::common::alarm::MultiSeverityAlarmLevelHigh);
@@ -73,6 +75,7 @@ void AbstractActuatorCommand::checkEndMove(){
 			}
 			BC_FAULT_RUNNING_PROPERTY;
 		}
+}
 
 }
 
@@ -128,6 +131,7 @@ void AbstractActuatorCommand::setHandler(c_data::CDataWrapper *data) {
 
 	p_stopCommandInExecution = getAttributeCache()->getRWPtr<bool>(DOMAIN_OUTPUT, "stopHoming");
 	o_lasthoming = getAttributeCache()->getRWPtr<uint64_t>(DOMAIN_OUTPUT, "LastHomingTime");
+	o_useUI  = getAttributeCache()->getRWPtr<bool>(DOMAIN_OUTPUT, "useSteps"); 
 
 
 	axID = getAttributeCache()->getROPtr<uint32_t>(DOMAIN_INPUT, "axisID");

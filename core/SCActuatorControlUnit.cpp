@@ -245,12 +245,12 @@ void ::driver::actuator::SCActuatorControlUnit::unitDefineActionAndDataset() thr
                           "Position warning threshold",
                           DataType::TYPE_DOUBLE,
                           DataType::Input);
-/*
+
      addAttributeToDataSet("bypass",
                             "exclude HW changes",
                             DataType::TYPE_BOOLEAN,
                             DataType::Input);
-*/
+
      addAttributeToDataSet("useSteps",
                             "if true motor will be controlled with steps as measure unit",
                             DataType::TYPE_BOOLEAN,
