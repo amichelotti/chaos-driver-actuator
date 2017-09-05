@@ -62,7 +62,6 @@ protected:
 	const double *p_resolution,*p_warningThreshold;  // ********* AGGIUNTO ************
 
 	const uint32_t *axID;       // ********* AGGIUNTO axID ************
-	const bool      *s_bypass;
 	const uint32_t *p_setTimeout;
 
 	bool *p_stopCommandInExecution;

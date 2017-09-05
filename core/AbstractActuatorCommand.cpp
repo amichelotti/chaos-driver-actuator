@@ -146,10 +146,8 @@ void AbstractActuatorCommand::setHandler(c_data::CDataWrapper *data) {
 
 	p_resolution = getAttributeCache()->getROPtr<double>(DOMAIN_INPUT, "resolution");
 
-	//...DA INIZIALIZZARE axID, i_bypass (entrambi dovrebbe essere di tipo DOMAIN_INPUT)
 	//...
 	//...
-	s_bypass =getAttributeCache()->getROPtr<bool>(DOMAIN_INPUT, "bypass");
 
 
 	//...
@@ -157,7 +155,7 @@ void AbstractActuatorCommand::setHandler(c_data::CDataWrapper *data) {
 	//...
 
 	//get pointer to the output datase variable
-	chaos::cu::driver_manager::driver::DriverAccessor *actuator_accessor = *s_bypass&&(driverAccessorsErogator->getAccessoInstanceByIndex(1))?driverAccessorsErogator->getAccessoInstanceByIndex(1):driverAccessorsErogator->getAccessoInstanceByIndex(0);
+	chaos::cu::driver_manager::driver::DriverAccessor *actuator_accessor = driverAccessorsErogator->getAccessoInstanceByIndex(0);
 	if(actuator_accessor != NULL) {
 		if(actuator_drv == NULL){
 			actuator_drv = new chaos::driver::actuator::ChaosActuatorInterface(actuator_accessor);
