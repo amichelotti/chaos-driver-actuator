@@ -69,6 +69,7 @@ void own::CmdACTMoveRelative::setHandler(c_data::CDataWrapper *data) {
 	float offset_mm = 0.f;
 
 	if(performCheck()!=0){
+    		setWorkState(false);
 		BC_FAULT_RUNNING_PROPERTY;
 		return;
 	}
