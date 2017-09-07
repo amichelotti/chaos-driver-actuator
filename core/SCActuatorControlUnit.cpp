@@ -167,6 +167,9 @@ void ::driver::actuator::SCActuatorControlUnit::unitDefineActionAndDataset() thr
   if (actuator_drv == NULL) {
     throw chaos::CException(-2, "Cannot allocate driver resources", __FUNCTION__);
   }
+
+//	AttributeSharedCacheWrapper::addCustomAttribute("customName",32, DataType::TYPE_BOOLEAN); 
+
   addAttributeToDataSet("axisID",
                           "axis ID for the motor",
                           DataType::TYPE_INT32,
