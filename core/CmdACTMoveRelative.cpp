@@ -69,6 +69,7 @@ void own::CmdACTMoveRelative::setHandler(c_data::CDataWrapper *data) {
 	float offset_mm = 0.f;
 
 	if(performCheck()!=0){
+    		setWorkState(false);
 		BC_FAULT_RUNNING_PROPERTY;
 		return;
 	}
@@ -84,7 +85,7 @@ void own::CmdACTMoveRelative::setHandler(c_data::CDataWrapper *data) {
 			!data->hasKey(CMD_ACT_MM_OFFSET)) {
 		SCLERR_ << "Offset millimeters parameter not present";
 		metadataLogging(chaos::common::metadata_logging::StandardLoggingChannel::LogLevelError,"Offset millimeters parameter  not present" );
-
+    		setWorkState(false);
 		BC_FAULT_RUNNING_PROPERTY;
 		return;
 	}
@@ -101,6 +102,7 @@ void own::CmdACTMoveRelative::setHandler(c_data::CDataWrapper *data) {
 
 	if(std::isnan(offset_mm)==true){
 		metadataLogging(chaos::common::metadata_logging::StandardLoggingChannel::LogLevelError,"Offset millimeters parameter is not a valid double number (nan?)");
+    		setWorkState(false);
 		BC_FAULT_RUNNING_PROPERTY;
 		return;
 	}
@@ -111,6 +113,7 @@ void own::CmdACTMoveRelative::setHandler(c_data::CDataWrapper *data) {
 	double newPosition=currentPosition+offset_mm;
 	if((newPosition > max_position)|| (newPosition< min_position)){ // nota: *o_position aggiornata inizialmente da AbstractActuatorCommand::acquireHandler();
 		metadataLogging(chaos::common::metadata_logging::StandardLoggingChannel::LogLevelError,CHAOS_FORMAT("Final set point %1% outside the maximum/minimum 'position' = tolerance \"max_position\":%2% \"min_position\":%3%" , % (currentPosition + offset_mm) % max_position % min_position));
+    		setWorkState(false);
 		BC_FAULT_RUNNING_PROPERTY;
 		return;
 	}
@@ -147,7 +150,7 @@ void own::CmdACTMoveRelative::setHandler(c_data::CDataWrapper *data) {
 	if(*o_stby==0){
 			// we are in standby only the SP is set
 			metadataLogging(chaos::common::metadata_logging::StandardLoggingChannel::LogLevelWarning,CHAOS_FORMAT("we are in standby we cannot start move to '%1%'",%*i_position));
-
+    			setWorkState(false);
 			BC_FAULT_RUNNING_PROPERTY;
 			return;
 		}
@@ -159,6 +162,7 @@ void own::CmdACTMoveRelative::setHandler(c_data::CDataWrapper *data) {
 	if((err = actuator_drv->moveRelativeMillimeters(*axID,offset_mm)) != 0) {
 		metadataLogging(chaos::common::metadata_logging::StandardLoggingChannel::LogLevelError,CHAOS_FORMAT("axis %1% cannot perform relative move to '%2%' mm",%*axID %offset_mm));
 		setStateVariableSeverity(StateVariableTypeAlarmCU,"command_error", chaos::common::alarm::MultiSeverityAlarmLevelHigh);
+    		setWorkState(false);
 		BC_FAULT_RUNNING_PROPERTY;
 		return;
 	}
@@ -203,8 +207,8 @@ bool own::CmdACTMoveRelative::timeoutHandler() {
 		SCLERR_ << "[metric] Setpoint not reached on timeout with readout position " << *o_position << " in " << elapsed_msec << " milliseconds";
 		setStateVariableSeverity(StateVariableTypeAlarmCU,"position_value_not_reached", chaos::common::alarm::MultiSeverityAlarmLevelWarning);
 		//FIRE OUT OF SET
-		//BC_END_RUNNING_PROPERTY; // ************* commentato *******************
-
+			//BC_END_RUNNING_PROPERTY; // ************* commentato *******************
+    		setWorkState(false);
 		BC_FAULT_RUNNING_PROPERTY;
 
 	}

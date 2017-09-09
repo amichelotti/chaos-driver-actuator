@@ -50,6 +50,7 @@ protected:
 	double *i_position;
 	::common::actuators::AbstractActuator::readingTypes readTyp;
 	int *tmpInt;
+	bool    *o_useUI;
 
 	bool		*o_stby;
 	bool		*o_pswitch;
@@ -61,7 +62,6 @@ protected:
 	const double *p_resolution,*p_warningThreshold;  // ********* AGGIUNTO ************
 
 	const uint32_t *axID;       // ********* AGGIUNTO axID ************
-	const bool      *s_bypass;
 	const uint32_t *p_setTimeout;
 
 	bool *p_stopCommandInExecution;

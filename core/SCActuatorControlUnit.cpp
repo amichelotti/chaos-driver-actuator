@@ -167,6 +167,9 @@ void ::driver::actuator::SCActuatorControlUnit::unitDefineActionAndDataset() thr
   if (actuator_drv == NULL) {
     throw chaos::CException(-2, "Cannot allocate driver resources", __FUNCTION__);
   }
+
+//	AttributeSharedCacheWrapper::addCustomAttribute("customName",32, DataType::TYPE_BOOLEAN); 
+
   addAttributeToDataSet("axisID",
                           "axis ID for the motor",
                           DataType::TYPE_INT32,
@@ -246,11 +249,12 @@ void ::driver::actuator::SCActuatorControlUnit::unitDefineActionAndDataset() thr
                           DataType::TYPE_DOUBLE,
                           DataType::Input);
 
+/*
      addAttributeToDataSet("bypass",
                             "exclude HW changes",
                             DataType::TYPE_BOOLEAN,
                             DataType::Input);
-
+*/
      addAttributeToDataSet("useSteps",
                             "if true motor will be controlled with steps as measure unit",
                             DataType::TYPE_BOOLEAN,
@@ -435,12 +439,10 @@ void ::driver::actuator::SCActuatorControlUnit::unitInit() throw(CException) {
    uint64_t *homingDone = getAttributeCache()->getRWPtr<uint64_t>(DOMAIN_OUTPUT, "LastHomingTime");
    double *o_position = getAttributeCache()->getRWPtr<double>(DOMAIN_OUTPUT, "position");
    axID=getAttributeCache()->getROPtr<uint32_t>(DOMAIN_INPUT, "axisID");
-    const bool* s_bypass=getAttributeCache()->getROPtr<bool>(DOMAIN_INPUT, "bypass");
     int32_t* inSteps=getAttributeCache()->getRWPtr<int32_t>(DOMAIN_OUTPUT, "useSteps");
 
-      chaos::cu::driver_manager::driver::DriverAccessor *actuator_accessor = *s_bypass&&(getAccessoInstanceByIndex(1))?getAccessoInstanceByIndex(1):getAccessoInstanceByIndex(0);
 
-  //chaos::cu::driver_manager::driver::DriverAccessor *actuator_accessor = getAccessoInstanceByIndex(0);
+  chaos::cu::driver_manager::driver::DriverAccessor *actuator_accessor = getAccessoInstanceByIndex(0);
   if (actuator_accessor == NULL) {
     throw chaos::CFatalException(-1, "Cannot retrieve the requested driver", __FUNCTION__);
   }
