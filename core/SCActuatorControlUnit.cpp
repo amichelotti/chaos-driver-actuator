@@ -101,7 +101,6 @@ int ::driver::actuator::SCActuatorControlUnit::decodeType(const std::string& str
 }
 bool ::driver::actuator::SCActuatorControlUnit::setPower(const std::string &name,bool value,uint32_t size){
           int err= -1;
-          int *axis;
 	  uint64_t cmd_id;
           int32_t vv= (value==true)? 1 : 0;
 	  SCCUAPP << "HANDLER set Power" ;
@@ -119,8 +118,6 @@ bool ::driver::actuator::SCActuatorControlUnit::setPower(const std::string &name
 
 
 bool ::driver::actuator::SCActuatorControlUnit::moveAt(const std::string &name,double value,uint32_t size){
-          int err= -1;
-          int *axis;
 	  uint64_t cmd_id;
 
 	  SCCUAPP << "HANDLER Move at" ;
@@ -593,10 +590,7 @@ bool ::driver::actuator::SCActuatorControlUnit::unitRestoreToSnapshot(chaos::cu:
   metadataLogging(chaos::common::metadata_logging::StandardLoggingChannel::LogLevelInfo,CHAOS_FORMAT("start restore \"%1%\" (axis %2%) to position %3% ",%getDeviceID() %*axID %restore_position_sp));
  
   try {
-    bool cmd_result = true;
     //get actual state
-    double *now_position = getAttributeCache()->getRWPtr<double>(DOMAIN_OUTPUT, "position");
-    int32_t *now_status_id = getAttributeCache()->getRWPtr<int32_t>(DOMAIN_OUTPUT, "status_id");
 
     //setBusyFlag(true,1);
     setBusyFlag(true);
