@@ -45,27 +45,38 @@ uint8_t own::CmdACTSetParameter::implementedHandler(){
 void own::CmdACTSetParameter::setHandler(c_data::CDataWrapper *data) {
 	std::string parName,value;
 	int err;
-	const uint32_t *axID=getAttributeCache()->getROPtr<uint32_t>(DOMAIN_INPUT, "axisID");
+	
 
 	AbstractActuatorCommand::setHandler(data);
 	SCLDBG_ << "check data";
 	if(!data ||
 	   !data->hasKey(CMD_ACT_PARNAME)) {
 		SCLERR_ << "parameter name  not present";
-		BC_END_RUNNIG_PROPERTY;
+ 		metadataLogging(chaos::common::metadata_logging::StandardLoggingChannel::LogLevelError,"parameter name not present.Command Set Parameter aborted" ); // ********** aggiunto **************
+		BC_END_RUNNING_PROPERTY;
 		return;
 	}
 	if(!data ||
 	   !data->hasKey(CMD_ACT_SETPAR_VALUE)) {
 		SCLERR_ << "parameter value  not present";
-		BC_END_RUNNIG_PROPERTY;
+ 		metadataLogging(chaos::common::metadata_logging::StandardLoggingChannel::LogLevelError,"parameter value not present.Command Set Parameter aborted" ); // ********** aggiunto **************
+		BC_END_RUNNING_PROPERTY;
 		return;
 	}
 	parName= static_cast<std::string>(data->getStringValue(CMD_ACT_PARNAME));
 	value= static_cast<std::string>(data->getStringValue(CMD_ACT_SETPAR_VALUE));
         //SCLDBG_ << "ALEDEBUG axisID to send " << *axID ;
+        
+        if(*o_stby=0){
+        // we are in standby only the SP is set
+            SCLDBG_ << "we are in standby we cannot start set parameter command: ";
+            setWorkState(false);
+            BC_END_RUNNING_PROPERTY;
+            return;
+        } 
+        
 	if((err = actuator_drv->setParameter(*axID,parName,value)) != 0) {
-		LOG_AND_TROW(SCLERR_, 1, boost::str(boost::format("Error %1% setting parameter %2") % err % parName));
+ 		metadataLogging(chaos::common::metadata_logging::StandardLoggingChannel::LogLevelError,"set parameter command not acknowledged" ); // ********** aggiunto **************
 	}
 }
 // empty acquire handler
@@ -73,7 +84,7 @@ void own::CmdACTSetParameter::acquireHandler() {
 }
 // empty correlation handler
 void own::CmdACTSetParameter::ccHandler() {
-BC_END_RUNNIG_PROPERTY;
+BC_END_RUNNING_PROPERTY;
 }
 // empty timeout handler
 bool own::CmdACTSetParameter::timeoutHandler() {

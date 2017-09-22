@@ -37,40 +37,71 @@ BATCH_COMMAND_CLOSE_DESCRIPTION()
 
 
 // return the implemented handler
-uint8_t own::CmdACTresetAlarms::implementedHandler(){
-	return      AbstractActuatorCommand::implementedHandler()|chaos_batch::HandlerType::HT_Acquisition;
-}
+//uint8_t own::CmdACTresetAlarms::implementedHandler(){
+//	return      AbstractActuatorCommand::implementedHandler()|chaos_batch::HandlerType::HT_Acquisition;
+//}
 // set handler
 void own::CmdACTresetAlarms::setHandler(c_data::CDataWrapper *data) {
 	int err;
+    setWorkState(true);
+
 	AbstractActuatorCommand::setHandler(data);
- 	const uint32_t *axID=getAttributeCache()->getROPtr<uint32_t>(DOMAIN_INPUT, "axisID");
+       
 
+        
+        if(!data ||
+            !data->hasKey(CMD_ACT_ALRM)) {
+            SCLERR_ << "Reset alarms parameter not present";
+            metadataLogging(chaos::common::metadata_logging::StandardLoggingChannel::LogLevelInfo,boost::str( boost::format("performing reset alarms: argument non present")) );
+            BC_FAULT_RUNNING_PROPERTY;
+            return;
+        }
+        
+        if(!data->isInt64Value(CMD_ACT_ALRM)) {
+            SCLERR_ << "Reset alarms parameter is not an integer 64 data type";
+            metadataLogging(chaos::common::metadata_logging::StandardLoggingChannel::LogLevelInfo,boost::str( boost::format("performing reset alarms: argument is not an integer 64 type")) );
+            BC_FAULT_RUNNING_PROPERTY;
+            return;
+        }
+        
 	int64_t alarmMask = data->getInt64Value(CMD_ACT_ALRM);
+        if(std::isnan(alarmMask)==true)
+        {
+            SCLERR_ << "Reset alarms parameter is nan";
+            metadataLogging(chaos::common::metadata_logging::StandardLoggingChannel::LogLevelInfo,boost::str( boost::format("performing reset alarms: argument is a nan")) );
+            BC_FAULT_RUNNING_PROPERTY;
+            return;
+        }
+        
 	SCLDBG_ << "ALEDEBUG Reset Alarms set handler "<< alarmMask ;
+        
 
+
+            SCLERR_ << "resetAlarms before sending to interface " << *axID << actuator_drv;
         if((err = actuator_drv->resetAlarms(*axID,alarmMask)) != 0) {
-                LOG_AND_TROW(SCLERR_, 1, boost::str(boost::format("Error %1% resetting alarms") % err));
-	}	
-	actuator_drv->accessor->base_opcode_priority=100;
-        setWorkState(true);
-        BC_EXEC_RUNNIG_PROPERTY;
+                //LOG_AND_TROW(SCLERR_, 1, boost::str(boost::format("Error %1% resetting alarms") % err));
+            SCLERR_ << "resetAlarms failed";
+            metadataLogging(chaos::common::metadata_logging::StandardLoggingChannel::LogLevelInfo,boost::str( boost::format("performing reset alarms: operation failed")) );
+            BC_FAULT_RUNNING_PROPERTY;
+            return;
+        }	
+            SCLERR_ << "resetAlarms after sending to interface";
+	//actuator_drv->accessor->base_opcode_priority=100;
+        BC_NORMAL_RUNNING_PROPERTY;
 	return;
-
-
 }
+
 // empty acquire handler
 void own::CmdACTresetAlarms::acquireHandler() {
  //force output dataset as changed
 	SCLDBG_ << "ALEDEBUG Reset Alarms acquire handler ";
         getAttributeCache()->setOutputDomainAsChanged();
-
 }
+
 // empty correlation handler
 void own::CmdACTresetAlarms::ccHandler() {
 	SCLDBG_ << "ALEDEBUG Reset Alarms CC handler ";
-        setWorkState(false);
-        BC_END_RUNNIG_PROPERTY;
+        BC_END_RUNNING_PROPERTY;
 	return;
 }
 // empty timeout handler

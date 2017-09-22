@@ -55,7 +55,10 @@ cu_driver::MsgManagmentResultType::MsgManagmentResult ChaosActuatorDD::execOpcod
     cu_driver::MsgManagmentResultType::MsgManagmentResult result = cu_driver::MsgManagmentResultType::MMR_EXECUTED;
     actuator_iparams_t *in = (actuator_iparams_t *)cmd->inputData;
     actuator_oparams_t *out = (actuator_oparams_t *)cmd->resultData;
-
+    if(motor==NULL){
+      ACERR<<"motor low level driver NULL, executing opcode:"<<cmd->opcode;
+      return result;
+    }
     switch(cmd->opcode){
         case OP_INIT:
              ACDBG<< "Initializing";
@@ -136,8 +139,12 @@ cu_driver::MsgManagmentResultType::MsgManagmentResult ChaosActuatorDD::execOpcod
             break; 
             
         case OP_RESET_ALARMS:
-            ACDBG<<"Reset alarms to:"<<in->alarm_mask;
+            ACDBG<<"Reset alarms to:"<<in->alarm_mask << std::endl;
             out->result = motor->resetAlarms(in->axis,in->alarm_mask);
+            break;
+        case OP_HARD_RESET:
+            ACDBG<<"HARD Reset in axis "<< in->axis << std::endl;
+            out->result = motor->hardreset(in->axis,in->ivalue);
             break;
         case OP_GET_ALARMS: {
 	    std::string desc;
@@ -158,6 +165,7 @@ cu_driver::MsgManagmentResultType::MsgManagmentResult ChaosActuatorDD::execOpcod
             break;
        
         case OP_STOP_MOTION:
+            ACDBG<<"Before Stop Motion :" << std::endl;
             out->result = motor->stopMotion(in->axis);
             ACDBG<<"Stop Motion, result:"<< out->result;
             break;
@@ -200,8 +208,8 @@ cu_driver::MsgManagmentResultType::MsgManagmentResult ChaosActuatorDD::execOpcod
         case OP_SENDDATASET:{
         std::string dataset;
 	out->result=motor->sendDataset(dataset);
-	ACDBG << "ALEDEBUG: Received dataset " <<  dataset;
-        strncpy(out->str,dataset.c_str(),JSON_MAX_SIZE);;
+	//ACDBG << "ALEDEBUG: Received dataset " <<  dataset;
+        strncpy(out->str,dataset.c_str(),JSON_MAX_SIZE);
 	break;
 	}
         case OP_SETPARAMETER:{
@@ -214,7 +222,14 @@ cu_driver::MsgManagmentResultType::MsgManagmentResult ChaosActuatorDD::execOpcod
 	free(SS1);
 	break;
 	}
-       
+        case OP_GETPARAMETER: {
+        	std::string tempString;
+        	out->result=motor->getParameter(in->axis,in->str,tempString);
+
+        	strncpy(out->str,tempString.c_str(),JSON_MAX_SIZE);
+        	ACDBG << "ALEDEBUG (DD) asked for " << in->str << " received " <<out->str;
+        	break;
+        }
             
         case OP_GET_FEATURE:{
             uint64_t feat=motor->getFeatures();

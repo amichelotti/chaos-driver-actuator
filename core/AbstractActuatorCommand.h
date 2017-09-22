@@ -23,6 +23,7 @@
 #define __Actuator__AbstractActuatorCommand__
 
 #include "ActuatorConstants.h"
+#include "common/actuators/core/AbstractActuator.h"
 
 #include <driver/actuator/core/ChaosActuatorInterface.h>
 
@@ -32,34 +33,64 @@ namespace c_data = chaos::common::data;
 namespace ccc_slow_command = chaos::cu::control_manager::slow_command;
 
 namespace driver {
-	namespace actuator {
-		
-		class AbstractActuatorCommand : public ccc_slow_command::SlowCommand {
+namespace actuator {
 
-		public:
-		  AbstractActuatorCommand();
-		  ~AbstractActuatorCommand();
-		protected:
-			char		*o_status;
-			char		*o_alarm_str;
-			int32_t		*o_status_id;
-			uint64_t	*o_alarms;
-			//reference of the chaos bastraction ofactuator driver
-			chaos::driver::actuator::ChaosActuatorInterface *actuator_drv;
-			
-			//implemented handler
-			uint8_t implementedHandler();
+class AbstractActuatorCommand : public ccc_slow_command::SlowCommand {
 
-			void ccHandler();
-			
-			// set the data fr the command
-			void setHandler(c_data::CDataWrapper *data);
+public:
+	AbstractActuatorCommand();
+	~AbstractActuatorCommand();
+protected:
+	int32_t		*o_status_id;
+	char            *o_status_str;
+	uint64_t	*o_alarms;
+	char		*o_alarm_str;
+	double          *o_position;
+	uint64_t     *o_lasthoming;
+	double *i_position;
+	::common::actuators::AbstractActuator::readingTypes readTyp;
+	int *tmpInt;
+	bool    *o_useUI;
 
-			void getState(int32_t axisID,int& current_state, std::string& current_state_str);
-			
-			void setWorkState(bool working);
-		};
-	}
+	bool		*o_stby;
+	bool		*o_pswitch;
+	bool            *o_nswitch;
+	double *i_speed; // ********* AGGIUNTO ************
+	double *highspeed_homing;  // ********* AGGIUNTO ************
+	const uint32_t	*i_command_timeout;// ********* AGGIUNTO ************
+
+	const double *p_resolution,*p_warningThreshold;  // ********* AGGIUNTO ************
+
+	const uint32_t *axID;       // ********* AGGIUNTO axID ************
+	const uint32_t *p_setTimeout;
+
+	bool *p_stopCommandInExecution;
+	double max_position,min_position;
+
+
+
+	//reference of the chaos bastraction ofactuator driver
+	chaos::driver::actuator::ChaosActuatorInterface *actuator_drv;
+
+	//implemented handler
+	uint8_t implementedHandler();
+
+	void acquireHandler(); // ******** Aggiunto qui!!! ********
+	void ccHandler();
+
+	// set the data fr the command
+	void setHandler(c_data::CDataWrapper *data);
+	void endHandler();
+	void getState(int32_t axisID,int& current_state, std::string& current_state_str);
+	int performCheck();
+
+	void checkEndMove();
+
+	void setWorkState(bool working);
+	void DecodeAndRaiseAlarms(uint64_t mask);
+
+};
+}
 }
 
 #endif /* defined(__Actuator__AbstractActuatorCommand__) */

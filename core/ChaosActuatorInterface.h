@@ -20,7 +20,7 @@ namespace chaos_driver=::chaos::cu::driver_manager::driver;
 namespace chaos {
     namespace driver {
 #define MAX_STR_SIZE 256
-#define JSON_MAX_SIZE 4096 
+#define JSON_MAX_SIZE 8192 
         namespace actuator {
             typedef enum {
                 OP_INIT = chaos_driver::OpcodeType::OP_USER, // init low level driver
@@ -30,18 +30,13 @@ namespace chaos {
 
                 OP_SET_SPEED, // set speed
                 OP_SET_ACCELERATION, // set acceleration
-                OP_SET_ADDITIVE, //
-                OP_SET_REFERENCE, //
-                OP_SET_MOVEMENT, //
 
-                OP_SET_HSPEED_HOM, // set speed
-                OP_SET_LSPEED_HOM, // set speed
-                OP_SET_ACCELERATION_HOM, // set acceleration
-                OP_SET_ADDITIVE_HOM, //
-                OP_SET_REFERENCE_HOM, //
-                OP_SET_MOVEMENT_HOM, //
+                //OP_SET_HSPEED_HOM, // set speed
+                //OP_SET_LSPEED_HOM, // set speed
+                //OP_SET_ACCELERATION_HOM, // set acceleration
 
                 OP_SETPARAMETER, //
+				OP_GETPARAMETER,
                 OP_SENDDATASET, //
                 OP_CONFIGAXIS, //
                 OP_GET_POSITION,
@@ -56,8 +51,8 @@ namespace chaos {
                 OP_GET_SWVERSION,
                 OP_GET_HWVERSION,
                 OP_GET_ALARM_DESC,
-		OP_SET_MAX_SPEED,
-                OP_GET_FEATURE
+		        OP_GET_FEATURE,
+				OP_HARD_RESET
             } ChaosActuatorOpcode;
             
             typedef struct {
@@ -118,16 +113,30 @@ namespace chaos {
                 int setAdditiveHoming(bool isAdditive);
                 int setReferenceBaseHoming(int32_t referenceBase);
                 int setMovementHoming(int32_t movement);
-		int setParameter(int32_t axisID,std::string parName, std::string value);
+                /**
+                    @brief return the value of the parameter specified in parName, currently inside the driver
+
+                                @param parName the name of parameter. This parameter must be one of the parameters declared by the driver in sendDataset
+                                @param  axisID  the axis Identifier of the motor
+                                @param  resultString  contains a string with the value of parameter. Correct conversion from string is demanded to the CU
+                                @return 0 if success or an error code
+                                */
+                int getParameter(int axisID,std::string parName,std::string& resultString);
+
+
+                int setParameter(int32_t axisID,std::string parName, std::string value);
                  /**
                  @brief return the position of the step motor in mm starting from the
                   * home position)
                  @param readingType the position reading method to be used to
                  @return 0 if success or an error code
                  */
+
+
                 int getPosition(int32_t axisID,readingTypes readingType,double *deltaPosition_mm);
                 
                 int resetAlarms(int32_t axisID,uint64_t alrm);
+                int hardreset(int32_t axisID,bool mode);
                 
                 
                 /**

@@ -32,6 +32,7 @@ using namespace driver::actuator;
 using namespace chaos::common::data;
 using namespace chaos::common::batch_command;
 using namespace chaos::cu::control_manager::slow_command;
+using namespace chaos::cu::control_manager;
 
 BATCH_COMMAND_OPEN_DESCRIPTION(driver::actuator::,CmdACTDefault,
                                                           "Default method",
@@ -56,37 +57,28 @@ uint8_t CmdACTDefault::implementedHandler() {
 void CmdACTDefault::setHandler(c_data::CDataWrapper *data) {
 	
         const int *tmpInt;
+        BackupData=data;
          
         lastState=-1;
         lastPosition=-1;
         lastAlarms=0;
-        __lastWarning=-1;
+	alreadyLogged=0;
         
         
         
 	CMDCU_ << "Set Handler";
 	AbstractActuatorCommand::setHandler(data);
- 	axID = getAttributeCache()->getROPtr<uint32_t>(DOMAIN_INPUT, "axisID");
-
+	BackupAxID=*axID;
+	setStateVariableSeverity(StateVariableTypeAlarmCU,"command_error", chaos::common::alarm::MultiSeverityAlarmLevelClear);
 	CMDCU_ << "After parental Set Handler";
-
 	//set the default scheduling to one seconds
 	setFeatures(features::FeaturesFlagTypes::FF_SET_SCHEDULER_DELAY, (uint64_t)1000000);
-
 	//get channel pointer
-	tmpInt =  getAttributeCache()->getROPtr<int32_t>(DOMAIN_INPUT, "readingType") ;
-	CMDCU_ << "Set Handler readingType is " << *tmpInt;
-        positionTHR= getAttributeCache()->getROPtr<double>(DOMAIN_INPUT, "__positionWarningTHR");
-        positionTHR_TIM=getAttributeCache()->getROPtr<double>(DOMAIN_INPUT, "__positionWarningTHR_Timeout");
-        posRes=getAttributeCache()->getROPtr<double>(DOMAIN_INPUT, "__positionResolution");
-        readTyp=(::common::actuators::AbstractActuator::readingTypes) *tmpInt;
-	o_position = getAttributeCache()->getRWPtr<double>(DOMAIN_OUTPUT, "position");
-        o_warning = getAttributeCache()->getRWPtr<int32_t>(DOMAIN_OUTPUT, "__outputWarning");
-		
+        positionTHR= getAttributeCache()->getROPtr<double>(DOMAIN_INPUT, "positionWarningTHR");
+        positionTHR_TIM=getAttributeCache()->getROPtr<double>(DOMAIN_INPUT, "positionWarningTHR_Timeout");
 	
-	o_alarm = getAttributeCache()->getRWPtr<int32_t>(DOMAIN_OUTPUT, "alarms");
         OutOfSetWarningStatus=false;
-	BC_NORMAL_RUNNIG_PROPERTY
+	BC_NORMAL_RUNNING_PROPERTY
        
         
 }
@@ -110,44 +102,29 @@ void CmdACTDefault::acquireHandler() {
       
         
 	CMDCU_ << "Acquiring data";
-	
-	tmpInt =  getAttributeCache()->getROPtr<int32_t>(DOMAIN_INPUT, "readingType") ;
-        readTyp=(::common::actuators::AbstractActuator::readingTypes) *tmpInt;
-	
-	pos_sp = getAttributeCache()->getRWPtr<double>(DOMAIN_OUTPUT, "position_sp");
-    if((err = actuator_drv->getPosition(*axID,readTyp,&tmp_float))==0){
-		*o_position = tmp_float;
-    } else {
-		LOG_AND_TROW(CMDCUERR_, 1, boost::str( boost::format("Error calling driver on get position readout with code %1%") % err));
-	}
-    /*if((err = actuator_drv->getPosition(::common::actuators::AbstractActuator::READ_ENCODER,&tmp_float))==0){
-		EncRead = tmp_float;
-    } else {
-		LOG_AND_TROW(CMDCUERR_, 1, boost::str( boost::format("Error calling driver on get position readout with code %1%") % err));
-	}
-      */  
         
-	tmp_uint64=0;		
-	if((err = actuator_drv->getAlarms(*axID,&tmp_uint64,desc)) == 0){
-		*o_alarms = tmp_uint64;
-                if (tmp_uint64)
-                    DPRINT("alarm description is %s",desc.c_str() );
-		o_alarm_str = getAttributeCache()->getRWPtr<char>(DOMAIN_OUTPUT, "alarmStr");
-		strncpy(o_alarm_str, desc.c_str(), 256);
-	} else {
-		LOG_AND_TROW(CMDCUERR_, 2, boost::str( boost::format("Error calling driver on get alarms readout with code %1%") % err));
-	}
+        
+        //acquire the current readout
+    //axID= getAttributeCache()->getROPtr<uint32_t>(DOMAIN_INPUT, "axisID");
 
-	if((err = actuator_drv->getState(*axID,&stato, desc)) == 0){
-		*o_status_id = stato;
-		//the new pointer need to be got (set new size can reallocate the pointer)
-		//could it be avoided?????
-		o_status = getAttributeCache()->getRWPtr<char>(DOMAIN_OUTPUT, "status");
-		//copy up to 255 and put the termination character
-		strncpy(o_status, desc.c_str(), 256);
-	} else {
-		LOG_AND_TROW(CMDCUERR_, 3, boost::str( boost::format("Error calling driver on get state readout with code %1%") % err));
-	}
+    if (*axID != BackupAxID)
+    {
+	AbstractActuatorCommand::setHandler(BackupData);
+	BackupAxID=*axID;
+    }
+
+    AbstractActuatorCommand::acquireHandler();
+	
+	
+//	tmpInt =  getAttributeCache()->getROPtr<int32_t>(DOMAIN_INPUT, "readingType") ;
+//        readTyp=(::common::actuators::AbstractActuator::readingTypes) *tmpInt;
+	
+	pos_sp = i_position ;//getAttributeCache()->getRWPtr<double>(DOMAIN_OUTPUT, "position");
+
+        
+	if (*o_alarms)
+            DPRINT("alarm description is %s",o_alarm_str);
+		
         //check out of set warning
         if ((*positionTHR) && (*positionTHR_TIM))
         {
@@ -164,7 +141,13 @@ void CmdACTDefault::acquireHandler() {
                     if ((now-OutOfSetWarningTimestamp) > *positionTHR_TIM)
                     {
                         CMDCUERR_ << "WARNING OUT OF SET " << *o_position << " ";
-                        *o_warning=1;
+                        setStateVariableSeverity(StateVariableTypeAlarmCU,"position_out_of_set", chaos::common::alarm::MultiSeverityAlarmLevelWarning);
+			if (alreadyLogged == 0)
+			{
+                        metadataLogging(chaos::common::metadata_logging::StandardLoggingChannel::LogLevelWarning,CHAOS_FORMAT("The position set point has drifted out the defined threshold  \"position\":%1% \"position set point\":%2% \"threshold\":%3%" , %(*o_position) %(*pos_sp)  % (*positionTHR) ));
+			alreadyLogged=1;
+			}
+                  
                     }
                 }
                 
@@ -172,7 +155,8 @@ void CmdACTDefault::acquireHandler() {
             else
             {
                 OutOfSetWarningStatus=false;
-                *o_warning=0;
+                setStateVariableSeverity(StateVariableTypeAlarmCU,"position_out_of_set", chaos::common::alarm::MultiSeverityAlarmLevelClear);
+		alreadyLogged=0;
             }
         }
 
@@ -184,19 +168,17 @@ void CmdACTDefault::acquireHandler() {
     CMDCU_ << "alarms ->" << *o_alarms;
     CMDCU_ << "alarm desc -> " << o_alarm_str;
     CMDCU_ << "status_id -> " << *o_status_id;
-    CMDCU_ << "status desc -> " << o_status;
+    CMDCU_ << "status desc -> " << o_status_str;
 	
 	//force output dataset as changed
     if (  (lastState!=*o_status_id) || 
-           ((abs(lastPosition - *o_position)> *posRes)) ||
-            (lastAlarms!=*o_alarms) ||
-             ( __lastWarning!=*o_warning)
+           ((abs(lastPosition - *o_position)> *p_resolution)) ||
+            (lastAlarms!=*o_alarms) 
             )
     {
 	getAttributeCache()->setOutputDomainAsChanged();
         lastState=*o_status_id;
         lastPosition=*o_position;
         lastAlarms=*o_alarms;
-        __lastWarning=*o_warning;
     }
 }

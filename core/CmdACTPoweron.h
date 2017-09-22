@@ -26,9 +26,13 @@ namespace ccc_slow_command = chaos::cu::control_manager::slow_command;
 namespace driver {
 	namespace actuator {
 		 DEFINE_BATCH_COMMAND_CLASS(CmdACTPoweron,AbstractActuatorCommand) {
-			const uint32_t *axID;
+
+		 protected:
+			 int32_t onState;
+ 			bool *i_stby;
+			//const uint32_t *axID;
 			//implemented handler
-			uint8_t implementedHandler();
+			//uint8_t implementedHandler();
 			//initial set handler
 			void setHandler(c_data::CDataWrapper *data);
 			//custom acquire handler

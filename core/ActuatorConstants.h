@@ -45,13 +45,16 @@ namespace driver {
 		//! The alias of the "reset" command of the type
 		const char * const CMD_ACT_RESET_ALIAS = "rset";
 
+		//! The alias of the "Hard reset" command of the type
+		const char * const CMD_ACT_HARDRESET_ALIAS = "HardReset";
 		//! The alias of the "stop motion" command of the type
-		const char * const CMD_ACT_STOPMOTION_ALIAS = "stop";
+		const char * const CMD_ACT_STOPMOTION_ALIAS = "stopMotion";
 		//! The alias of the homing command 
 		const char * const CMD_ACT_HOMING_ALIAS = "homing";
 		//! The alias of the homing type parameter
-		const char * const CMD_ACT_HOMINGTYPE = "homing type";
+		const char * const CMD_ACT_HOMINGTYPE = "homing_type";
 		
+		const char * const CMD_ACT_HARDRESET_MODE = "hard_reset_mode";
 		//! The alias of the "move rel" command of the type
 		const char * const CMD_ACT_MOVE_RELATIVE_ALIAS = "mov_rel";
 		//! The alias of the "move absolute" command of the type
@@ -70,8 +73,8 @@ namespace driver {
         const char * const CMD_ACT_CALIBRATE_TO = "to";
         const char * const CMD_ACT_CALIBRATE_STEACT = "steps";
 
-        #define DEFAULT_COMMAND_TIMEOUT_MS   10000
-        #define DEFAULT_RAMP_TIME_OFFSET_MS  10000
+        #define DEFAULT_COMMAND_TIMEOUT_MS   10000000
+        #define DEFAULT_MOVE_TIMETOL_OFFSET_MS  (1000)*1000
 
 	}
 }

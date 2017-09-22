@@ -3,10 +3,10 @@ project(chaos_driver_actuator_sim)
 
 
 message(STATUS "Actuator simulated driver ${DRIVERS_LIB}")
-add_definitions(-DCHAOS -DDEBUG)
+
 FILE(GLOB src *.cpp)
 
-ADD_LIBRARY(${PROJECT_NAME} SHARED ${src})
+ADD_LIBRARY(${PROJECT_NAME} ${src})
 
 #ADD_EXECUTABLE(test_actuator_sim_cu test/main.cpp)
  TARGET_LINK_LIBRARIES(${PROJECT_NAME} common_actuators common_actuators_technosoftSimulator)

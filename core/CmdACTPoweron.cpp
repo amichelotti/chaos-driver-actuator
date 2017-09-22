@@ -16,7 +16,7 @@ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 See the License for the specific language governing permissions and
 limitations under the License.
 
-*/
+ */
 #include "CmdACTPoweron.h"
 
 #include <cmath>
@@ -29,81 +29,84 @@ limitations under the License.
 namespace own = driver::actuator;
 namespace c_data =  chaos::common::data;
 namespace chaos_batch = chaos::common::batch_command;
+using namespace chaos::cu::control_manager;
+
 BATCH_COMMAND_OPEN_DESCRIPTION_ALIAS(driver::actuator::,CmdACTPoweron,CMD_ACT_POWERON_ALIAS,
-			"Turn on the power of the actuator",
-			"29d39d4f-0311-4774-b0b3-8caa7862193c")
+		"Turn on the power of the actuator",
+		"29d39d4f-0311-4774-b0b3-8caa7862193c")
 BATCH_COMMAND_ADD_INT32_PARAM(CMD_ACT_POWERON_VALUE,"on state",chaos::common::batch_command::BatchCommandAndParameterDescriptionkey::BC_PARAMETER_FLAG_MANDATORY)
 
 BATCH_COMMAND_CLOSE_DESCRIPTION()
 
 
-// return the implemented handler
-uint8_t own::CmdACTPoweron::implementedHandler(){
-	return      AbstractActuatorCommand::implementedHandler()|chaos_batch::HandlerType::HT_Acquisition;
-}
-// empty set handler
 void own::CmdACTPoweron::setHandler(c_data::CDataWrapper *data) {
 	int err;
-	int32_t onState = data->getInt32Value(CMD_ACT_POWERON_VALUE);
-	axID=getAttributeCache()->getROPtr<uint32_t>(DOMAIN_INPUT, "axisID");
-
-
 	AbstractActuatorCommand::setHandler(data);
-	if((err = actuator_drv->poweron(*axID,onState)) != 0) {
-		LOG_AND_TROW(SCLERR_, 1, boost::str(boost::format("Error %1% while power on the actuator") % err));
-	}
+ 	i_stby=getAttributeCache()->getRWPtr<bool>(DOMAIN_INPUT, "powerOn");
+
+
 	setWorkState(true);
-	BC_EXEC_RUNNIG_PROPERTY;
+
+	if(!data ||!data->hasKey(CMD_ACT_POWERON_VALUE)) {
+			metadataLogging(chaos::common::metadata_logging::StandardLoggingChannel::LogLevelError,"parameter  0/1 must be specified" );
+			BC_FAULT_RUNNING_PROPERTY;
+			return;
+	}
+
+
+	onState = data->getInt32Value(CMD_ACT_POWERON_VALUE);
+
+	setStateVariableSeverity(StateVariableTypeAlarmCU,"command_error", chaos::common::alarm::MultiSeverityAlarmLevelClear);
+	setStateVariableSeverity(StateVariableTypeAlarmCU,"powerOn_out_of_set", chaos::common::alarm::MultiSeverityAlarmLevelClear);
+	setStateVariableSeverity(StateVariableTypeAlarmCU,"powerOn_value_not_reached", chaos::common::alarm::MultiSeverityAlarmLevelClear);
+
+   	uint64_t computed_timeout=std::max((uint64_t)5000000,(uint64_t)*p_setTimeout);
+ 	SCLDBG_ << "Calculated timeout is = " << computed_timeout;
+        setFeatures(chaos_batch::features::FeaturesFlagTypes::FF_SET_COMMAND_TIMEOUT, computed_timeout);
+
+
+	SCLDBG_   << "Launching poweron in set handler power on in axid "<< *axID << " value " << onState;
+	if((err = actuator_drv->poweron(*axID,onState)) != 0) {
+		metadataLogging(chaos::common::metadata_logging::StandardLoggingChannel::LogLevelError,CHAOS_FORMAT("axis %1% cannot perform set state (poweron) to ",%*axID %onState));
+		setStateVariableSeverity(StateVariableTypeAlarmCU,"command_error", chaos::common::alarm::MultiSeverityAlarmLevelHigh);
+		BC_FAULT_RUNNING_PROPERTY;
+		return;
+
+	}
+	BC_NORMAL_RUNNING_PROPERTY;
 }
 // empty acquire handler
 void own::CmdACTPoweron::acquireHandler() {
+	AbstractActuatorCommand::acquireHandler();
+
 }
 // empty correlation handler
 void own::CmdACTPoweron::ccHandler() {
-	int err,state;
-	std::string state_str;
-	if((err = actuator_drv->getState(*axID,&state, state_str))) 
-	{
-		LOG_AND_TROW(SCLERR_, 1, boost::str(boost::format("Error fetching state readout with code %1%") % err));
-	} 
-	else 
- 	{
-		*o_status_id = state;
- 			SCLERR_ << "ALEDEBUG poweron CC got state "<<state_str ;
-		//copy up to 255 and put the termination character
-		strncpy(o_status, state_str.c_str(), 256);
-		if(((*o_status_id)&::common::actuators::ACTUATOR_POWER_SUPPLIED)!=0)
-		{
-			BC_END_RUNNIG_PROPERTY;
-			setWorkState(false);
-		}
-			BC_END_RUNNIG_PROPERTY;
-			setWorkState(false);
+	if((((*o_status_id)&::common::actuators::ACTUATOR_POWER_SUPPLIED)?1:0)==onState){
+	         SCLDBG_ << " cchandler power on command on axisID " << *axID << " onstate "<< onState;
+
+		*o_stby=(onState==1);
+		*i_stby=(onState==1);
+ 		getAttributeCache()->setInputDomainAsChanged();
+
+		BC_END_RUNNING_PROPERTY;
 	}
 }
 // empty timeout handler
 bool own::CmdACTPoweron::timeoutHandler() {
-	int err,state;
-	std::string state_str;
-	setWorkState(false);
- 	if((err = actuator_drv->getState(*axID,&state, state_str)))
-        {
-                LOG_AND_TROW(SCLERR_, 1, boost::str(boost::format("Error fetching state readout with code %1%") % err));
-        }
-        else
-        {
-                *o_status_id = state;
-                //copy up to 255 and put the termination character
-                strncpy(o_status, state_str.c_str(), 256);
-                if(((*o_status_id)&::common::actuators::ACTUATOR_POWER_SUPPLIED)!=0)
-                {
-                        BC_END_RUNNIG_PROPERTY;
-                }
-		else
-		{
- 			SCLERR_ << "[metric] Power on not achieved before timeout " ;
-			BC_FAULT_RUNNIG_PROPERTY;
-		}
-        }
+	AbstractActuatorCommand::acquireHandler();
+
+	if((((*o_status_id)&::common::actuators::ACTUATOR_POWER_SUPPLIED)?1:0)==onState){
+	SCLDBG_ << "power on ok in timeout command on axisID " << *axID;
+			*o_stby=(onState==1);
+			*i_stby=(onState==1);
+ 		getAttributeCache()->setInputDomainAsChanged();
+			BC_END_RUNNING_PROPERTY;
+			return false;
+	}
+	setStateVariableSeverity(StateVariableTypeAlarmCU,"powerOn_value_not_reached", chaos::common::alarm::MultiSeverityAlarmLevelWarning);
+
+	BC_END_RUNNING_PROPERTY;
+	return false;
 
 }

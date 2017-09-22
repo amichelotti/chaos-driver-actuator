@@ -34,24 +34,24 @@ namespace driver {
 		//! Command for change the mode of the actuator
 		DEFINE_BATCH_COMMAND_CLASS(CmdACTMoveAbsolute,AbstractActuatorCommand) {
 			
-			double	*o_position_sp;
-			double	*o_position;
-			double *i_speed;
-			const uint32_t *axID;
+			//double	*o_position_sp;
+			//double	*o_position;
+			//double *i_speed;
+			//const uint32_t *axID;
 			
-			const uint32_t	*i_command_timeout;
-			const double	*__i_delta_setpoint;
-			const double	*__i_setpoint_affinity;
+			//const uint32_t	*i_command_timeout;
+			//const double	*__i_delta_setpoint;
+			//const double	*__i_setpoint_affinity;
                         
-::common::actuators::AbstractActuator::readingTypes readTyp;
+                        ::common::actuators::AbstractActuator::readingTypes readTyp;
 
 			//is the delta to the setpoint that notify the end of command
-			time_t launched;
-			double affinity_set_delta;
-                         bool slow_acquisition_index;
+			//time_t launched;
+			//double affinity_set_delta;
+                        //bool slow_acquisition_index;
 		protected:
 			//implemented handler
-			uint8_t implementedHandler();
+			//uint8_t implementedHandler();// ************ Commentato *************
 			
 			// Set handler
 			void setHandler(c_data::CDataWrapper *data);

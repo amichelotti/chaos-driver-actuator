@@ -29,10 +29,10 @@ namespace driver {
 			//reading type
 			::common::actuators::AbstractActuator::readingTypes readTyp;
 			bool slow_acquisition_index;
-			const uint32_t *axID;
+			//const uint32_t *axID;
 
 			//implemented handler
-			uint8_t implementedHandler();
+			//uint8_t implementedHandler();
 			//initial set handler
 			void setHandler(c_data::CDataWrapper *data);
 			//custom acquire handler
@@ -41,6 +41,10 @@ namespace driver {
 			void ccHandler();
 			//manage the timeout 
 			bool timeoutHandler();
+                        
+                       
+                            
+                        
 			};
 		}
 	}

@@ -1,5 +1,5 @@
 /*
-CmdACTHoming.h
+CmdACTHardReset.h
 !CHAOS
 Created by CUGenerator
 
@@ -17,23 +17,15 @@ See the License for the specific language governing permissions and
 limitations under the License.
 
 */
-#ifndef __Actuator__CmdACTHoming__
-#define __Actuator__CmdACTHoming__
+#ifndef __Actuator__CmdACTHardReset__
+#define __Actuator__CmdACTHardReset__
 #include "AbstractActuatorCommand.h"
-#include "CmdACTStopMotion.h"
-
 #include <bitset>
 namespace c_data = chaos::common::data;
 namespace ccc_slow_command = chaos::cu::control_manager::slow_command;
 namespace driver {
 	namespace actuator {
-		 DEFINE_BATCH_COMMAND_CLASS(CmdACTHoming,AbstractActuatorCommand) {
-			int  homResult;
-			int32_t homingTypeVar;  // ok
-		 	uint64_t scheduleTime;	
-			//double	*o_position;
-			//const uint32_t *axID;
-
+		 DEFINE_BATCH_COMMAND_CLASS(CmdACTHardReset,AbstractActuatorCommand) {
 			//implemented handler
 			//uint8_t implementedHandler();
 			//initial set handler
