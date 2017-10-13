@@ -212,7 +212,7 @@ void ::driver::actuator::SCActuatorControlUnit::unitDefineActionAndDataset() thr
                           DataType::Output, 256);
 
   addAttributeToDataSet("ConfigString",
-                          "ConfigString",
+                          "ConfigString complementary driver info. Unuseful if specified in driver Json parameters",
                           DataType::TYPE_STRING,
                           DataType::Input, 256);
 
@@ -450,13 +450,15 @@ void ::driver::actuator::SCActuatorControlUnit::unitInit() throw(CException) {
   char* ptStr=NULL, *auxStr=NULL;
 
   ptStr=(char*)getAttributeCache()->getROPtr<char*>(DOMAIN_INPUT, "ConfigString");
-  if(ptStr==NULL || *ptStr ==0){
-    throw chaos::CFatalException(-3, "You must provide a configuration string " + getCUID(), __FUNCTION__);
-
-  }
+//  if(ptStr==NULL || *ptStr ==0){
+//    throw chaos::CFatalException(-3, "You must provide a configuration string " + getCUID(), __FUNCTION__);
+//
+//  }
   auxStr=(char*)getAttributeCache()->getROPtr<char*>(DOMAIN_INPUT, "auxiliaryConfigParameters");
 
-
+  
+  
+  
   SCCUDBG<<"configuring driver from Control Unit ";
   SCCUDBG<<"config string is '"<<ptStr<<"'";
     // perfomed in driver initialization
