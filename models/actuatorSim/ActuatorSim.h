@@ -41,6 +41,7 @@ namespace chaos {
              */
            class ActuatorSim: public ChaosActuatorDD{
 	   void driverInit(const char *initParameter) throw(chaos::CException);
+           void driverInit(const chaos::common::data::CDataWrapper& json) throw(chaos::CException);
                 
             public:
                 ActuatorSim();

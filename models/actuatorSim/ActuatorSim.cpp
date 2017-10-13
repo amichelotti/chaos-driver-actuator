@@ -49,20 +49,58 @@ chaos::driver::actuator::ActuatorSim::ActuatorSim() {
 chaos::driver::actuator::ActuatorSim::~ActuatorSim() {
 	
 }
+#ifdef CHAOS
+void chaos::driver::actuator::ActuatorSim::driverInit(const chaos::common::data::CDataWrapper& json) throw(chaos::CException) {
+     int ret;
+    PSLAPP << "Init  driver initialization with json " <<json.getJSONString().c_str();
+    if(motor)
+    {
+          throw chaos::CException(1, "Already Initialized", "ActuatorSim::driverInit");
+    }
+    motor = new ::common::actuators::models::simul::ActuatorTechnoSoft();
+    
+    if(motor==NULL)
+    {
+      throw chaos::CException(1, "Cannot allocate resources for ActuatorSim", "ActuatorSim::driverInit");
+    }
+    motor->jsonConfiguration= ((chaos::common::data::CDataWrapper*)(&json))->clone();
+   
+      if (  (ret=motor->init(NULL)) < 0) 
+      {
+	PSLAPP<<"Init Failed! ret:"<<ret<<std::endl;
+	throw chaos::CException(1, "Bad parameters for ActuatorSim","ActuatorSim::driverInit");
+      } 
+      else 
+      {
+	PSLAPP<<"Init Done" <<std::endl;
+      }
+    
+   
+}
+#endif
+
+
+
+
+
+
 
 void chaos::driver::actuator::ActuatorSim::driverInit(const char *initParameter) throw(chaos::CException) {
     //check the input parameter
 	boost::smatch match;
 	std::string inputStr = initParameter;
-	PSLAPP << "Init  driver initialisation string:\""<<initParameter<<"\""<<std::endl;
+	PSLAPP << "Init driver initialization string:\""<<initParameter<<"\""<<std::endl;
     if(motor){
-          throw chaos::CException(1, "Already Initialised", "ActuatorSim::driverInit");
+          throw chaos::CException(1, "Already Initialized", "ActuatorSim::driverInit");
     }
     motor = new ::common::actuators::models::simul::ActuatorTechnoSoft();
     
     if(motor==NULL){
       throw chaos::CException(1, "Cannot allocate resources for ActuatorSim", "ActuatorSim::driverInit");
     } else {
+        PSLAPP<<"Setting jsonConfiguration to new empty " ;
+        motor->jsonConfiguration=new chaos::common::data::CDataWrapper();
+        PSLAPP << motor->jsonConfiguration->isEmpty()<<std::endl;
 #ifdef INITDRIVER_DEF
       int ret;
       if (  (ret=motor->init((void*)initParameter)) < 0) {
