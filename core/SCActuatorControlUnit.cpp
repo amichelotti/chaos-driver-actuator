@@ -499,6 +499,14 @@ void ::driver::actuator::SCActuatorControlUnit::unitInit() throw(CException) {
         else break;
         param=strtok(NULL,":");
     }
+    string vval="nulla";
+    actuator_drv->getParameter(*axID,"useiu",vval);
+    if (vval != "")
+    {
+        *inSteps=atoi(vval.c_str());
+        
+           
+    }
     }
 
 /*
