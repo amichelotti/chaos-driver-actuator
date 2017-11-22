@@ -583,10 +583,11 @@ bool ::driver::actuator::SCActuatorControlUnit::unitRestoreToSnapshot(chaos::cu:
 
   if (!snapshot_cache->getSharedDomain(DOMAIN_OUTPUT).hasAttribute("powerOn"))
   {
-	  RESTORE_LERR << " missing powerOn to restore" ;
-	  if (!snapshot_cache->getSharedDomain(DOMAIN_INPUT).hasAttribute("speed"))
-	  return false;
+    RESTORE_LERR << " missing powerOn to restore" ;
+    if (!snapshot_cache->getSharedDomain(DOMAIN_INPUT).hasAttribute("speed"))
+      return false;
 
+    return false;
   }
 
 
