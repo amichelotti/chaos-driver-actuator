@@ -35,7 +35,7 @@ namespace driver {
                         bool            OutOfSetWarningStatus;
 			unsigned int	slow_acquisition_idx;
 			//const uint32_t *axID;
-			uint64_t	*o_dev_state;
+            //uint64_t	*o_dev_state;
                       //::common::actuators::AbstractActuator::readingTypes   readTyp;
                         //double          *o_position;
                         double          *o_positionEnc;

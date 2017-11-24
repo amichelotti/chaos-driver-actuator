@@ -145,7 +145,8 @@ void AbstractActuatorCommand::setHandler(c_data::CDataWrapper *data) {
 	p_setTimeout = getAttributeCache()->getROPtr<uint32_t>(DOMAIN_INPUT, "setTimeout");
 
 	p_resolution = getAttributeCache()->getROPtr<double>(DOMAIN_INPUT, "resolution");
-
+    *o_alarm_str=0;
+    *o_status_str=0;
 	//...
 	//...
 

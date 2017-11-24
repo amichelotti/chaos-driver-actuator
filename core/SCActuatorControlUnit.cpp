@@ -177,11 +177,11 @@ void ::driver::actuator::SCActuatorControlUnit::unitDefineActionAndDataset() thr
                           DataType::TYPE_INT32,
                           DataType::Input);
 
-     addAttributeToDataSet("dev_state",
+    /* addAttributeToDataSet("dev_state",
                           "Bit field device state",
                           DataType::TYPE_INT64,
                           DataType::Output);
-
+*/
     addAttributeToDataSet("position",
                           "position",
                           DataType::TYPE_DOUBLE,
@@ -214,12 +214,12 @@ void ::driver::actuator::SCActuatorControlUnit::unitDefineActionAndDataset() thr
   addAttributeToDataSet("ConfigString",
                           "ConfigString complementary driver info. Unuseful if specified in driver Json parameters",
                           DataType::TYPE_STRING,
-                          DataType::Input, 256);
+                          DataType::Input, 1024);
 
   addAttributeToDataSet("auxiliaryConfigParameters",
                           "parameter:value;parameter:value;",
                           DataType::TYPE_STRING,
-                          DataType::Input, 512);
+                          DataType::Input, 1024);
 
     addAttributeToDataSet("driver_timeout",
                           "Driver timeout in milliseconds",
@@ -254,7 +254,7 @@ void ::driver::actuator::SCActuatorControlUnit::unitDefineActionAndDataset() thr
 */
      addAttributeToDataSet("useSteps",
                             "if true motor will be controlled with steps as measure unit",
-                            DataType::TYPE_BOOLEAN,
+                            DataType::TYPE_INT32,
                             DataType::Output);
 
      addAttributeToDataSet("powerOn",
@@ -449,12 +449,12 @@ void ::driver::actuator::SCActuatorControlUnit::unitInit() throw(CException) {
   }
   char* ptStr=NULL, *auxStr=NULL;
 
-  ptStr=(char*)getAttributeCache()->getROPtr<char*>(DOMAIN_INPUT, "ConfigString");
+  ptStr=(char*)getAttributeCache()->getROPtr<char>(DOMAIN_INPUT, "ConfigString");
 //  if(ptStr==NULL || *ptStr ==0){
 //    throw chaos::CFatalException(-3, "You must provide a configuration string " + getCUID(), __FUNCTION__);
 //
 //  }
-  auxStr=(char*)getAttributeCache()->getROPtr<char*>(DOMAIN_INPUT, "auxiliaryConfigParameters");
+  auxStr=(char*)getAttributeCache()->getROPtr<char>(DOMAIN_INPUT, "auxiliaryConfigParameters");
 
   
   
@@ -498,6 +498,14 @@ void ::driver::actuator::SCActuatorControlUnit::unitInit() throw(CException) {
         }
         else break;
         param=strtok(NULL,":");
+    }
+    string vval="nulla";
+    actuator_drv->getParameter(*axID,"useiu",vval);
+    if (vval != "")
+    {
+        *inSteps=atoi(vval.c_str());
+        
+           
     }
     }
 
@@ -575,10 +583,11 @@ bool ::driver::actuator::SCActuatorControlUnit::unitRestoreToSnapshot(chaos::cu:
 
   if (!snapshot_cache->getSharedDomain(DOMAIN_OUTPUT).hasAttribute("powerOn"))
   {
-	  RESTORE_LERR << " missing powerOn to restore" ;
-	  if (!snapshot_cache->getSharedDomain(DOMAIN_INPUT).hasAttribute("speed"))
-	  return false;
+    RESTORE_LERR << " missing powerOn to restore" ;
+    if (!snapshot_cache->getSharedDomain(DOMAIN_INPUT).hasAttribute("speed"))
+      return false;
 
+    return false;
   }
 
 
