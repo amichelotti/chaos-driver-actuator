@@ -66,7 +66,7 @@ cu_driver::MsgManagmentResultType::MsgManagmentResult ChaosActuatorDD::execOpcod
             break;
             
         case OP_CONFIGAXIS:
-             ACDBG<< "Configuring";
+             ACDBG<< "Configuring " << in->str;
              out->result = motor->configAxis(in->str);
             break;
         case OP_DEINIT:
