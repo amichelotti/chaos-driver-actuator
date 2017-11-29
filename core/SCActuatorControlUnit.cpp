@@ -102,10 +102,27 @@ int ::driver::actuator::SCActuatorControlUnit::decodeType(const std::string& str
 bool ::driver::actuator::SCActuatorControlUnit::setPower(const std::string &name,bool value,uint32_t size){
           int err= -1;
 	  uint64_t cmd_id;
-          int32_t vv= (value==true)? 1 : 0;
-	  SCCUAPP << "HANDLER set Power" ;
+          int32_t vvv=0;
+          int32_t vprgn=99;
+          if  (value==true) {vvv=1;vprgn=1;}else{vvv= 0;vprgn=0;}
+	  SCCUAPP << "HANDLER set Power vslue = " << value << " and conversion is " << vvv ;
+          if (vvv == 46)
+	  {
+            SCCUAPP << " vale uguale 46 adesso la cambio";
+            vvv=0;
+            SCCUAPP << " adesso vale " << vvv ;
+ 	  }
+	  else
+          {
+	    if (value == true)
+	    	vvv=1;
+	    else
+		vvv=0;
+	    vvv=vprgn;
+            SCCUAPP << "MEGABACO non vale 46 ma invece adesso vale " << vvv << " mentre vprgn "<< vprgn;
+          }
  	  std::auto_ptr<CDataWrapper> cmd_pack(new CDataWrapper());
-          cmd_pack->addInt32Value(CMD_ACT_POWERON_VALUE, vv);
+          cmd_pack->addInt32Value(CMD_ACT_POWERON_VALUE, vvv);
     //send command
             submitBatchCommand(CMD_ACT_POWERON_ALIAS,
             cmd_pack.release(),
@@ -605,7 +622,7 @@ bool ::driver::actuator::SCActuatorControlUnit::unitRestoreToSnapshot(chaos::cu:
 
     //setBusyFlag(true,1);
     setBusyFlag(true);
-    if (!setPowerOn(true)) {
+    if (!setPowerOn(1)) {
     	  metadataLogging(chaos::common::metadata_logging::StandardLoggingChannel::LogLevelError,CHAOS_FORMAT("Error applying power on during restore \"%1%\" (axis %2%) to position %3% ",%getDeviceID() %*axID %restore_position_sp));
 	  //setBusyFlag(false,-1);
 	  setBusyFlag(false);
@@ -623,7 +640,7 @@ bool ::driver::actuator::SCActuatorControlUnit::unitRestoreToSnapshot(chaos::cu:
     sleep(1);
     if (restore_power_sp == false) 
     {
-	if (!setPowerOn(restore_power_sp)) 
+	if (!setPowerOn(0)) 
 	{
     	  metadataLogging(chaos::common::metadata_logging::StandardLoggingChannel::LogLevelError,CHAOS_FORMAT("Error restoring power on during restore \"%1%\" (axis %2%) to value %3% ",%getDeviceID() %*axID %restore_power_sp));
 	  setBusyFlag(false);
@@ -670,9 +687,11 @@ bool ::driver::actuator::SCActuatorControlUnit::setPosition(double val,bool sync
   return result;
 }
 
-bool  ::driver::actuator::SCActuatorControlUnit::setPowerOn(bool value,bool sync) {
+bool  ::driver::actuator::SCActuatorControlUnit::setPowerOn(int32_t value,bool sync) {
 	uint64_t cmd_id;
 	bool result = true;
+	
+        SCCUAPP <<  "LAUNCHING BATCH COMMAND setPowerOn "<< value;
 	ChaosUniquePtr<CDataWrapper> cmd_pack(new CDataWrapper());
   	cmd_pack->addInt32Value(CMD_ACT_POWERON_VALUE, value);
   	//send command
@@ -715,7 +734,7 @@ bool ::driver::actuator::SCActuatorControlUnit::waitOnCommandID(uint64_t cmd_id)
         SCCUAPP << cmd_id << " -> COMPLETED";
         break;
       case BatchCommandEventType::EVT_FAULT:
-        SCCUAPP << cmd_id << " -> FALUT";
+        SCCUAPP << cmd_id << " -> FAULT";
         break;
     }
     //wait some times

@@ -55,6 +55,7 @@ void own::CmdACTPoweron::setHandler(c_data::CDataWrapper *data) {
 
 
 	onState = data->getInt32Value(CMD_ACT_POWERON_VALUE);
+	SCLDBG_ << "ALEDEBUG received poweron value " <<onState ;
 
 	setStateVariableSeverity(StateVariableTypeAlarmCU,"command_error", chaos::common::alarm::MultiSeverityAlarmLevelClear);
 	setStateVariableSeverity(StateVariableTypeAlarmCU,"powerOn_out_of_set", chaos::common::alarm::MultiSeverityAlarmLevelClear);

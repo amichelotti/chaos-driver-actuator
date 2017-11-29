@@ -67,7 +67,7 @@ protected:
 
 	//-----------utility methdo for the restore operation---------
 	bool setPosition(double pos,bool sync = true);
-	bool setPowerOn(bool value,bool sync = true);
+	bool setPowerOn(int32_t value,bool sync = true);
 
 	//-----------utility methdo for the restore operation---------
 	bool moveAt(const std::string &name,double value,uint32_t size);
