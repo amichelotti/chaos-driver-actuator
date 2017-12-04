@@ -137,7 +137,7 @@ bool ::driver::actuator::SCActuatorControlUnit::setPower(const std::string &name
 bool ::driver::actuator::SCActuatorControlUnit::moveAt(const std::string &name,double value,uint32_t size){
 	  uint64_t cmd_id;
 
-	  SCCUAPP << "HANDLER Move at" ;
+	  SCCUAPP << "HANDLER Move at " <<value;
  	  std::auto_ptr<CDataWrapper> cmd_pack(new CDataWrapper());
           cmd_pack->addDoubleValue(CMD_ACT_MM_OFFSET, value);
 

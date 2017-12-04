@@ -76,6 +76,15 @@ void own::CmdACTPoweron::setHandler(c_data::CDataWrapper *data) {
 	}
 	BC_NORMAL_RUNNING_PROPERTY;
 }
+
+void own::CmdACTPoweron::endHandler() 
+{
+		SCLDBG_ << "removing busy flag";
+    setWorkState(false);
+    AbstractActuatorCommand::endHandler();
+}
+
+
 // empty acquire handler
 void own::CmdACTPoweron::acquireHandler() {
 	AbstractActuatorCommand::acquireHandler();
