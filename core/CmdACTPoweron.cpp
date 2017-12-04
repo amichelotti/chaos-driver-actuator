@@ -68,7 +68,7 @@ void own::CmdACTPoweron::setHandler(c_data::CDataWrapper *data) {
 
 	SCLDBG_   << "Launching poweron in set handler power on in axid "<< *axID << " value " << onState;
 	if((err = actuator_drv->poweron(*axID,onState)) != 0) {
-		metadataLogging(chaos::common::metadata_logging::StandardLoggingChannel::LogLevelError,CHAOS_FORMAT("axis %1% cannot perform set state (poweron) to ",%*axID %onState));
+        metadataLogging(chaos::common::metadata_logging::StandardLoggingChannel::LogLevelError,CHAOS_FORMAT("axis %1% cannot perform set state (poweron) to %2%",%*axID %onState));
 		setStateVariableSeverity(StateVariableTypeAlarmCU,"command_error", chaos::common::alarm::MultiSeverityAlarmLevelHigh);
 		BC_FAULT_RUNNING_PROPERTY;
 		return;
