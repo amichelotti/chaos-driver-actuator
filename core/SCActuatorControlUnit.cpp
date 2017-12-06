@@ -103,24 +103,10 @@ bool ::driver::actuator::SCActuatorControlUnit::setPower(const std::string &name
           int err= -1;
 	  uint64_t cmd_id;
           int32_t vvv=0;
-          int32_t vprgn=99;
-          if  (value==true) {vvv=1;vprgn=1;}else{vvv= 0;vprgn=0;}
+          
+          if  (value==true) {vvv=1;}else{vvv= 0;}
 	  SCCUAPP << "HANDLER set Power vslue = " << value << " and conversion is " << vvv ;
-          if (vvv == 46)
-	  {
-            SCCUAPP << " vale uguale 46 adesso la cambio";
-            vvv=0;
-            SCCUAPP << " adesso vale " << vvv ;
- 	  }
-	  else
-          {
-	    if (value == true)
-	    	vvv=1;
-	    else
-		vvv=0;
-	    vvv=vprgn;
-            SCCUAPP << "MEGABACO non vale 46 ma invece adesso vale " << vvv << " mentre vprgn "<< vprgn;
-          }
+          
  	  std::auto_ptr<CDataWrapper> cmd_pack(new CDataWrapper());
           cmd_pack->addInt32Value(CMD_ACT_POWERON_VALUE, vvv);
     //send command
@@ -299,7 +285,7 @@ void ::driver::actuator::SCActuatorControlUnit::unitDefineActionAndDataset() thr
 
   std::string dataset;
   actuator_drv->sendDataset(dataset) ;
-  SCCUAPP << "DATASETVARIABLE getting dataset from driver " << dataset;
+  SCCUAPP << "DATASETVARIABLE getting dataset from driver " ;//<< dataset;
   Json::Value                                 json_parameter;
   Json::Reader                                json_reader;
 
@@ -495,6 +481,7 @@ void ::driver::actuator::SCActuatorControlUnit::unitInit() throw(CException) {
     char* param=NULL;
     char* value;
     param=strtok(auxStr,":");
+    *inSteps=0;
     while (param)
     {
         value=NULL;
