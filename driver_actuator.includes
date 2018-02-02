@@ -1,4 +1,4 @@
-core
-models/actuatorSim
-models/technosoft
-/usr/local/chaos/chaos-distrib/include
+../../chaosframework
+.
+../../chaosframework/usr/local/include
+
