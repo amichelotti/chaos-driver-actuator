@@ -10,7 +10,7 @@ ELSE()
 ADD_LIBRARY(${PROJECT_NAME} SHARED ${core_src})
 ENDIF()
 
-TARGET_LINK_LIBRARIES(${PROJECT_NAME} ${DRIVERS_LIB} chaos_cutoolkit chaos_common common_debug common_modbus modbus chaos_cutoolkit chaos_uitoolkit ${FrameworkLib})
+TARGET_LINK_LIBRARIES(${PROJECT_NAME} chaos_cutoolkit chaos_common common_debug common_modbus modbus chaos_cutoolkit chaos_uitoolkit ${FrameworkLib})
 installHeaders(core)
 INSTALL_TARGETS(/lib ${PROJECT_NAME})
 
