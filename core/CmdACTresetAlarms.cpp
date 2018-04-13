@@ -43,8 +43,7 @@ BATCH_COMMAND_CLOSE_DESCRIPTION()
 // set handler
 void own::CmdACTresetAlarms::setHandler(c_data::CDataWrapper *data) {
 	int err;
-    setWorkState(true);
-
+    	setWorkState(true);
 	AbstractActuatorCommand::setHandler(data);
        
 
@@ -53,22 +52,31 @@ void own::CmdACTresetAlarms::setHandler(c_data::CDataWrapper *data) {
             !data->hasKey(CMD_ACT_ALRM)) {
             SCLERR_ << "Reset alarms parameter not present";
             metadataLogging(chaos::common::metadata_logging::StandardLoggingChannel::LogLevelInfo,boost::str( boost::format("performing reset alarms: argument non present")) );
+    	    setWorkState(false);
             BC_FAULT_RUNNING_PROPERTY;
             return;
         }
         
+        int64_t alarmMask;
         if(!data->isInt64Value(CMD_ACT_ALRM)) {
-            SCLERR_ << "Reset alarms parameter is not an integer 64 data type";
+             if (!data->isInt32Value(CMD_ACT_ALRM))
+	     {
+            SCLERR_ << "Reset alarms parameter "<< data->getInt32Value(CMD_ACT_ALRM)  << "is not an integer 64 data type";
             metadataLogging(chaos::common::metadata_logging::StandardLoggingChannel::LogLevelInfo,boost::str( boost::format("performing reset alarms: argument is not an integer 64 type")) );
+    	    setWorkState(false);
             BC_FAULT_RUNNING_PROPERTY;
             return;
+	     }
+	     else  
+		alarmMask=data->getInt32Value(CMD_ACT_ALRM);
         }
         
-	int64_t alarmMask = data->getInt64Value(CMD_ACT_ALRM);
+	alarmMask = data->getInt64Value(CMD_ACT_ALRM);
         if(std::isnan(alarmMask)==true)
         {
             SCLERR_ << "Reset alarms parameter is nan";
             metadataLogging(chaos::common::metadata_logging::StandardLoggingChannel::LogLevelInfo,boost::str( boost::format("performing reset alarms: argument is a nan")) );
+    	    setWorkState(false);
             BC_FAULT_RUNNING_PROPERTY;
             return;
         }
@@ -82,6 +90,7 @@ void own::CmdACTresetAlarms::setHandler(c_data::CDataWrapper *data) {
                 //LOG_AND_TROW(SCLERR_, 1, boost::str(boost::format("Error %1% resetting alarms") % err));
             SCLERR_ << "resetAlarms failed";
             metadataLogging(chaos::common::metadata_logging::StandardLoggingChannel::LogLevelInfo,boost::str( boost::format("performing reset alarms: operation failed")) );
+    	    setWorkState(false);
             BC_FAULT_RUNNING_PROPERTY;
             return;
         }	
@@ -101,11 +110,13 @@ void own::CmdACTresetAlarms::acquireHandler() {
 // empty correlation handler
 void own::CmdACTresetAlarms::ccHandler() {
 	SCLDBG_ << "ALEDEBUG Reset Alarms CC handler ";
+    	setWorkState(false);
         BC_END_RUNNING_PROPERTY;
 	return;
 }
 // empty timeout handler
 bool own::CmdACTresetAlarms::timeoutHandler() {
 	SCLDBG_ << "ALEDEBUG Reset Alarms timeout handler ";
+    	setWorkState(false);
 	return false;
 }
