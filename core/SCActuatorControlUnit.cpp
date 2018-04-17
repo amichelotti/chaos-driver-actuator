@@ -64,6 +64,7 @@ PUBLISHABLE_CONTROL_UNIT_IMPLEMENTATION(::driver::actuator::SCActuatorControlUni
     chaos::cu::control_manager::SCAbstractControlUnit(_control_unit_id,
                                                       _control_unit_param,
                                                       _control_unit_drivers) {
+    
   actuator_drv = NULL;
 }
 
@@ -71,6 +72,7 @@ PUBLISHABLE_CONTROL_UNIT_IMPLEMENTATION(::driver::actuator::SCActuatorControlUni
  Base destructor
  */
 ::driver::actuator::SCActuatorControlUnit::~SCActuatorControlUnit() {
+    
   if (actuator_drv) {
     delete (actuator_drv);
   }
@@ -349,12 +351,16 @@ void ::driver::actuator::SCActuatorControlUnit::unitDefineActionAndDataset() thr
 	//SCCUAPP << attrName <<" " <<  attrDesc <<" " << datatype << "("<<dtt<<")" << " " << datadirection;
 	
 	addAttributeToDataSet(attrName,attrDesc,dtt,DataType::Input);
+        SimplifiedAttribute toADD(attrName,dtt);
+        this->DriverDefinedAttributes.push_back(toADD);
 	//SCCUAPP << (*it)["name"] ;
     }
 
   }
-
+ // SCCUAPP << "ALEDEBUG Before adding custom attribute" << endl;
+ //this->addAttributeToDataSet("provaAttr","testCustom",DataType::TYPE_STRING,DataType::
    
+ // SCCUAPP << "ALEDEBUG After adding custom attribute"  << endl;
  
  addHandlerOnInputAttributeName< ::driver::actuator::SCActuatorControlUnit, double >(this,
             &::driver::actuator::SCActuatorControlUnit::moveAt,
@@ -452,6 +458,7 @@ void ::driver::actuator::SCActuatorControlUnit::unitInit() throw(CException) {
   }
   char* ptStr=NULL, *auxStr=NULL;
 
+  //actuator_drv->init(actuator_drv->jsonConfiguration);
   ptStr=(char*)getAttributeCache()->getROPtr<char>(DOMAIN_INPUT, "ConfigString");
 //  if(ptStr==NULL || *ptStr ==0){
 //    throw chaos::CFatalException(-3, "You must provide a configuration string " + getCUID(), __FUNCTION__);
@@ -477,6 +484,7 @@ void ::driver::actuator::SCActuatorControlUnit::unitInit() throw(CException) {
   }
 */
   //parsing di auxiliary
+    SCCUAPP << "ALEDEBUG parsing auxiliary string " << auxStr;
     {
     char* param=NULL;
     char* value;
@@ -498,6 +506,7 @@ void ::driver::actuator::SCActuatorControlUnit::unitInit() throw(CException) {
             {
 		if (PAR == "useIU") *inSteps=atoi(value);
                 SCCUAPP << "Parameter "<<param<< " set to "<< value;
+   metadataLogging(chaos::common::metadata_logging::StandardLoggingChannel::LogLevelInfo,boost::str( boost::format("Parameter '%1% set to  '%2%' ") %param % value) );
             }
         }
         else break;
@@ -511,25 +520,56 @@ void ::driver::actuator::SCActuatorControlUnit::unitInit() throw(CException) {
         
            
     }
+    vval="";
+    actuator_drv->getParameter(*axID,"speed",vval);
+    
     }
 
-/*
-  std::string strBool=(*inSteps==true)? "1" : "0";
-  if ((err=actuator_drv->setParameter(*axID,"USEIU",strBool)) != 0) {
-    throw chaos::CFatalException(err, "Error setting the unit measure  of the actuator", __FUNCTION__);
-}o
-*/
+
+    for (std::list<SimplifiedAttribute>::iterator it= this->DriverDefinedAttributes.begin(); it != this->DriverDefinedAttributes.end();it++)
+    {
+        std::string tmpStr;
+        actuator_drv->getParameter(*axID,(*it).Name,tmpStr);
+        switch ( (*it).dtType)
+        {
+            case chaos::DataType::TYPE_DOUBLE :   {double* tmpPointer=getAttributeCache()->getRWPtr<double>(DOMAIN_INPUT,(*it).Name);
+                                                             *tmpPointer=(double) atof(tmpStr.c_str());
+                                                             break;
+                                                            }
+            case chaos::DataType::TYPE_INT32 :   {int32_t* tmpPointer=getAttributeCache()->getRWPtr<int32_t>(DOMAIN_INPUT,(*it).Name);
+                                                             *tmpPointer=(int32_t) atoi(tmpStr.c_str());
+                                                             break;
+                                                            }
+            case chaos::DataType::TYPE_INT64 :   {int64_t* tmpPointer=getAttributeCache()->getRWPtr<int64_t>(DOMAIN_INPUT,(*it).Name);
+                                                             *tmpPointer=(int64_t) atol(tmpStr.c_str());
+                                                             break;
+                                                            }
+            case chaos::DataType::TYPE_BOOLEAN :   {bool* tmpPointer=getAttributeCache()->getRWPtr<bool>(DOMAIN_INPUT,(*it).Name);
+                                                             *tmpPointer=(atoi(tmpStr.c_str())==0)? false:true;
+                                                             break;
+                                                            }
+            case chaos::DataType::TYPE_STRING :   { char* tmpPointer=getAttributeCache()->getRWPtr<char>(DOMAIN_INPUT,(*it).Name);
+                                                             //*tmpPointer=( char*)tmpStr.c_str();
+                                                             tmpPointer=(char*)tmpStr.c_str();
+                                                             break;
+                                                            }
+            
+            default: break;
+        }
+    
+    }
+    
   if ((err=actuator_drv->getState(*axID,&state_id, state_str)) != 0) {
     throw chaos::CFatalException(err, "Error getting the state of the actuator", __FUNCTION__);
   }
   
   *status_id = state_id;
   //notify change on status_id cached attribute
-  getAttributeCache()->setOutputDomainAsChanged();
 
   if (actuator_drv->getHWVersion(*axID,device_hw) == 0) {
     SCCUAPP << "hardware found: \"" << device_hw << "\"";
   }
+  getAttributeCache()->setOutputDomainAsChanged();
   ::common::actuators::AbstractActuator::readingTypes readTyp;
   double tmp_float = 0.0F;
   const int32_t *tmpInt =  getAttributeCache()->getROPtr<int32_t>(DOMAIN_INPUT, "readingType") ;
@@ -565,6 +605,7 @@ void ::driver::actuator::SCActuatorControlUnit::unitDeinit() throw(CException) {
     actuator_drv->poweron(*axID,0);
     SCCUAPP << "deinitializing ";
     actuator_drv->deinit(*axID);
+    this->DriverDefinedAttributes.clear();
     
 }
 

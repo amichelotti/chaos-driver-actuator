@@ -26,6 +26,13 @@
 using namespace chaos;
 namespace driver {
 namespace actuator {
+    
+    class SimplifiedAttribute {
+    public:
+        string Name;
+        chaos::DataType::DataType dtType;
+        SimplifiedAttribute(string n,chaos::DataType::DataType dt) { Name=n; dtType=dt;}
+    };
 
 class SCActuatorControlUnit : public chaos::cu::control_manager::SCAbstractControlUnit {
 	PUBLISHABLE_CONTROL_UNIT_INTERFACE(SCActuatorControlUnit)
@@ -74,6 +81,7 @@ protected:
 	bool setPower(const std::string &name,bool value,uint32_t size);
 
 	const uint32_t *axID;
+        std::list<SimplifiedAttribute> DriverDefinedAttributes;
 
 
 public:

@@ -27,6 +27,7 @@ namespace driver {
 	namespace actuator {
 		 DEFINE_BATCH_COMMAND_CLASS(CmdACTSetParameter,AbstractActuatorCommand) {
 			//implemented handler
+                        
 			uint8_t implementedHandler();
 			//initial set handler
 			void setHandler(c_data::CDataWrapper *data);
