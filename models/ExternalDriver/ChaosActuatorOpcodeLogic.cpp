@@ -114,11 +114,12 @@ RETURN_ERROR(cmd, e1, es1.c_str(), __PRETTY_FUNCTION__);\
 
 int ChaosActuatorOpcodeLogic::sendInit(DrvMsgPtr cmd) {
     cmd->ret =  0;
+    cmd->ret=sendInitRequest();
     return  cmd->ret;
 }
 
 int ChaosActuatorOpcodeLogic::sendDeinit(DrvMsgPtr cmd) {
-    CDWShrdPtr response;
+/*    CDWShrdPtr response;
 
     CDWUniquePtr init_pack(new CDataWrapper());
 
@@ -126,6 +127,8 @@ int ChaosActuatorOpcodeLogic::sendDeinit(DrvMsgPtr cmd) {
     SEND_REQUEST_OPC("deinit",cmd, init_pack, response);
 
     if(response.get()){DBG << response->getJSONString();}
+    return cmd->ret;*/
+    cmd->ret=sendDeinitRequest();
     return cmd->ret;
 }
 

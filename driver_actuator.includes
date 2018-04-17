@@ -2,3 +2,7 @@
 .
 ../../chaosframework/usr/local/include
 
+models/ExternalDriver
+models/technosoft
+models/technosoft/test
+models/actuatorSim
