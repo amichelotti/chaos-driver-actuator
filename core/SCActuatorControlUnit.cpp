@@ -105,7 +105,7 @@ bool  ::driver::actuator::SCActuatorControlUnit::setProp(const std::string &name
     int ret;
     SCCUAPP <<"SET IPROP:"<<name<<" VALUE:"<<value;
     string valStr=boost::lexical_cast<std::string>(value);
-    ret=actuator_drv->setParameter((int32_t)this->axID,(std::string)name,valStr);
+    ret=actuator_drv->setParameter(*axID,(std::string)name,valStr);
     return (ret==0);
 }
 
@@ -131,6 +131,14 @@ bool  ::driver::actuator::SCActuatorControlUnit::setProp(const std::string &name
     SCCUAPP <<"SET IPROP:"<<name<<" VALUE:"<<value;
     string valStr=boost::lexical_cast<std::string>(value);
     ret=actuator_drv->setParameter(*axID,(std::string)name,valStr);
+    return (ret==0);
+}
+
+bool  ::driver::actuator::SCActuatorControlUnit::setProp(const std::string &name, std::string value, uint32_t size){
+    int ret;
+    SCCUAPP <<"SET IPROP:"<<name<<" VALUE:"<<value;
+    //string valStr=boost::lexical_cast<std::string>(value);
+    ret=actuator_drv->setParameter(*axID,(std::string)name,value);
     return (ret==0);
 }
 

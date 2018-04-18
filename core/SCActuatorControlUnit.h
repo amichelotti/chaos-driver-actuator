@@ -83,6 +83,7 @@ protected:
         bool setProp(const std::string &name, double value, uint32_t size);
         bool setProp(const std::string &name, int64_t value, uint32_t size);
         bool setProp(const std::string &name, bool value, uint32_t size);
+        bool setProp(const std::string &name, std::string  value, uint32_t size);
 	const uint32_t *axID;
         std::list<SimplifiedAttribute> DriverDefinedAttributes;
 
