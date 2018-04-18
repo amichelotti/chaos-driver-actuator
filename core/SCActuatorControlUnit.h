@@ -76,10 +76,13 @@ protected:
 	bool setPosition(double pos,bool sync = true);
 	bool setPowerOn(int32_t value,bool sync = true);
 
-	//-----------utility methdo for the restore operation---------
+	//-----------handler definition
 	bool moveAt(const std::string &name,double value,uint32_t size);
 	bool setPower(const std::string &name,bool value,uint32_t size);
-
+        bool setProp(const std::string &name, int32_t value, uint32_t size);
+        bool setProp(const std::string &name, double value, uint32_t size);
+        bool setProp(const std::string &name, int64_t value, uint32_t size);
+        bool setProp(const std::string &name, bool value, uint32_t size);
 	const uint32_t *axID;
         std::list<SimplifiedAttribute> DriverDefinedAttributes;
 

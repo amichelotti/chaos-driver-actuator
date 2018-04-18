@@ -101,6 +101,40 @@ int ::driver::actuator::SCActuatorControlUnit::decodeType(const std::string& str
 
     return err;
 }
+bool  ::driver::actuator::SCActuatorControlUnit::setProp(const std::string &name, int32_t value, uint32_t size){
+    int ret;
+    SCCUAPP <<"SET IPROP:"<<name<<" VALUE:"<<value;
+    string valStr=boost::lexical_cast<std::string>(value);
+    ret=actuator_drv->setParameter((int32_t)this->axID,(std::string)name,valStr);
+    return (ret==0);
+}
+
+
+bool  ::driver::actuator::SCActuatorControlUnit::setProp(const std::string &name, double value, uint32_t size){
+    int ret;
+    SCCUAPP <<"SET IPROP:"<<name<<" VALUE:"<<value;
+    string valStr=boost::lexical_cast<std::string>(value);
+    ret=actuator_drv->setParameter((int32_t)this->axID,(std::string)name,valStr);
+    return (ret==0);
+}
+
+bool  ::driver::actuator::SCActuatorControlUnit::setProp(const std::string &name, int64_t value, uint32_t size){
+    int ret;
+    SCCUAPP <<"SET IPROP:"<<name<<" VALUE:"<<value;
+    string valStr=boost::lexical_cast<std::string>(value);
+    ret=actuator_drv->setParameter((int32_t)this->axID,(std::string)name,valStr);
+    return (ret==0);
+}
+
+bool  ::driver::actuator::SCActuatorControlUnit::setProp(const std::string &name, bool value, uint32_t size){
+    int ret;
+    SCCUAPP <<"SET IPROP:"<<name<<" VALUE:"<<value;
+    string valStr=boost::lexical_cast<std::string>(value);
+    ret=actuator_drv->setParameter((int32_t)this->axID,(std::string)name,valStr);
+    return (ret==0);
+}
+
+
 bool ::driver::actuator::SCActuatorControlUnit::setPower(const std::string &name,bool value,uint32_t size){
           int err= -1;
 	  uint64_t cmd_id;
@@ -156,7 +190,7 @@ void ::driver::actuator::SCActuatorControlUnit::unitDefineActionAndDataset() thr
   installCommand(BATCH_COMMAND_GET_DESCRIPTION(CmdACTPoweron));
   installCommand(BATCH_COMMAND_GET_DESCRIPTION(CmdACTresetAlarms));
   installCommand(BATCH_COMMAND_GET_DESCRIPTION(CmdACTHardReset));
-  installCommand(BATCH_COMMAND_GET_DESCRIPTION(CmdACTSetParameter));
+  //installCommand(BATCH_COMMAND_GET_DESCRIPTION(CmdACTSetParameter));
   //setup the dataset
   
   chaos::cu::driver_manager::driver::DriverAccessor *actuator_accessor = getAccessoInstanceByIndex(0);
@@ -181,12 +215,7 @@ void ::driver::actuator::SCActuatorControlUnit::unitDefineActionAndDataset() thr
                           "readingType",
                           DataType::TYPE_INT32,
                           DataType::Input);
-
-    /* addAttributeToDataSet("dev_state",
-                          "Bit field device state",
-                          DataType::TYPE_INT64,
-                          DataType::Output);
-*/
+  
     addAttributeToDataSet("position",
                           "position",
                           DataType::TYPE_DOUBLE,
@@ -353,6 +382,33 @@ void ::driver::actuator::SCActuatorControlUnit::unitDefineActionAndDataset() thr
 	addAttributeToDataSet(attrName,attrDesc,dtt,DataType::Input);
         SimplifiedAttribute toADD(attrName,dtt);
         this->DriverDefinedAttributes.push_back(toADD);
+        switch (dtt)
+        {
+            case chaos::DataType::TYPE_DOUBLE :   {addHandlerOnInputAttributeName< ::driver::actuator::SCActuatorControlUnit,double>(this,
+            &::driver::actuator::SCActuatorControlUnit::setProp,attrName);
+                                                             break;
+                                                            }
+            case chaos::DataType::TYPE_INT32 :   {addHandlerOnInputAttributeName< ::driver::actuator::SCActuatorControlUnit,int32_t>(this,
+            &::driver::actuator::SCActuatorControlUnit::setProp,attrName);
+                                                             break;
+                                                            }
+            case chaos::DataType::TYPE_INT64 :   {addHandlerOnInputAttributeName< ::driver::actuator::SCActuatorControlUnit,int64_t>(this,
+            &::driver::actuator::SCActuatorControlUnit::setProp,attrName);
+                                                             break;
+                                                            }
+            case chaos::DataType::TYPE_BOOLEAN :   {addHandlerOnInputAttributeName< ::driver::actuator::SCActuatorControlUnit,bool>(this,
+            &::driver::actuator::SCActuatorControlUnit::setProp,attrName);
+                                                             break;
+                                                            }
+            case chaos::DataType::TYPE_STRING :   {
+            //addHandlerOnInputAttributeName< ::driver::actuator::SCActuatorControlUnit,std::string>(this,
+            //&::driver::actuator::SCActuatorControlUnit::setProp,attrName);
+                                                             break;
+                                                            }
+            
+            default: break;
+        }
+        
 	//SCCUAPP << (*it)["name"] ;
     }
 
@@ -369,6 +425,11 @@ void ::driver::actuator::SCActuatorControlUnit::unitDefineActionAndDataset() thr
  addHandlerOnInputAttributeName< ::driver::actuator::SCActuatorControlUnit, bool >(this,
             &::driver::actuator::SCActuatorControlUnit::setPower,
             "powerOn");
+ 
+ 
+ //addHandlerOnInputAttributeName< ::driver::actuator::SCActuatorControlUnit,
+ 
+ 
 /***************************ALARMS******************************************/
 addStateVariable(StateVariableTypeAlarmCU,"position_out_of_set",
             "Notify when a position has drifted away from set");
