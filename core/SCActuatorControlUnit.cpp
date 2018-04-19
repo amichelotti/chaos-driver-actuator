@@ -553,11 +553,12 @@ void ::driver::actuator::SCActuatorControlUnit::unitInit() throw(CException) {
   }
 */
   //parsing di auxiliary
+    char*  cloneOfAuxStr=strdup(auxStr);
     SCCUAPP << "ALEDEBUG parsing auxiliary string " << auxStr;
     {
     char* param=NULL;
     char* value;
-    param=strtok(auxStr,":");
+    param=strtok(cloneOfAuxStr,":");
     *inSteps=0;
     while (param)
     {
@@ -590,9 +591,9 @@ void ::driver::actuator::SCActuatorControlUnit::unitInit() throw(CException) {
            
     }
     vval="";
-    actuator_drv->getParameter(*axID,"speed",vval);
     
     }
+    free(cloneOfAuxStr);
 
 
     for (std::list<SimplifiedAttribute>::iterator it= this->DriverDefinedAttributes.begin(); it != this->DriverDefinedAttributes.end();it++)

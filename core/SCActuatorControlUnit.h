@@ -72,7 +72,7 @@ protected:
 	//!restore method for actuators
 	bool unitRestoreToSnapshot(chaos::cu::control_manager::AbstractSharedDomainCache * const snapshot_cache) throw(CException);
 
-	//-----------utility methdo for the restore operation---------
+	//-----------utility methods for the restore operation---------
 	bool setPosition(double pos,bool sync = true);
 	bool setPowerOn(int32_t value,bool sync = true);
 
