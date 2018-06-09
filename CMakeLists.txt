@@ -14,7 +14,10 @@ ADD_LIBRARY(${PROJECT_NAME} SHARED ${core_src})
 ENDIF()
 
 TARGET_LINK_LIBRARIES(${PROJECT_NAME} chaos_cutoolkit chaos_common common_debug common_modbus modbus chaos_cutoolkit chaos_uitoolkit ${FrameworkLib})
-installHeaders(core)
+
+FILE(GLOB files "core/*.h")
+INSTALL(FILES ${files} DESTINATION include/driver/actuator/core)
+
 INSTALL_TARGETS(/lib ${PROJECT_NAME})
 
 
