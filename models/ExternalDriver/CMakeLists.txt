@@ -10,6 +10,9 @@ ELSE()
 ADD_LIBRARY(${PROJECT_NAME} SHARED ${src})
 ENDIF()
 TARGET_LINK_LIBRARIES(${PROJECT_NAME} common_actuators chaos_driver_actuator chaos_cutoolkit chaos_common)
+FILE(GLOB files "*.h")
+INSTALL(FILES ${files} DESTINATION include/driver/actuator/models/ExternalDriver/)
+
 INSTALL_TARGETS(/lib ${PROJECT_NAME} )
 
 
