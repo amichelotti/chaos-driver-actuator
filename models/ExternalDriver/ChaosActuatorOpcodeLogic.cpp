@@ -99,7 +99,7 @@ WRITE_ERR_ON_CMD(err, -1, "Error from from remote driver", __PRETTY_FUNCTION__);
     catch (...) \
     {	\
 DBG << "Exception catched in send request opc" ; \
-WRITE_ERR_ON_CMD(err, -1, "Error from from remote driver", __PRETTY_FUNCTION__);\
+WRITE_ERR_ON_CMD(err, -6, "Exception from remote driver", __PRETTY_FUNCTION__);\
     }\
 }
 
