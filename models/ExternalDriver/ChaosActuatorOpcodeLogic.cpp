@@ -82,6 +82,7 @@ WRITE_ERR_ON_CMD(c, -2, "'err' key not found on external driver return package",
 
 #define SEND_REQUEST_OPC(opc,c, r,a) {\
     int err;\
+try { \
 if(err=sendOpcodeRequest(opc,ChaosMoveOperator(r),a)) {\
 WRITE_ERR_ON_CMD(err, -1, "Error from from remote driver", __PRETTY_FUNCTION__);\
 }else {\
@@ -94,6 +95,12 @@ WRITE_ERR_ON_CMD(err, -1, "Error from from remote driver", __PRETTY_FUNCTION__);
     } else {\
     WRITE_ERR_ON_CMD(c, -2, "'err' key not found on external driver return package", __PRETTY_FUNCTION__);\
     }}\
+	}\
+    catch (...) \
+    {	\
+DBG << "Exception catched in send request opc" ; \
+WRITE_ERR_ON_CMD(err, -1, "Error from from remote driver", __PRETTY_FUNCTION__);\
+    }\
 }
 
 #define CHECK_KEY_AND_TYPE_IN_RESPONSE(r, k, t, e1, e2)\
@@ -167,6 +174,7 @@ int ChaosActuatorOpcodeLogic::getPosition(DrvMsgPtr cmd, int32_t axisID, ::commo
   
     SEND_REQUEST_OPC("get_pos",cmd, para_pack, response);
 	if(response.get()){DBG << response->getJSONString();}
+    DBG << "now cmd->ret is " << cmd->ret;
     if(cmd->ret) {return cmd->ret;}
 	CHECK_KEY_IN_RESPONSE(response, "value", -1);
 	*deltaPosition=response->getVariantValue("value").asDouble();

@@ -500,7 +500,7 @@ void ::driver::actuator::SCActuatorControlUnit::unitDefineCustomAttribute() {
 void ::driver::actuator::SCActuatorControlUnit::unitInit() throw(CException) {
   SCCUAPP << "Starting unitInit";
 
-  int err = 0;
+  int err = -1;
   int state_id;
   std::string max_range;
   std::string min_range;
@@ -554,7 +554,7 @@ void ::driver::actuator::SCActuatorControlUnit::unitInit() throw(CException) {
 */
   //parsing di auxiliary
     char*  cloneOfAuxStr=strdup(auxStr);
-    SCCUAPP << "ALEDEBUG parsing auxiliary string " << auxStr;
+    SCCUAPP << "parsing auxiliary string " << auxStr;
     {
     char* param=NULL;
     char* value;
