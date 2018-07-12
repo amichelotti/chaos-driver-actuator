@@ -47,7 +47,9 @@ chaos::driver::actuator::ActuatorSim::ActuatorSim() {
 
 //default descrutcor
 chaos::driver::actuator::ActuatorSim::~ActuatorSim() {
-	
+	if(motor && motor->jsonConfiguration){
+            delete motor->jsonConfiguration;
+      }
 }
 #ifdef CHAOS
 void chaos::driver::actuator::ActuatorSim::driverInit(const chaos::common::data::CDataWrapper& json) throw(chaos::CException) {
@@ -63,7 +65,7 @@ void chaos::driver::actuator::ActuatorSim::driverInit(const chaos::common::data:
     {
       throw chaos::CException(1, "Cannot allocate resources for ActuatorSim", "ActuatorSim::driverInit");
     }
-    motor->jsonConfiguration= ((chaos::common::data::CDataWrapper*)(&json))->clone();
+    motor->jsonConfiguration= ((chaos::common::data::CDataWrapper*)(&json))->clone().release();
    
       if (  (ret=motor->init(NULL)) < 0) 
       {
