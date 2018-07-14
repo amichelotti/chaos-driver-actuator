@@ -65,7 +65,7 @@ void chaos::driver::actuator::TechnosoftMotor::driverInit(const chaos::common::d
     {
       throw chaos::CException(1, "Cannot allocate resources for TechnosoftMotor", "TechnosoftMotor::driverInit");
     }
-    CDataWrapper*p= (json.clone()).release();
+    chaos::common::data::CDataWrapper*p= (json.clone()).release();
     motor->jsonConfiguration=p;
 
 
