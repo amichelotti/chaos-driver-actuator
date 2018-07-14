@@ -65,9 +65,11 @@ void chaos::driver::actuator::TechnosoftMotor::driverInit(const chaos::common::d
     {
       throw chaos::CException(1, "Cannot allocate resources for TechnosoftMotor", "TechnosoftMotor::driverInit");
     }
-    chaos::common::data::CDataWrapper*p= (json.clone()).release();
-    motor->jsonConfiguration=p;
+    // DA CAMBIARE DOVREBBE ESSERE ALLOCATO DA ACTUATORTECHNOSOFT
+    // POSSIBILMENTE SMART POINTER
+      motor->jsonConfiguration=new chaos::common::data::CDataWrapper();
 
+      json.copyAllTo(motor->jsonConfiguration)
 
    
       if (  (ret=motor->init(NULL)) < 0) 
@@ -101,6 +103,7 @@ void chaos::driver::actuator::TechnosoftMotor::driverInit(const char *initParame
     } 
     else 
     { 
+      // DA CAMBIARE DOVREBBE ESSERE ALLOCATO DA ACTUATORTECHNOSOFT
       motor->jsonConfiguration=new chaos::common::data::CDataWrapper();
      
       int ret;
