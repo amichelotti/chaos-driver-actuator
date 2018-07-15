@@ -47,9 +47,6 @@ chaos::driver::actuator::ActuatorSim::ActuatorSim() {
 
 //default descrutcor
 chaos::driver::actuator::ActuatorSim::~ActuatorSim() {
-	if(motor && motor->jsonConfiguration){
-            delete motor->jsonConfiguration;
-      }
 }
 #ifdef CHAOS
 void chaos::driver::actuator::ActuatorSim::driverInit(const chaos::common::data::CDataWrapper& json) throw(chaos::CException) {
@@ -65,7 +62,8 @@ void chaos::driver::actuator::ActuatorSim::driverInit(const chaos::common::data:
     {
       throw chaos::CException(1, "Cannot allocate resources for ActuatorSim", "ActuatorSim::driverInit");
     }
-    motor->jsonConfiguration= ((chaos::common::data::CDataWrapper*)(&json))->clone().release();
+    
+    motor->jsonConfiguration.setSerializedJsonData(json.getCompliantJSONString().c_str());
    
       if (  (ret=motor->init(NULL)) < 0) 
       {
@@ -101,8 +99,6 @@ void chaos::driver::actuator::ActuatorSim::driverInit(const char *initParameter)
       throw chaos::CException(1, "Cannot allocate resources for ActuatorSim", "ActuatorSim::driverInit");
     } else {
         PSLAPP<<"Setting jsonConfiguration to new empty " ;
-        motor->jsonConfiguration=new chaos::common::data::CDataWrapper();
-        PSLAPP << motor->jsonConfiguration->isEmpty()<<std::endl;
 #ifdef INITDRIVER_DEF
       int ret;
       if (  (ret=motor->init((void*)initParameter)) < 0) {

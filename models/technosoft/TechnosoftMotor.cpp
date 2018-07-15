@@ -69,7 +69,7 @@ void chaos::driver::actuator::TechnosoftMotor::driverInit(const chaos::common::d
     // POSSIBILMENTE SMART POINTER
       motor->jsonConfiguration=new chaos::common::data::CDataWrapper();
 
-      json.copyAllTo(*motor->jsonConfiguration);
+      json.clone().copyAllTo(*motor->jsonConfiguration);
 
    
       if (  (ret=motor->init(NULL)) < 0) 
