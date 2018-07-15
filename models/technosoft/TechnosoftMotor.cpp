@@ -67,9 +67,7 @@ void chaos::driver::actuator::TechnosoftMotor::driverInit(const chaos::common::d
     }
     // DA CAMBIARE DOVREBBE ESSERE ALLOCATO DA ACTUATORTECHNOSOFT
     // POSSIBILMENTE SMART POINTER
-      motor->jsonConfiguration=new chaos::common::data::CDataWrapper();
-
-      json.clone().copyAllTo(*motor->jsonConfiguration);
+    motor.jsonConfiguration.setSerializedJsonData(json.getCompliantJSONString().c_str());
 
    
       if (  (ret=motor->init(NULL)) < 0) 
@@ -104,7 +102,6 @@ void chaos::driver::actuator::TechnosoftMotor::driverInit(const char *initParame
     else 
     { 
       // DA CAMBIARE DOVREBBE ESSERE ALLOCATO DA ACTUATORTECHNOSOFT
-      motor->jsonConfiguration=new chaos::common::data::CDataWrapper();
      
       int ret;
       if (  (ret=motor->init((void*)initParameter)) < 0) 
