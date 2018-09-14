@@ -89,4 +89,5 @@ BC_END_RUNNING_PROPERTY;
 }
 // empty timeout handler
 bool own::CmdACTSetParameter::timeoutHandler() {
+	return false;
 }
