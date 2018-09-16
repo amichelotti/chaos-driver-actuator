@@ -343,5 +343,4 @@ void AbstractActuatorCommand::getState(int32_t axisID,int& current_state, std::s
 }
 
 void AbstractActuatorCommand::setWorkState(bool working_flag) {
-	setBusyFlag(working_flag);
 }
