@@ -121,7 +121,7 @@ void own::CmdACTHoming::setHandler(c_data::CDataWrapper *data)
 		return;
 	}
 
-	if(err = actuator_drv->homing(*axID,(::common::actuators::AbstractActuator::homingType) homType) < 0)
+	if((err = actuator_drv->homing(*axID,(::common::actuators::AbstractActuator::homingType) homType)) < 0)
 	{
 		setStateVariableSeverity(StateVariableTypeAlarmCU,"homing_operation_failed", chaos::common::alarm::MultiSeverityAlarmLevelHigh);
 		metadataLogging(chaos::common::metadata_logging::StandardLoggingChannel::LogLevelError,boost::str( boost::format("axis %1% cannot perform homing type %2% driver err: %3%") %*axID %homType %err));
@@ -190,7 +190,7 @@ void own::CmdACTHoming::ccHandler() {
 	}
 	if (((*o_status_id) & ::common::actuators::ACTUATOR_POWER_SUPPLIED)==0){
 		int err;
-		if (err=actuator_drv->stopMotion(*axID)!= 0)
+		if ((err=actuator_drv->stopMotion(*axID)!= 0))
 		{
 			metadataLogging(chaos::common::metadata_logging::StandardLoggingChannel::LogLevelError,"Stopping motion");
 
