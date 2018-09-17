@@ -70,7 +70,6 @@ void own::CmdACTSetParameter::setHandler(c_data::CDataWrapper *data) {
         if(*o_stby==0){
         // we are in standby only the SP is set
             SCLDBG_ << "we are in standby we cannot start set parameter command: ";
-            setWorkState(false);
             BC_END_RUNNING_PROPERTY;
             return;
         } 

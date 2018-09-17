@@ -58,7 +58,6 @@ void own::CmdACTHardReset::setHandler(c_data::CDataWrapper *data) {
 
 	int32_t resetMode = data->getInt32Value(CMD_ACT_HARDRESET_MODE);
 
-    setWorkState(true);
 
     SCLDBG_ << "HardReset set handler " ;
         
@@ -88,7 +87,6 @@ void own::CmdACTHardReset::acquireHandler() {
 // empty correlation handler
 void own::CmdACTHardReset::ccHandler() {
 	SCLDBG_ << "Hard Reset CC handler ";
-        setWorkState(false);
         BC_END_RUNNING_PROPERTY;
 	return;
 }

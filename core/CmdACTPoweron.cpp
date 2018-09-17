@@ -43,10 +43,6 @@ void own::CmdACTPoweron::setHandler(c_data::CDataWrapper *data) {
 	int err;
 	AbstractActuatorCommand::setHandler(data);
  	i_stby=getAttributeCache()->getRWPtr<bool>(DOMAIN_INPUT, "powerOn");
-
-
-	setWorkState(true);
-
 	if(!data ||!data->hasKey(CMD_ACT_POWERON_VALUE)) {
 			metadataLogging(chaos::common::metadata_logging::StandardLoggingChannel::LogLevelError,"parameter  0/1 must be specified" );
 			BC_FAULT_RUNNING_PROPERTY;
@@ -80,7 +76,6 @@ void own::CmdACTPoweron::setHandler(c_data::CDataWrapper *data) {
 void own::CmdACTPoweron::endHandler() 
 {
 		SCLDBG_ << "removing busy flag";
-    setWorkState(false);
     AbstractActuatorCommand::endHandler();
 }
 

@@ -40,11 +40,6 @@ AbstractActuatorCommand::~AbstractActuatorCommand() {
 	actuator_drv = NULL;
 }
 
-void AbstractActuatorCommand::endHandler() {
-	CMDCUDBG_<<"Close Command";
-	setWorkState(false);
-
-}
 
 void AbstractActuatorCommand::checkEndMove(){
 	int err;
@@ -335,12 +330,8 @@ void AbstractActuatorCommand::getState(int32_t axisID,int& current_state, std::s
 	std::string state_str;
 	//int32_t i_driver_timeout = getAttributeCache()->getValue<int32_t>(DOMAIN_INPUT, "driver_timeout"); // *************** commentato *************
 	if((err=actuator_drv->getState(axisID,&current_state, state_str)) != 0) {
-		//setWorkState(false);    // *************** commentato *****************
 		CMDCUERR_ << boost::str( boost::format("Error getting the actuator state = %1% ") % err);
 		metadataLogging(chaos::common::metadata_logging::StandardLoggingChannel::LogLevelError,CHAOS_FORMAT("axis %1% error getting state, err:%2%'",%*axID %err));
 
 	}
-}
-
-void AbstractActuatorCommand::setWorkState(bool working_flag) {
 }

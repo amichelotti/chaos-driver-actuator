@@ -41,8 +41,6 @@ BATCH_COMMAND_CLOSE_DESCRIPTION()
 void own::CmdACTHoming::setHandler(c_data::CDataWrapper *data) 
 {
 	AbstractActuatorCommand::setHandler(data);
-	setWorkState(true);
-
 
 	int err = 0;
 	//double max_homing_type=0,min_homing_type=0;
@@ -116,7 +114,6 @@ void own::CmdACTHoming::setHandler(c_data::CDataWrapper *data)
 	if(*o_stby==0){
 		// we are in standby only the SP is set
 		metadataLogging(chaos::common::metadata_logging::StandardLoggingChannel::LogLevelWarning,"cannot perform homing because in PowerOff");
-		setWorkState(false);
 		BC_FAULT_RUNNING_PROPERTY;
 		return;
 	}
