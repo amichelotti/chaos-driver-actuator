@@ -718,22 +718,16 @@ bool ::driver::actuator::SCActuatorControlUnit::unitRestoreToSnapshot(chaos::cu:
   try {
     //get actual state
 
-    //setBusyFlag(true,1);
-    setBusyFlag(true);
     if (!setPowerOn(1)) {
     	  metadataLogging(chaos::common::metadata_logging::StandardLoggingChannel::LogLevelError,CHAOS_FORMAT("Error applying power on during restore \"%1%\" (axis %2%) to position %3% ",%getDeviceID() %*axID %restore_position_sp));
-	  //setBusyFlag(false,-1);
-	  setBusyFlag(false);
- 	  return false;
+	  return false;
     } 
     sleep(1);
 
     if (!setPosition(restore_position_sp)) {
     	  metadataLogging(chaos::common::metadata_logging::StandardLoggingChannel::LogLevelError,CHAOS_FORMAT("Error restoring \"%1%\" (axis %2%) to position %3% ",%getDeviceID() %*axID %restore_position_sp));
 
-	  setBusyFlag(false);
-	  //setBusyFlag(false,-1);
-    	  return false;
+	  	  return false;
     }
     sleep(1);
     if (restore_power_sp == false) 
@@ -741,21 +735,14 @@ bool ::driver::actuator::SCActuatorControlUnit::unitRestoreToSnapshot(chaos::cu:
 	if (!setPowerOn(0)) 
 	{
     	  metadataLogging(chaos::common::metadata_logging::StandardLoggingChannel::LogLevelError,CHAOS_FORMAT("Error restoring power on during restore \"%1%\" (axis %2%) to value %3% ",%getDeviceID() %*axID %restore_power_sp));
-	  setBusyFlag(false);
  	  return false;
 	  
 	}
     }
     uint64_t restore_duration_in_ms = chaos::common::utility::TimingUtil::getTimeStamp() - start_restore_time;
 	metadataLogging(chaos::common::metadata_logging::StandardLoggingChannel::LogLevelInfo,CHAOS_FORMAT("Restored \"%1%\" (axis %2%) to position %3% in %4%",%getDeviceID() %*axID %restore_position_sp %restore_duration_in_ms));
-    setBusyFlag(false);
-
-    //setBusyFlag(false,-1);
-    setBusyFlag(false);
     return true;
   } catch (CException &ex) {
-    //setBusyFlag(false,-1);
-    setBusyFlag(false);
     uint64_t restore_duration_in_ms = chaos::common::utility::TimingUtil::getTimeStamp() - start_restore_time;
     RESTORE_LAPP << "[metric] Restore has fault in " << restore_duration_in_ms << " milliseconds";
     throw ex;
@@ -843,6 +830,9 @@ bool ::driver::actuator::SCActuatorControlUnit::waitOnCommandID(uint64_t cmd_id)
   return (cmd_state.get() &&
       cmd_state->last_event == BatchCommandEventType::EVT_COMPLETED);
 }
+
+
+
 
 
 
