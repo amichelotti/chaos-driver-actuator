@@ -784,7 +784,7 @@ bool ::driver::actuator::SCActuatorControlUnit::unitRestoreToSnapshot(chaos::cu:
 
     if (!setPosition(restore_position_sp))
     {
-      metadataLogging(chaos::common::metadata_logging::StandardLoggingChannel::LogLevelError, CHAOS_FORMAT("Error restoring \"%1%\" (axis %2%) to position %3% ", % getDeviceID() % *axID % restore_position_sp));
+      metadataLogging(chaos::common::metadata_logging::StandardLoggingChannel::LogLevelError, CHAOS_FORMAT("Error SetPosition, restoring \"%1%\" (axis %2%) to position %3% ", % getDeviceID() % *axID % restore_position_sp));
 
       return false;
     }
