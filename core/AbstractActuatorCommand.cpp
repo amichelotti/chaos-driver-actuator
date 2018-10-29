@@ -58,6 +58,7 @@ void AbstractActuatorCommand::checkEndMove(){
 		}
 
 //if (! *o_useUI)
+#if 0
 {
 		if ((((*o_status_id) & ::common::actuators::ACTUATOR_INMOTION)==0) ||(((*o_status_id) & ::common::actuators::ACTUATOR_POWER_SUPPLIED)==0)){
 			setStateVariableSeverity(StateVariableTypeAlarmCU,"position_value_not_reached", chaos::common::alarm::MultiSeverityAlarmLevelWarning);
@@ -72,6 +73,7 @@ void AbstractActuatorCommand::checkEndMove(){
 		}
 }
 
+#endif
 }
 
 int AbstractActuatorCommand::performCheck(){
