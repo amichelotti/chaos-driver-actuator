@@ -55,7 +55,7 @@ chaos::driver::actuator::ActuatorSim::~ActuatorSim() {
 #ifdef CHAOS
 void chaos::driver::actuator::ActuatorSim::driverInit(const chaos::common::data::CDataWrapper& json) throw(chaos::CException) {
      int ret;
-    ACTDBG << "Init  driver initialization with json " <<json.getJSONString().c_str();
+    ACTDBG << "Init driver initialization with json " <<json.getJSONString().c_str();
     if(motor)
     {
           throw chaos::CException(1, "Already Initialized", "ActuatorSim::driverInit");
