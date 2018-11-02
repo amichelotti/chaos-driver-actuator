@@ -48,29 +48,29 @@ protected:
 			 Define the Control Unit Dataset and Actions
 	 */
 	int  decodeType(const std::string& str_type, DataType::DataType& attribute_type) ;
-	void unitDefineActionAndDataset()throw(chaos::CException);
+	void unitDefineActionAndDataset();
 
 	void unitDefineCustomAttribute();
 
 	/*(Optional)
 			 Initialize the Control Unit and all driver, with received param from MetadataServer
 	 */
-	void unitInit() throw(chaos::CException);
+	void unitInit();
 	/*(Optional)
 			 Execute the work, this is called with a determinated delay, it must be as fast as possible
 	 */
-	void unitStart() throw(chaos::CException);
+	void unitStart();
 	/*(Optional)
 			 The Control Unit will be stopped
 	 */
-	void unitStop() throw(chaos::CException);
+	void unitStop();
 	/*(Optional)
 			 The Control Unit will be deinitialized and disposed
 	 */
-	void unitDeinit() throw(chaos::CException);
+	void unitDeinit();
 
 	//!restore method for actuators
-	bool unitRestoreToSnapshot(chaos::cu::control_manager::AbstractSharedDomainCache * const snapshot_cache) throw(CException);
+	bool unitRestoreToSnapshot(chaos::cu::control_manager::AbstractSharedDomainCache * const snapshot_cache);
 
 	//-----------utility methods for the restore operation---------
 	bool setPosition(double pos,bool sync = true);
