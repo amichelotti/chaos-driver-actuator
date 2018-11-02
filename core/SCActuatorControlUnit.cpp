@@ -215,7 +215,7 @@ bool ::driver::actuator::SCActuatorControlUnit::moveAt(const std::string &name, 
 /*
  Return the default configuration
  */
-void ::driver::actuator::SCActuatorControlUnit::unitDefineActionAndDataset() throw(chaos::CException)
+void ::driver::actuator::SCActuatorControlUnit::unitDefineActionAndDataset() 
 {
   //install all command
 
@@ -251,7 +251,7 @@ void ::driver::actuator::SCActuatorControlUnit::unitDefineActionAndDataset() thr
                         DataType::Input);
 
   addAttributeToDataSet("readingType",
-                        "readingType",
+                        "0:encoder,1:counter",
                         DataType::TYPE_INT32,
                         DataType::Input);
 
@@ -265,7 +265,7 @@ void ::driver::actuator::SCActuatorControlUnit::unitDefineActionAndDataset() thr
                         DataType::TYPE_INT64,
                         DataType::Output);
   addAttributeToDataSet("alarms",
-                        "Alarms",
+                        "Device alarms BitMask",
                         DataType::TYPE_INT64,
                         DataType::Output);
 
@@ -275,7 +275,7 @@ void ::driver::actuator::SCActuatorControlUnit::unitDefineActionAndDataset() thr
                         DataType::Output, 256);
 
   addAttributeToDataSet("status_id",
-                        "status_id",
+                        "Device Status BitMask ",
                         DataType::TYPE_INT32,
                         DataType::Output);
 
@@ -467,9 +467,7 @@ void ::driver::actuator::SCActuatorControlUnit::unitDefineActionAndDataset() thr
       //SCCUAPP << (*it)["name"] ;
     }
   }
-  // SCCUAPP << "ALEDEBUG Before adding custom attribute" << endl;
-  //this->addAttributeToDataSet("provaAttr","testCustom",DataType::TYPE_STRING,DataType::
-
+  
   // SCCUAPP << "ALEDEBUG After adding custom attribute"  << endl;
 
   addHandlerOnInputAttributeName<::driver::actuator::SCActuatorControlUnit, double>(this,
@@ -480,8 +478,7 @@ void ::driver::actuator::SCActuatorControlUnit::unitDefineActionAndDataset() thr
                                                                                   &::driver::actuator::SCActuatorControlUnit::setPower,
                                                                                   "powerOn");
 
-  //addHandlerOnInputAttributeName< ::driver::actuator::SCActuatorControlUnit,
-
+  
   /***************************ALARMS******************************************/
   addStateVariable(StateVariableTypeAlarmCU, "position_out_of_set",
                    "Notify when a position has drifted away from set");
@@ -537,7 +534,7 @@ void ::driver::actuator::SCActuatorControlUnit::unitDefineCustomAttribute()
 }
 
 // Abstract method for the initialization of the control unit
-void ::driver::actuator::SCActuatorControlUnit::unitInit() throw(CException)
+void ::driver::actuator::SCActuatorControlUnit::unitInit()
 {
   SCCUAPP << "Starting unitInit";
 
@@ -624,7 +621,7 @@ void ::driver::actuator::SCActuatorControlUnit::unitInit() throw(CException)
       param = strtok(NULL, ":");
     }
     string vval = "nulla";
-    actuator_drv->getParameter(*axID, "useiu", vval);
+    actuator_drv->getParameter(*axID, "useIU", vval);
     if (vval != "")
     {
       *inSteps = atoi(vval.c_str());
@@ -707,17 +704,17 @@ void ::driver::actuator::SCActuatorControlUnit::unitInit() throw(CException)
 }
 
 // Abstract method for the start of the control unit
-void ::driver::actuator::SCActuatorControlUnit::unitStart() throw(CException)
+void ::driver::actuator::SCActuatorControlUnit::unitStart()
 {
 }
 
 // Abstract method for the stop of the control unit
-void ::driver::actuator::SCActuatorControlUnit::unitStop() throw(CException)
+void ::driver::actuator::SCActuatorControlUnit::unitStop() 
 {
 }
 
 // Abstract method for the deinit of the control unit
-void ::driver::actuator::SCActuatorControlUnit::unitDeinit() throw(CException)
+void ::driver::actuator::SCActuatorControlUnit::unitDeinit()
 {
   SCCUAPP << "Stop Motion ";
   actuator_drv->stopMotion(*axID);
@@ -734,7 +731,7 @@ void ::driver::actuator::SCActuatorControlUnit::unitDeinit() throw(CException)
 
 #define RESTORE_LERR SCCUERR << "[RESTORE-" << getCUID() << "] "
 
-bool ::driver::actuator::SCActuatorControlUnit::unitRestoreToSnapshot(chaos::cu::control_manager::AbstractSharedDomainCache *const snapshot_cache) throw(chaos::CException)
+bool ::driver::actuator::SCActuatorControlUnit::unitRestoreToSnapshot(chaos::cu::control_manager::AbstractSharedDomainCache *const snapshot_cache) 
 {
   uint64_t start_restore_time= chaos::common::utility::TimingUtil::getTimeStamp();
 
@@ -811,7 +808,7 @@ bool ::driver::actuator::SCActuatorControlUnit::unitRestoreToSnapshot(chaos::cu:
   return false;
 }
 
-//-----------utility methdo for the restore operation---------
+//-----------utility method for the restore operation---------
 
 bool ::driver::actuator::SCActuatorControlUnit::setPosition(double val, bool sync)
 {
