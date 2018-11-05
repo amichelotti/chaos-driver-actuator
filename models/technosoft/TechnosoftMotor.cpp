@@ -70,7 +70,7 @@ void chaos::driver::actuator::TechnosoftMotor::driverInit(const chaos::common::d
     motor->jsonConfiguration.setSerializedJsonData(json.getCompliantJSONString().c_str());
 
    
-      if (  (ret=motor->init(NULL)) < 0) 
+      if (  (ret=motor->init((void*)NULL)) < 0) 
       {
 	PSLAPP<<"Init Failed! ret:"<<ret<<std::endl;
 	throw chaos::CException(1, "Bad parameters for TechnosoftMotor","TechnosoftMotor::driverInit");
@@ -85,7 +85,7 @@ void chaos::driver::actuator::TechnosoftMotor::driverInit(const chaos::common::d
 #endif
 
 
-void chaos::driver::actuator::TechnosoftMotor::driverInit(const char *initParameter) throw(chaos::CException) {
+void chaos::driver::actuator::TechnosoftMotor::driverInit(const char *initParameter) {
     //check the input parameter
 	boost::smatch match;
 	std::string inputStr = initParameter;

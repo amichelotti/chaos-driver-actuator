@@ -41,7 +41,7 @@ ChaosActuatorDD::~ChaosActuatorDD() {
 	
 }
 
-void ChaosActuatorDD::driverDeinit() throw(chaos::CException) {
+void ChaosActuatorDD::driverDeinit()  {
     if(motor){
         delete motor;
     }

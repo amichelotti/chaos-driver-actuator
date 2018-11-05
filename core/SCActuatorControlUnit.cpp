@@ -22,6 +22,8 @@
 #include <boost/format.hpp>
 #include <boost/lexical_cast.hpp>
 #include <common/debug/core/debug.h>
+#include <common/misc/driver/ConfigDriverMacro.h>
+#include <chaos/common/data/CDataWrapper.h>
 #include <json/json.h>
 
 //---commands----
@@ -319,12 +321,7 @@ void ::driver::actuator::SCActuatorControlUnit::unitDefineActionAndDataset()
                         DataType::TYPE_DOUBLE,
                         DataType::Input);
 
-  /*
-     addAttributeToDataSet("bypass",
-                            "exclude HW changes",
-                            DataType::TYPE_BOOLEAN,
-                            DataType::Input);
-*/
+  
   addAttributeToDataSet("useSteps",
                         "if true motor will be controlled with steps as measure unit",
                         DataType::TYPE_INT32,
@@ -567,12 +564,7 @@ void ::driver::actuator::SCActuatorControlUnit::unitInit()
 
   //actuator_drv->init(actuator_drv->jsonConfiguration);
   ptStr = (char *)getAttributeCache()->getROPtr<char>(DOMAIN_INPUT, "ConfigString");
-  //  if(ptStr==NULL || *ptStr ==0){
-  //    throw chaos::CFatalException(-3, "You must provide a configuration string " + getCUID(), __FUNCTION__);
-  //
-  //  }
   auxStr = (char *)getAttributeCache()->getROPtr<char>(DOMAIN_INPUT, "auxiliaryConfigParameters");
-
   SCCUDBG << "configuring driver from Control Unit ";
   SCCUDBG << "config string is '" << ptStr << "'";
   // perfomed in driver initialization
@@ -581,14 +573,8 @@ void ::driver::actuator::SCActuatorControlUnit::unitInit()
     throw chaos::CFatalException(err, "Cannot configure axis " + getDeviceID(), __FUNCTION__);
   }
   *homingDone = 0;
-  // performing power on
-  /*
-  SCCUDBG<<"power on to Control Unit";
-  if ((err=actuator_drv->poweron(*axID,1) != 0)) {
-    throw chaos::CFatalException(err, "Cannot poweron actuator " + getDeviceID(), __FUNCTION__);
-  }
-*/
   //parsing di auxiliary
+
   char *cloneOfAuxStr = strdup(auxStr);
   SCCUAPP << "parsing auxiliary string " << auxStr;
   {
@@ -758,10 +744,7 @@ bool ::driver::actuator::SCActuatorControlUnit::unitRestoreToSnapshot(chaos::cu:
       RESTORE_LERR << " missing powerOn to restore";
       return false;
     }
-    /*
- if (!snapshot_cache->getSharedDomain(DOMAIN_INPUT).hasAttribute("speed"))
-      return false;
-*/
+ 
 
     double restore_position_sp = *snapshot_cache->getAttributeValue(DOMAIN_INPUT, "position")->getValuePtr<double>();
     RESTORE_LDBG << "Restore Trying to set position at " << restore_position_sp;

@@ -114,17 +114,11 @@ void CmdACTDefault::acquireHandler() {
     }
 
     AbstractActuatorCommand::acquireHandler();
-	
-	
-//	tmpInt =  getAttributeCache()->getROPtr<int32_t>(DOMAIN_INPUT, "readingType") ;
-//        readTyp=(::common::actuators::AbstractActuator::readingTypes) *tmpInt;
-	
+
 	pos_sp = i_position ;//getAttributeCache()->getRWPtr<double>(DOMAIN_OUTPUT, "position");
 
-        
 	if (*o_alarms)
             DPRINT("alarm description is %s",o_alarm_str);
-		
         //check out of set warning
         if ((*positionTHR) && (*positionTHR_TIM))
         {
