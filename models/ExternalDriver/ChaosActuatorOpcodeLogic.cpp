@@ -83,7 +83,7 @@ WRITE_ERR_ON_CMD(c, -2, "'err' key not found on external driver return package",
 #define SEND_REQUEST_OPC(opc,c, r,a) {\
     int err;\
 try { \
-if(err=sendOpcodeRequest(opc,ChaosMoveOperator(r),a)) {\
+if((err=sendOpcodeRequest(opc,ChaosMoveOperator(r),a))) {\
 WRITE_ERR_ON_CMD(err, -1, "Error from from remote driver", __PRETTY_FUNCTION__);\
 }else {\
     if(response->hasKey("err")) {\
