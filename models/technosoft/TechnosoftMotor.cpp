@@ -52,7 +52,7 @@ chaos::driver::actuator::TechnosoftMotor::~TechnosoftMotor() {
 	
 }
 #ifdef CHAOS
-void chaos::driver::actuator::TechnosoftMotor::driverInit(const chaos::common::data::CDataWrapper& json)  {
+void chaos::driver::actuator::TechnosoftMotor::driverInit(const chaos::common::data::CDataWrapper& json) {
      int ret;
     PSLAPP << "Init  driver initialization with json " <<json.getJSONString().c_str();
     if(motor)
