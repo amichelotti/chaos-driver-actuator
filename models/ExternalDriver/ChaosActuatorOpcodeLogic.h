@@ -30,9 +30,9 @@ namespace chaos {
 			class ChaosActuatorOpcodeLogic: 
 				public chaos::cu::driver_manager::driver::OpcodeExternalCommandMapper {
             protected:
-                int sendInit(cu::driver_manager::driver::DrvMsgPtr cmd);
+         //       int sendInit(cu::driver_manager::driver::DrvMsgPtr cmd);
                 
-                int sendDeinit(cu::driver_manager::driver::DrvMsgPtr cmd);
+          //      int sendDeinit(cu::driver_manager::driver::DrvMsgPtr cmd);
 				  /**
                     @brief return the value of the parameter specified in parName, currently inside the driver
                     @param parName the name of parameter. This parameter must be one of the parameters declared by the driver in sendDataset
