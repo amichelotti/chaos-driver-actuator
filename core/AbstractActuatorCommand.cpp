@@ -124,10 +124,10 @@ void AbstractActuatorCommand::setHandler(c_data::CDataWrapper *data) {
 	// ********* nota: i_position rimpiazza o_position_sp
 	//p_stopCommandInExecution = getAttributeCache()->getROPtr<bool>(DOMAIN_INPUT, "stopCommandInExecution");
 
-	p_stopCommandInExecution = getAttributeCache()->getRWPtr<bool>(DOMAIN_OUTPUT, "stopHoming");
+	p_stopCommandInExecution = getAttributeCache()->getRWPtr<bool>(DOMAIN_CUSTOM, "stopHoming");
 	o_lasthoming = getAttributeCache()->getRWPtr<uint64_t>(DOMAIN_OUTPUT, "LastHomingTime");
 	o_useUI  = getAttributeCache()->getRWPtr<bool>(DOMAIN_OUTPUT, "useSteps"); 
-
+	o_home = getAttributeCache()->getRWPtr<bool>(DOMAIN_OUTPUT, "home");
 
 	axID = getAttributeCache()->getROPtr<uint32_t>(DOMAIN_INPUT, "axisID");
 	tmpInt =  (int*) getAttributeCache()->getROPtr<int32_t>(DOMAIN_INPUT, "readingType") ;

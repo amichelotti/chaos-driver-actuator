@@ -158,6 +158,7 @@ void own::CmdACTMoveRelative::setHandler(c_data::CDataWrapper *data) {
 		BC_FAULT_RUNNING_PROPERTY;
 		return;
 	}
+	*o_home=false;
 
 	metadataLogging(chaos::common::metadata_logging::StandardLoggingChannel::LogLevelInfo,boost::str( boost::format("performing command move relative :%1% timeout %2%") % offset_mm % computed_timeout) );
 	//************* actuator_drv->accessor->base_opcode_priority=100; ********************* commentato

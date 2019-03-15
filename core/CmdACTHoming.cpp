@@ -167,6 +167,7 @@ void own::CmdACTHoming::ccHandler() {
 		uint64_t elapsed_msec = chaos::common::utility::TimingUtil::getTimeStamp() - getSetTime();
 		SCLDBG_ << "Homing operation completed in "<< elapsed_msec <<" milliseconds";
 		*o_lasthoming = chaos::common::utility::TimingUtil::getTimeStamp();
+		*o_home=true;
 		metadataLogging(chaos::common::metadata_logging::StandardLoggingChannel::LogLevelInfo,"Homing completed");
                 *i_position=0;
  		getAttributeCache()->setInputDomainAsChanged();
@@ -217,6 +218,7 @@ bool own::CmdACTHoming::timeoutHandler() {
 	}
 	setStateVariableSeverity(StateVariableTypeAlarmCU,"homing_operation_failed", chaos::common::alarm::MultiSeverityAlarmLevelHigh);
 	metadataLogging(chaos::common::metadata_logging::StandardLoggingChannel::LogLevelError,"Stopping motion, because timeout during homing");
+	*o_home=false;
 
 	BC_FAULT_RUNNING_PROPERTY;
 	return false;

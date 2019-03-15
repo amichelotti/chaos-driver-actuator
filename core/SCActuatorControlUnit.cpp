@@ -214,6 +214,12 @@ bool ::driver::actuator::SCActuatorControlUnit::moveAt(const std::string &name, 
   return true;
 }
 
+void ::driver::actuator::SCActuatorControlUnit::unitDefineCustomAttribute() {
+    //here are defined the custom shared variable
+    bool stop_homing=0;
+    getAttributeCache()->addCustomAttribute("stopHoming", sizeof(bool), chaos::DataType::TYPE_BOOLEAN);
+    getAttributeCache()->setCustomAttributeValue("stopHoming", &stop_homing, sizeof(bool));
+}
 /*
  Return the default configuration
  */
@@ -342,8 +348,8 @@ void ::driver::actuator::SCActuatorControlUnit::unitDefineActionAndDataset()
                         DataType::TYPE_BOOLEAN,
                         DataType::Output);
 
-  addAttributeToDataSet("stopHoming",
-                        "homing to be stopped flag",
+  addAttributeToDataSet("home",
+                        "homing reached",
                         DataType::TYPE_BOOLEAN,
                         DataType::Output);
 
@@ -525,10 +531,6 @@ void ::driver::actuator::SCActuatorControlUnit::unitDefineActionAndDataset()
                    "Notify when the driver cannot execute the reading of alarms");
 }
 
-void ::driver::actuator::SCActuatorControlUnit::unitDefineCustomAttribute()
-{
-  //addAttributeToDataSet("maxSpeedCustom", "max Speed in mm/s", DataType::TYPE_DOUBLE, DataType::Input);
-}
 
 // Abstract method for the initialization of the control unit
 void ::driver::actuator::SCActuatorControlUnit::unitInit()
