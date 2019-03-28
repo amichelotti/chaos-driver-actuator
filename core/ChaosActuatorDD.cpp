@@ -50,7 +50,7 @@ void ChaosActuatorDD::driverDeinit()  {
 
 
 cu_driver::MsgManagmentResultType::MsgManagmentResult ChaosActuatorDD::execOpcode(cu_driver::DrvMsgPtr cmd){
-//        boost::mutex::scoped_lock lock(io_mux);
+        boost::mutex::scoped_lock lock(io_mux);
 
     cu_driver::MsgManagmentResultType::MsgManagmentResult result = cu_driver::MsgManagmentResultType::MMR_EXECUTED;
     actuator_iparams_t *in = (actuator_iparams_t *)cmd->inputData;
@@ -213,9 +213,10 @@ cu_driver::MsgManagmentResultType::MsgManagmentResult ChaosActuatorDD::execOpcod
 	break;
 	}
         case OP_SETPARAMETER:{
-	out->result=motor->setParameter(in->axis,in->str,in->str2);
-	char* SS0=strdup(in->str);
+            char* SS0=strdup(in->str);
 	char* SS1=strdup(in->str2);
+	out->result=motor->setParameter(in->axis,SS0,SS1);
+	
 	ACDBG << "ALEDEBUG: Sending Set " << SS1 <<"  on Parameter " << SS0 <<"axis " <<in->axis;
 	ACDBG << "result " << out->result ;
 	free(SS0);
