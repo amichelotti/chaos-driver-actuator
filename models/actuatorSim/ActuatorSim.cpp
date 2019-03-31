@@ -39,7 +39,11 @@ OPEN_REGISTER_PLUGIN
 REGISTER_PLUGIN(chaos::driver::actuator::ActuatorSim)
 CLOSE_REGISTER_PLUGIN
 
-
+#ifndef ACTAPP
+#define ACTAPP LAPP_ << "[ActuatorSim] "
+#define ACTERR LERR_ << "[ActuatorSim] "
+#define ACTDBG LDBG_ << "[ActuatorSim] "
+#endif
 //default constructor definition
 chaos::driver::actuator::ActuatorSim::ActuatorSim() {
     motor = NULL;
@@ -47,29 +51,65 @@ chaos::driver::actuator::ActuatorSim::ActuatorSim() {
 
 //default descrutcor
 chaos::driver::actuator::ActuatorSim::~ActuatorSim() {
-	
 }
+#ifdef CHAOS
+void chaos::driver::actuator::ActuatorSim::driverInit(const chaos::common::data::CDataWrapper& json) throw(chaos::CException) {
+     int ret;
+    ACTDBG << "Init driver initialization with json " <<json.getJSONString().c_str();
+    if(motor)
+    {
+          throw chaos::CException(1, "Already Initialized", "ActuatorSim::driverInit");
+    }
+    motor = new ::common::actuators::models::simul::ActuatorTechnoSoft();
+    
+    if(motor==NULL)
+    {
+      throw chaos::CException(1, "Cannot allocate resources for ActuatorSim", "ActuatorSim::driverInit");
+    }
+    
+    motor->jsonConfiguration.setSerializedJsonData(json.getCompliantJSONString().c_str());
+   
+      if (  (ret=motor->init(NULL)) < 0) 
+      {
+	ACTERR<<"Init Failed! ret:"<<ret<<std::endl;
+	throw chaos::CException(1, "Bad parameters for ActuatorSim","ActuatorSim::driverInit");
+      } 
+      else 
+      {
+	ACTDBG<<"Init Done" <<std::endl;
+      }
+    
+   
+}
+#endif
+
+
+
+
+
+
 
 void chaos::driver::actuator::ActuatorSim::driverInit(const char *initParameter) throw(chaos::CException) {
     //check the input parameter
 	boost::smatch match;
 	std::string inputStr = initParameter;
-	PSLAPP << "Init  driver initialisation string:\""<<initParameter<<"\""<<std::endl;
+	ACTDBG << "Init driver initialization string:\""<<initParameter<<"\""<<std::endl;
     if(motor){
-          throw chaos::CException(1, "Already Initialised", "ActuatorSim::driverInit");
+          throw chaos::CException(1, "Already Initialized", "ActuatorSim::driverInit");
     }
     motor = new ::common::actuators::models::simul::ActuatorTechnoSoft();
     
     if(motor==NULL){
       throw chaos::CException(1, "Cannot allocate resources for ActuatorSim", "ActuatorSim::driverInit");
     } else {
+        ACTDBG<<"Setting jsonConfiguration to new empty " ;
 #ifdef INITDRIVER_DEF
       int ret;
       if (  (ret=motor->init((void*)initParameter)) < 0) {
-	PSLAPP<<"Init Failed of:" <<initParameter<<" ret:"<<ret<<std::endl;
+	ACTERR<<"Init Failed of:" <<initParameter<<" ret:"<<ret<<std::endl;
 	throw chaos::CException(1, "Bad parameters for ActuatorSim","ActuatorSim::driverInit");
       } else {
-	PSLAPP<<"Init Done" <<std::endl;
+	ACTDBG<<"Init Done" <<std::endl;
       }
     
 #endif

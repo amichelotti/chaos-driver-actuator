@@ -20,9 +20,7 @@
 #ifndef __driver_ActuatorSim_h__
 #define __driver_ActuatorSim_h__
 
-#ifndef PSLAPP
-#define PSLAPP LAPP_ << "[ActuatorSim] "
-#endif
+
 
 #include <chaos/cu_toolkit/driver_manager/driver/AbstractDriverPlugin.h>
 
@@ -41,6 +39,7 @@ namespace chaos {
              */
            class ActuatorSim: public ChaosActuatorDD{
 	   void driverInit(const char *initParameter) throw(chaos::CException);
+           void driverInit(const chaos::common::data::CDataWrapper& json) throw(chaos::CException);
                 
             public:
                 ActuatorSim();

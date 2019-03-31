@@ -41,8 +41,10 @@ namespace chaos {
              */
             class TechnosoftMotor: public ChaosActuatorDD{
                 //::common::powersupply::TechnosoftMotor *Unit;
-	      void driverInit(const char *initParameter) throw(chaos::CException);
-                
+	      void driverInit(const char *initParameter) ;
+#ifdef CHAOS
+              void driverInit(const chaos::common::data::CDataWrapper& json);
+#endif    
             public:
                 TechnosoftMotor();
                 ~TechnosoftMotor();

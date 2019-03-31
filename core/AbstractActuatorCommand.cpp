@@ -40,11 +40,6 @@ AbstractActuatorCommand::~AbstractActuatorCommand() {
 	actuator_drv = NULL;
 }
 
-void AbstractActuatorCommand::endHandler() {
-	CMDCUDBG_<<"Close Command";
-	setWorkState(false);
-
-}
 
 void AbstractActuatorCommand::checkEndMove(){
 	int err;
@@ -67,7 +62,7 @@ void AbstractActuatorCommand::checkEndMove(){
 		if ((((*o_status_id) & ::common::actuators::ACTUATOR_INMOTION)==0) ||(((*o_status_id) & ::common::actuators::ACTUATOR_POWER_SUPPLIED)==0)){
 			setStateVariableSeverity(StateVariableTypeAlarmCU,"position_value_not_reached", chaos::common::alarm::MultiSeverityAlarmLevelWarning);
 			metadataLogging(chaos::common::metadata_logging::StandardLoggingChannel::LogLevelError,CHAOS_FORMAT("motor axis %1% has stopped before reach setpoint, delta %2% %3%",%*axID %delta_position_reached %(((*o_status_id) & ::common::actuators::ACTUATOR_INMOTION)==0)));
-			if (err=actuator_drv->stopMotion(*axID)!= 0){
+			if ((err=actuator_drv->stopMotion(*axID))!= 0){
 						metadataLogging(chaos::common::metadata_logging::StandardLoggingChannel::LogLevelError,CHAOS_FORMAT("cannot stop motion on axis '%1%'",%*axID));
 						setStateVariableSeverity(StateVariableTypeAlarmCU,"command_error", chaos::common::alarm::MultiSeverityAlarmLevelHigh);
 						BC_FAULT_RUNNING_PROPERTY;
@@ -129,10 +124,10 @@ void AbstractActuatorCommand::setHandler(c_data::CDataWrapper *data) {
 	// ********* nota: i_position rimpiazza o_position_sp
 	//p_stopCommandInExecution = getAttributeCache()->getROPtr<bool>(DOMAIN_INPUT, "stopCommandInExecution");
 
-	p_stopCommandInExecution = getAttributeCache()->getRWPtr<bool>(DOMAIN_OUTPUT, "stopHoming");
+	p_stopCommandInExecution = getAttributeCache()->getRWPtr<bool>(DOMAIN_CUSTOM, "stopHoming");
 	o_lasthoming = getAttributeCache()->getRWPtr<uint64_t>(DOMAIN_OUTPUT, "LastHomingTime");
 	o_useUI  = getAttributeCache()->getRWPtr<bool>(DOMAIN_OUTPUT, "useSteps"); 
-
+	o_home = getAttributeCache()->getRWPtr<bool>(DOMAIN_OUTPUT, "home");
 
 	axID = getAttributeCache()->getROPtr<uint32_t>(DOMAIN_INPUT, "axisID");
 	tmpInt =  (int*) getAttributeCache()->getROPtr<int32_t>(DOMAIN_INPUT, "readingType") ;
@@ -145,7 +140,8 @@ void AbstractActuatorCommand::setHandler(c_data::CDataWrapper *data) {
 	p_setTimeout = getAttributeCache()->getROPtr<uint32_t>(DOMAIN_INPUT, "setTimeout");
 
 	p_resolution = getAttributeCache()->getROPtr<double>(DOMAIN_INPUT, "resolution");
-
+    *o_alarm_str=0;
+    *o_status_str=0;
 	//...
 	//...
 
@@ -334,13 +330,8 @@ void AbstractActuatorCommand::getState(int32_t axisID,int& current_state, std::s
 	std::string state_str;
 	//int32_t i_driver_timeout = getAttributeCache()->getValue<int32_t>(DOMAIN_INPUT, "driver_timeout"); // *************** commentato *************
 	if((err=actuator_drv->getState(axisID,&current_state, state_str)) != 0) {
-		//setWorkState(false);    // *************** commentato *****************
 		CMDCUERR_ << boost::str( boost::format("Error getting the actuator state = %1% ") % err);
 		metadataLogging(chaos::common::metadata_logging::StandardLoggingChannel::LogLevelError,CHAOS_FORMAT("axis %1% error getting state, err:%2%'",%*axID %err));
 
 	}
-}
-
-void AbstractActuatorCommand::setWorkState(bool working_flag) {
-	setBusyFlag(working_flag);
 }

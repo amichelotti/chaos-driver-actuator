@@ -51,7 +51,7 @@ protected:
 	::common::actuators::AbstractActuator::readingTypes readTyp;
 	int *tmpInt;
 	bool    *o_useUI;
-
+	bool *o_home;
 	bool		*o_stby;
 	bool		*o_pswitch;
 	bool            *o_nswitch;
@@ -80,13 +80,11 @@ protected:
 
 	// set the data fr the command
 	void setHandler(c_data::CDataWrapper *data);
-	void endHandler();
 	void getState(int32_t axisID,int& current_state, std::string& current_state_str);
 	int performCheck();
 
 	void checkEndMove();
 
-	void setWorkState(bool working);
 	void DecodeAndRaiseAlarms(uint64_t mask);
 
 };
