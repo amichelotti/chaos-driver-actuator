@@ -70,7 +70,6 @@ void own::CmdACTSetParameter::setHandler(c_data::CDataWrapper *data) {
         if(*o_stby==0){
         // we are in standby only the SP is set
             SCLDBG_ << "we are in standby we cannot start set parameter command: ";
-            setWorkState(false);
             BC_END_RUNNING_PROPERTY;
             return;
         } 
@@ -78,7 +77,8 @@ void own::CmdACTSetParameter::setHandler(c_data::CDataWrapper *data) {
 	if((err = actuator_drv->setParameter(*axID,parName,value)) != 0) {
  		metadataLogging(chaos::common::metadata_logging::StandardLoggingChannel::LogLevelError,"set parameter command not acknowledged" ); // ********** aggiunto **************
 	}
-}
+       
+        }
 // empty acquire handler
 void own::CmdACTSetParameter::acquireHandler() {
 }
@@ -88,4 +88,5 @@ BC_END_RUNNING_PROPERTY;
 }
 // empty timeout handler
 bool own::CmdACTSetParameter::timeoutHandler() {
+	return false;
 }

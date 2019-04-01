@@ -13,7 +13,11 @@ ADD_LIBRARY(${PROJECT_NAME} ${src})
 SET(DRIVERS_LIB ${DRIVERS_LIB} ${PROJECT_NAME} PARENT_SCOPE)
 FILE(GLOB src *.h)
 
-installHeaders(.)
+FILE(GLOB files "*.h")
+INSTALL(FILES ${files} DESTINATION include/driver/actuator/models/actuatorSim/)
+
+
+
 INSTALL_TARGETS(/lib ${PROJECT_NAME} )
 #INSTALL_TARGETS(/bin test_technosoft_cu)
 

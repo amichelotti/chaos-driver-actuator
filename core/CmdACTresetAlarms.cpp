@@ -43,8 +43,6 @@ BATCH_COMMAND_CLOSE_DESCRIPTION()
 // set handler
 void own::CmdACTresetAlarms::setHandler(c_data::CDataWrapper *data) {
 	int err;
-    setWorkState(true);
-
 	AbstractActuatorCommand::setHandler(data);
        
 
@@ -57,14 +55,20 @@ void own::CmdACTresetAlarms::setHandler(c_data::CDataWrapper *data) {
             return;
         }
         
+        int64_t alarmMask;
         if(!data->isInt64Value(CMD_ACT_ALRM)) {
-            SCLERR_ << "Reset alarms parameter is not an integer 64 data type";
+             if (!data->isInt32Value(CMD_ACT_ALRM))
+	     {
+            SCLERR_ << "Reset alarms parameter "<< data->getInt32Value(CMD_ACT_ALRM)  << "is not an integer 64 data type";
             metadataLogging(chaos::common::metadata_logging::StandardLoggingChannel::LogLevelInfo,boost::str( boost::format("performing reset alarms: argument is not an integer 64 type")) );
             BC_FAULT_RUNNING_PROPERTY;
             return;
+	     }
+	     else  
+		alarmMask=data->getInt32Value(CMD_ACT_ALRM);
         }
         
-	int64_t alarmMask = data->getInt64Value(CMD_ACT_ALRM);
+	alarmMask = data->getInt64Value(CMD_ACT_ALRM);
         if(std::isnan(alarmMask)==true)
         {
             SCLERR_ << "Reset alarms parameter is nan";

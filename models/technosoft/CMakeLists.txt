@@ -12,9 +12,10 @@ ADD_EXECUTABLE(test_technosoft_cu test/main.cpp)
 TARGET_LINK_LIBRARIES(${PROJECT_NAME} common_actuators common_actuators_technosoft)
 TARGET_LINK_LIBRARIES(test_technosoft_cu ${PROJECT_NAME} chaos_driver_actuator common_actuators common_actuators_technosoft chaos_cutoolkit chaos_common ${FrameworkLib})
 SET(DRIVERS_LIB ${DRIVERS_LIB} ${PROJECT_NAME} PARENT_SCOPE)
-FILE(GLOB src *.h)
 
-installHeaders(.)
+FILE(GLOB files "*.h")
+INSTALL(FILES ${files} DESTINATION include/driver/actuator/models/technosoft/)
+
 INSTALL_TARGETS(/lib ${PROJECT_NAME} )
 INSTALL_TARGETS(/bin test_technosoft_cu)
 

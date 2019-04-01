@@ -43,10 +43,6 @@ void own::CmdACTPoweron::setHandler(c_data::CDataWrapper *data) {
 	int err;
 	AbstractActuatorCommand::setHandler(data);
  	i_stby=getAttributeCache()->getRWPtr<bool>(DOMAIN_INPUT, "powerOn");
-
-
-	setWorkState(true);
-
 	if(!data ||!data->hasKey(CMD_ACT_POWERON_VALUE)) {
 			metadataLogging(chaos::common::metadata_logging::StandardLoggingChannel::LogLevelError,"parameter  0/1 must be specified" );
 			BC_FAULT_RUNNING_PROPERTY;
@@ -55,6 +51,7 @@ void own::CmdACTPoweron::setHandler(c_data::CDataWrapper *data) {
 
 
 	onState = data->getInt32Value(CMD_ACT_POWERON_VALUE);
+	SCLDBG_ << "ALEDEBUG received poweron value " <<onState ;
 
 	setStateVariableSeverity(StateVariableTypeAlarmCU,"command_error", chaos::common::alarm::MultiSeverityAlarmLevelClear);
 	setStateVariableSeverity(StateVariableTypeAlarmCU,"powerOn_out_of_set", chaos::common::alarm::MultiSeverityAlarmLevelClear);
@@ -67,7 +64,7 @@ void own::CmdACTPoweron::setHandler(c_data::CDataWrapper *data) {
 
 	SCLDBG_   << "Launching poweron in set handler power on in axid "<< *axID << " value " << onState;
 	if((err = actuator_drv->poweron(*axID,onState)) != 0) {
-		metadataLogging(chaos::common::metadata_logging::StandardLoggingChannel::LogLevelError,CHAOS_FORMAT("axis %1% cannot perform set state (poweron) to ",%*axID %onState));
+        metadataLogging(chaos::common::metadata_logging::StandardLoggingChannel::LogLevelError,CHAOS_FORMAT("axis %1% cannot perform set state (poweron) to %2%",%*axID %onState));
 		setStateVariableSeverity(StateVariableTypeAlarmCU,"command_error", chaos::common::alarm::MultiSeverityAlarmLevelHigh);
 		BC_FAULT_RUNNING_PROPERTY;
 		return;
@@ -75,6 +72,14 @@ void own::CmdACTPoweron::setHandler(c_data::CDataWrapper *data) {
 	}
 	BC_NORMAL_RUNNING_PROPERTY;
 }
+
+void own::CmdACTPoweron::endHandler() 
+{
+		SCLDBG_ << "removing busy flag";
+    AbstractActuatorCommand::endHandler();
+}
+
+
 // empty acquire handler
 void own::CmdACTPoweron::acquireHandler() {
 	AbstractActuatorCommand::acquireHandler();

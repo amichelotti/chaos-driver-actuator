@@ -1,5 +1,8 @@
 cmake_minimum_required(VERSION 2.8)
 project(chaos_driver_actuator)
+find_package(chaos MODULE REQUIRED)
+include_directories(../../ ${chaos_INCLUDE_DIRS})
+
 FILE(GLOB core_src core/*.cpp)
 SET(DRIVERS_LIB )
 add_subdirectory(models)
@@ -10,8 +13,11 @@ ELSE()
 ADD_LIBRARY(${PROJECT_NAME} SHARED ${core_src})
 ENDIF()
 
-TARGET_LINK_LIBRARIES(${PROJECT_NAME} ${DRIVERS_LIB} chaos_cutoolkit chaos_common common_debug common_modbus modbus chaos_cutoolkit chaos_uitoolkit ${FrameworkLib})
-installHeaders(core)
+TARGET_LINK_LIBRARIES(${PROJECT_NAME} chaos_cutoolkit chaos_common common_debug common_modbus modbus chaos_cutoolkit ${FrameworkLib})
+
+FILE(GLOB files "core/*.h")
+INSTALL(FILES ${files} DESTINATION include/driver/actuator/core)
+
 INSTALL_TARGETS(/lib ${PROJECT_NAME})
 
 

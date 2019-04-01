@@ -1,4 +1,8 @@
-core
-models/actuatorSim
+../../chaosframework
+.
+../../chaosframework/usr/local/include
+
+models/ExternalDriver
 models/technosoft
-/usr/local/chaos/chaos-distrib/include
+models/technosoft/test
+models/actuatorSim

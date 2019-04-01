@@ -26,6 +26,13 @@
 using namespace chaos;
 namespace driver {
 namespace actuator {
+    
+    class SimplifiedAttribute {
+    public:
+        string Name;
+        chaos::DataType::DataType dtType;
+        SimplifiedAttribute(string n,chaos::DataType::DataType dt) { Name=n; dtType=dt;}
+    };
 
 class SCActuatorControlUnit : public chaos::cu::control_manager::SCAbstractControlUnit {
 	PUBLISHABLE_CONTROL_UNIT_INTERFACE(SCActuatorControlUnit)
@@ -41,39 +48,44 @@ protected:
 			 Define the Control Unit Dataset and Actions
 	 */
 	int  decodeType(const std::string& str_type, DataType::DataType& attribute_type) ;
-	void unitDefineActionAndDataset()throw(chaos::CException);
+	void unitDefineActionAndDataset();
 
 	void unitDefineCustomAttribute();
 
 	/*(Optional)
 			 Initialize the Control Unit and all driver, with received param from MetadataServer
 	 */
-	void unitInit() throw(chaos::CException);
+	void unitInit();
 	/*(Optional)
 			 Execute the work, this is called with a determinated delay, it must be as fast as possible
 	 */
-	void unitStart() throw(chaos::CException);
+	void unitStart();
 	/*(Optional)
 			 The Control Unit will be stopped
 	 */
-	void unitStop() throw(chaos::CException);
+	void unitStop();
 	/*(Optional)
 			 The Control Unit will be deinitialized and disposed
 	 */
-	void unitDeinit() throw(chaos::CException);
+	void unitDeinit();
 
 	//!restore method for actuators
-	bool unitRestoreToSnapshot(chaos::cu::control_manager::AbstractSharedDomainCache * const snapshot_cache) throw(CException);
+	bool unitRestoreToSnapshot(chaos::cu::control_manager::AbstractSharedDomainCache * const snapshot_cache);
 
-	//-----------utility methdo for the restore operation---------
+	//-----------utility methods for the restore operation---------
 	bool setPosition(double pos,bool sync = true);
-	bool setPowerOn(bool value,bool sync = true);
+	bool setPowerOn(int32_t value,bool sync = true);
 
-	//-----------utility methdo for the restore operation---------
+	//-----------handler definition
 	bool moveAt(const std::string &name,double value,uint32_t size);
 	bool setPower(const std::string &name,bool value,uint32_t size);
-
+        bool setProp(const std::string &name, int32_t value, uint32_t size);
+        bool setProp(const std::string &name, double value, uint32_t size);
+        bool setProp(const std::string &name, int64_t value, uint32_t size);
+        bool setProp(const std::string &name, bool value, uint32_t size);
+        bool setProp(const std::string &name, std::string  value, uint32_t size);
 	const uint32_t *axID;
+        std::list<SimplifiedAttribute> DriverDefinedAttributes;
 
 
 public:

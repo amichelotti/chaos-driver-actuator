@@ -52,7 +52,7 @@ chaos::driver::actuator::TechnosoftMotor::~TechnosoftMotor() {
 	
 }
 #ifdef CHAOS
-void chaos::driver::actuator::TechnosoftMotor::driverInit(const chaos::common::data::CDataWrapper& json) throw(chaos::CException) {
+void chaos::driver::actuator::TechnosoftMotor::driverInit(const chaos::common::data::CDataWrapper& json) {
      int ret;
     PSLAPP << "Init  driver initialization with json " <<json.getJSONString().c_str();
     if(motor)
@@ -65,9 +65,12 @@ void chaos::driver::actuator::TechnosoftMotor::driverInit(const chaos::common::d
     {
       throw chaos::CException(1, "Cannot allocate resources for TechnosoftMotor", "TechnosoftMotor::driverInit");
     }
-    motor->jsonConfiguration= ((chaos::common::data::CDataWrapper*)(&json))->clone();
+    // DA CAMBIARE DOVREBBE ESSERE ALLOCATO DA ACTUATORTECHNOSOFT
+    // POSSIBILMENTE SMART POINTER
+    motor->jsonConfiguration.setSerializedJsonData(json.getCompliantJSONString().c_str());
+
    
-      if (  (ret=motor->init(NULL)) < 0) 
+      if (  (ret=motor->init((void*)NULL)) < 0) 
       {
 	PSLAPP<<"Init Failed! ret:"<<ret<<std::endl;
 	throw chaos::CException(1, "Bad parameters for TechnosoftMotor","TechnosoftMotor::driverInit");
@@ -82,7 +85,7 @@ void chaos::driver::actuator::TechnosoftMotor::driverInit(const chaos::common::d
 #endif
 
 
-void chaos::driver::actuator::TechnosoftMotor::driverInit(const char *initParameter) throw(chaos::CException) {
+void chaos::driver::actuator::TechnosoftMotor::driverInit(const char *initParameter) {
     //check the input parameter
 	boost::smatch match;
 	std::string inputStr = initParameter;
@@ -98,7 +101,7 @@ void chaos::driver::actuator::TechnosoftMotor::driverInit(const char *initParame
     } 
     else 
     { 
-      motor->jsonConfiguration=new chaos::common::data::CDataWrapper();
+      // DA CAMBIARE DOVREBBE ESSERE ALLOCATO DA ACTUATORTECHNOSOFT
      
       int ret;
       if (  (ret=motor->init((void*)initParameter)) < 0) 
