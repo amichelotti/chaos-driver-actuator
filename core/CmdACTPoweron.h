@@ -35,7 +35,6 @@ namespace driver {
 			//uint8_t implementedHandler();
 			//initial set handler
 			void setHandler(c_data::CDataWrapper *data);
-                        void endHandler();
 			//custom acquire handler
 			void acquireHandler();
 			//correlation and commit handler
