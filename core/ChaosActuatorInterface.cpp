@@ -219,12 +219,6 @@ accessor->send(&message);\
 *pival = ret.ivalue;\
 return ret.result;
 
-#define READ_OP_AX_INT_TIM(op,ax,pival,timeout) \
-PREPARE_OP_RET_INT_TIMEOUT(op,timeout); \
-idata.axis=ax;\
-accessor->send(&message);\
-*pival = ret.ivalue;\
-return ret.result;
 
 /***************************/
 #define READ_OP_64INT_TIM(op,pival,timeout) \
