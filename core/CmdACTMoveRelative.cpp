@@ -165,6 +165,7 @@ void own::CmdACTMoveRelative::acquireHandler() {          //OK
 	//acquire the current readout
 	AbstractActuatorCommand::acquireHandler();
 	//force output dataset as changed
+	getAttributeCache()->setOutputDomainAsChanged();
 }
 
 void own::CmdACTMoveRelative::ccHandler() {
