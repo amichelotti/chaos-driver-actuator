@@ -178,7 +178,7 @@ void own::CmdACTMoveAbsolute::acquireHandler() {   //************ modificato in 
 	//acquire the current readout
 	AbstractActuatorCommand::acquireHandler();
 	//force output dataset as changed
-	//	getAttributeCache()->setOutputDomainAsChanged();
+	getAttributeCache()->setOutputDomainAsChanged();
 }
 
 void own::CmdACTMoveAbsolute::ccHandler() {

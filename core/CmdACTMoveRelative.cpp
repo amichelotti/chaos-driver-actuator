@@ -48,11 +48,6 @@ BATCH_COMMAND_CLOSE_DESCRIPTION()
 //    return	AbstractActuatorCommand::implementedHandler()|chaos_batch::HandlerType::HT_Acquisition;
 //}
 
-void own::CmdACTMoveRelative::endHandler() 
-{
-		SCLDBG_ << "removing busy flag";
-    AbstractActuatorCommand::endHandler();
-}
 void own::CmdACTMoveRelative::setHandler(c_data::CDataWrapper *data) {
 	//chaos::common::data::RangeValueInfo position_sp_attr_info;   // ************* Commentato *************
 	//chaos::common::data::RangeValueInfo attributeInfo;           // ************* Commentato *************
@@ -170,6 +165,7 @@ void own::CmdACTMoveRelative::acquireHandler() {          //OK
 	//acquire the current readout
 	AbstractActuatorCommand::acquireHandler();
 	//force output dataset as changed
+	getAttributeCache()->setOutputDomainAsChanged();
 }
 
 void own::CmdACTMoveRelative::ccHandler() {

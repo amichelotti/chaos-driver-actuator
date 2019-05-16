@@ -12,6 +12,7 @@ using namespace chaos::driver::actuator;
 #define PREPARE_OP_RET_INT_TIMEOUT(op,tim) \
 actuator_oparams_t ret;\
 actuator_iparams_t idata;\
+ret.result=DRV_BYPASS_DEFAULT_CODE;\
 message.opcode = op; \
 message.inputData=(void*)&idata;\
 idata.timeout=tim;\
@@ -23,7 +24,8 @@ message.resultData = (void*)&ret;\
 #define READ_OP_FLOAT_PARAM_INT(op,ival,pfval,timeout) \
 PREPARE_OP_RET_INT_TIMEOUT(op,timeout); \
 idata.ivalue=ival; \
-   accessor->send(&message); \
+ret.fvalue0=*pfval;\
+accessor->send(&message); \
 *pfval = ret.fvalue0; \
 return ret.result; 
 
@@ -31,6 +33,7 @@ return ret.result;
 PREPARE_OP_RET_INT_TIMEOUT(op,timeout); \
 idata.axis=ax;\
 idata.ivalue=ival; \
+ret.fvalue0=*pfval;\
    accessor->send(&message); \
 *pfval = ret.fvalue0; \
 return ret.result; 
@@ -108,6 +111,7 @@ return ret.result;
 #define READ_OP_AX_FLOAT_TIM(op,ax,pfval,timeout) \
 PREPARE_OP_RET_INT_TIMEOUT(op,timeout); \
 idata.axis=ax;\
+ret.fvalue0=*pfval;\
 accessor->send(&message);\
 *pfval = ret.fvalue0;\
 return ret.result;
@@ -115,6 +119,7 @@ return ret.result;
 
 #define READ_OP_FLOAT_TIM(op,pfval,timeout) \
 PREPARE_OP_RET_INT_TIMEOUT(op,timeout); \
+ret.fvalue0=*pfval;\
 accessor->send(&message);\
 *pfval = ret.fvalue0;\
 return ret.result;
@@ -124,12 +129,14 @@ return ret.result;
 #define READ_OP_AX_INT_TIM(op,ax,pival,timeout) \
 PREPARE_OP_RET_INT_TIMEOUT(op,timeout); \
 idata.axis=ax;\
+ret.fvalue0=*pfval;\
 accessor->send(&message);\
 *pival = ret.ivalue;\
 return ret.result;
 
 #define READ_OP_INT_TIM(op,pival,timeout) \
 PREPARE_OP_RET_INT_TIMEOUT(op,timeout); \
+ret.ivalue=*pival;\
 accessor->send(&message);\
 *pival = ret.ivalue;\
 return ret.result;
@@ -138,6 +145,8 @@ return ret.result;
 #define READ_OP_AX_INT64_STRING_TIM(op,ax,pival,pstring,timeout) \
 PREPARE_OP_RET_INT_TIMEOUT(op,timeout); \
 idata.axis=ax;\
+ret.alarm_mask=*pival ;\
+*ret.str=0;\
 accessor->send(&message);\
 *pival = ret.alarm_mask;\
 pstring = ret.str;\
@@ -146,6 +155,8 @@ return ret.result;
 #define READ_OP_AX_INT_STRING_TIM(op,ax,pival,pstring,timeout) \
 PREPARE_OP_RET_INT_TIMEOUT(op,timeout); \
 idata.axis=ax;\
+*ret.str=0;\
+ret.ivalue=*pival;\
 accessor->send(&message);\
 *pival = ret.ivalue;\
 pstring = ret.str;\
@@ -153,6 +164,8 @@ return ret.result;
 
 #define READ_OP_INT_STRING_TIM(op,pival,pstring,timeout) \
 PREPARE_OP_RET_INT_TIMEOUT(op,timeout); \
+*ret.str=0;\
+ret.ivalue=*pival;\
 accessor->send(&message);\
 *pival = ret.ivalue;\
 pstring = ret.str;\
@@ -206,12 +219,6 @@ accessor->send(&message);\
 *pival = ret.ivalue;\
 return ret.result;
 
-#define READ_OP_AX_INT_TIM(op,ax,pival,timeout) \
-PREPARE_OP_RET_INT_TIMEOUT(op,timeout); \
-idata.axis=ax;\
-accessor->send(&message);\
-*pival = ret.ivalue;\
-return ret.result;
 
 /***************************/
 #define READ_OP_64INT_TIM(op,pival,timeout) \
