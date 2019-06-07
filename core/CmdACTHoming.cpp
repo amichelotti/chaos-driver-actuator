@@ -191,7 +191,7 @@ void own::CmdACTHoming::ccHandler() {
 		if ((err=actuator_drv->stopMotion(*axID)!= 0))
 		{
 			metadataLogging(chaos::common::metadata_logging::StandardLoggingChannel::LogLevelError,"Stopping motion");
-
+			SCLDBG_ <<  "ALEDEBUG stopping because not on power on";
 			setStateVariableSeverity(StateVariableTypeAlarmCU,"homing_operation_failed", chaos::common::alarm::MultiSeverityAlarmLevelHigh);
 			BC_FAULT_RUNNING_PROPERTY;
 			return;
@@ -216,6 +216,7 @@ bool own::CmdACTHoming::timeoutHandler() {
 
 
 	}
+	SCLDBG_ <<  "ALEDEBUG stopped because of timeout";
 	setStateVariableSeverity(StateVariableTypeAlarmCU,"homing_operation_failed", chaos::common::alarm::MultiSeverityAlarmLevelHigh);
 	metadataLogging(chaos::common::metadata_logging::StandardLoggingChannel::LogLevelError,"Stopping motion, because timeout during homing");
 	*o_home=false;
