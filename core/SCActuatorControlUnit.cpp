@@ -302,11 +302,11 @@ void ::driver::actuator::SCActuatorControlUnit::unitDefineActionAndDataset()
                         DataType::TYPE_STRING,
                         DataType::Input, 1024);
 
-  addAttributeToDataSet("driver_timeout",
+  /*addAttributeToDataSet("driver_timeout",
                         "Driver timeout in milliseconds",
                         DataType::TYPE_INT32,
                         DataType::Input);
-
+						*/
   addAttributeToDataSet("setTimeout",
                         "Command timeout in milliseconds",
                         DataType::TYPE_INT32,
