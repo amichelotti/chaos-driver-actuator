@@ -358,6 +358,7 @@ void ::driver::actuator::SCActuatorControlUnit::unitDefineActionAndDataset()
   SCCUAPP << "DATASETVARIABLE getting dataset from driver "; //<< dataset;
   Json::Value json_parameter;
   Json::Reader json_reader;
+  
 
   //parse json string
   if (!json_reader.parse(dataset, json_parameter))
@@ -577,7 +578,12 @@ void ::driver::actuator::SCActuatorControlUnit::unitInit()
   *homingDone = 0;
   //parsing di auxiliary
 
-  char *cloneOfAuxStr = strdup(auxStr);
+  char* cloneOfAuxStr;
+#ifdef _MSC_VER
+  cloneOfAuxStr= _strdup(auxStr);
+#else
+  cloneOfAuxStr = strdup(auxStr);
+#endif
   SCCUAPP << "parsing auxiliary string " << auxStr;
   {
     char *param = NULL;
