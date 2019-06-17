@@ -79,13 +79,19 @@ void own::CmdACTHoming::setHandler(c_data::CDataWrapper *data)
 	if ((err = actuator_drv->getParameter(*axID,"highspeed_homing",retStr)) != 0)
 	{
 	    	//SCLDBG_ << "ALEDEBUG failed to read speed from driver";
-	   	metadataLogging(chaos::common::metadata_logging::StandardLoggingChannel::LogLevelWarning,"Warning cannot know the real highspeedhoming of motor. Using DB value instead");
-	   	realSpeed=(*highspeed_homing);
+		if ((err = actuator_drv->getParameter(*axID, "speed", retStr)) != 0)
+		{
+			metadataLogging(chaos::common::metadata_logging::StandardLoggingChannel::LogLevelWarning, "Warning cannot know the real highspeedhoming of motor.");
+			realSpeed = 0;
+		}
+		else
+		{
+			realSpeed = atof(retStr.c_str());
+		}
 
 	}
 	else
 	{
-		SCLDBG_ << "ALEDEBUG driver said highspeed_homing is " << retStr;
 		realSpeed=atof(retStr.c_str());
 	}
 	if ((err = actuator_drv->getParameter(*axID,"range_slit[mm]",retStr)) != 0)
