@@ -679,7 +679,7 @@ void ::driver::actuator::SCActuatorControlUnit::unitInit()
   {
     SCCUAPP << "hardware found: \"" << device_hw << "\"";
   }
-  getAttributeCache()->setOutputDomainAsChanged();
+  
   ::common::actuators::AbstractActuator::readingTypes readTyp;
   double tmp_float = 0.0F;
   const int32_t *tmpInt = getAttributeCache()->getROPtr<int32_t>(DOMAIN_INPUT, "readingType");
@@ -693,7 +693,8 @@ void ::driver::actuator::SCActuatorControlUnit::unitInit()
   {
     throw chaos::CFatalException(err, "Error getting initial position of the actuator", __FUNCTION__);
   }
-
+  getAttributeCache()->setOutputDomainAsChanged();
+  getAttributeCache()->setInputDomainAsChanged();
   metadataLogging(chaos::common::metadata_logging::StandardLoggingChannel::LogLevelInfo, boost::str(boost::format("Initialization of axis '%1% done configuration '%2%' ") % *axID % ptStr));
 }
 
