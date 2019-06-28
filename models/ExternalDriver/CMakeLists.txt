@@ -13,8 +13,9 @@ TARGET_LINK_LIBRARIES(${PROJECT_NAME} common_actuators chaos_driver_actuator cha
 FILE(GLOB files "*.h")
 INSTALL(FILES ${files} DESTINATION include/driver/actuator/models/ExternalDriver/)
 
-INSTALL_TARGETS(/lib ${PROJECT_NAME} )
-
+INSTALL(TARGETS ${PROJECT_NAME}
+        DESTINATION "lib"
+        PERMISSIONS OWNER_WRITE OWNER_READ GROUP_READ WORLD_READ)
 
 
 
