@@ -79,13 +79,19 @@ void own::CmdACTHoming::setHandler(c_data::CDataWrapper *data)
 	if ((err = actuator_drv->getParameter(*axID,"highspeed_homing",retStr)) != 0)
 	{
 	    	//SCLDBG_ << "ALEDEBUG failed to read speed from driver";
-	   	metadataLogging(chaos::common::metadata_logging::StandardLoggingChannel::LogLevelWarning,"Warning cannot know the real highspeedhoming of motor. Using DB value instead");
-	   	realSpeed=(*highspeed_homing);
+		if ((err = actuator_drv->getParameter(*axID, "speed", retStr)) != 0)
+		{
+			metadataLogging(chaos::common::metadata_logging::StandardLoggingChannel::LogLevelWarning, "Warning cannot know the real highspeedhoming of motor.");
+			realSpeed = 0;
+		}
+		else
+		{
+			realSpeed = atof(retStr.c_str());
+		}
 
 	}
 	else
 	{
-		SCLDBG_ << "ALEDEBUG driver said highspeed_homing is " << retStr;
 		realSpeed=atof(retStr.c_str());
 	}
 	if ((err = actuator_drv->getParameter(*axID,"range_slit[mm]",retStr)) != 0)
@@ -191,7 +197,7 @@ void own::CmdACTHoming::ccHandler() {
 		if ((err=actuator_drv->stopMotion(*axID)!= 0))
 		{
 			metadataLogging(chaos::common::metadata_logging::StandardLoggingChannel::LogLevelError,"Stopping motion");
-
+			SCLDBG_ <<  "ALEDEBUG stopping because not on power on";
 			setStateVariableSeverity(StateVariableTypeAlarmCU,"homing_operation_failed", chaos::common::alarm::MultiSeverityAlarmLevelHigh);
 			BC_FAULT_RUNNING_PROPERTY;
 			return;
@@ -216,6 +222,7 @@ bool own::CmdACTHoming::timeoutHandler() {
 
 
 	}
+	SCLDBG_ <<  "ALEDEBUG stopped because of timeout";
 	setStateVariableSeverity(StateVariableTypeAlarmCU,"homing_operation_failed", chaos::common::alarm::MultiSeverityAlarmLevelHigh);
 	metadataLogging(chaos::common::metadata_logging::StandardLoggingChannel::LogLevelError,"Stopping motion, because timeout during homing");
 	*o_home=false;

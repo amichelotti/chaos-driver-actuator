@@ -18,7 +18,9 @@ INSTALL(FILES ${files} DESTINATION include/driver/actuator/models/actuatorSim/)
 
 
 
-INSTALL_TARGETS(/lib ${PROJECT_NAME} )
+INSTALL(TARGETS ${PROJECT_NAME}
+        DESTINATION "lib"
+        PERMISSIONS OWNER_WRITE OWNER_READ GROUP_READ WORLD_READ)
 #INSTALL_TARGETS(/bin test_technosoft_cu)
 
 

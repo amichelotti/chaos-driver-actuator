@@ -72,6 +72,7 @@ void own::CmdACTHardReset::setHandler(c_data::CDataWrapper *data) {
         }	
             SCLERR_ << "HardReset after sending to interface";
 	*o_lasthoming=0;
+	getAttributeCache()->setOutputDomainAsChanged();
 	//actuator_drv->accessor->base_opcode_priority=100;
         BC_NORMAL_RUNNING_PROPERTY;
 	return;
@@ -81,7 +82,7 @@ void own::CmdACTHardReset::setHandler(c_data::CDataWrapper *data) {
 void own::CmdACTHardReset::acquireHandler() {
  //force output dataset as changed
 	SCLDBG_ << "Hard Reset  acquire handler ";
-        getAttributeCache()->setOutputDomainAsChanged();
+        
 }
 
 // empty correlation handler

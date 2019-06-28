@@ -56,7 +56,7 @@ protected:
 	bool		*o_pswitch;
 	bool            *o_nswitch;
 	double *i_speed; // ********* AGGIUNTO ************
-	double *highspeed_homing;  // ********* AGGIUNTO ************
+	
 	const uint32_t	*i_command_timeout;// ********* AGGIUNTO ************
 
 	const double *p_resolution,*p_warningThreshold;  // ********* AGGIUNTO ************

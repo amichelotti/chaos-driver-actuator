@@ -69,7 +69,7 @@ void own::CmdACTresetAlarms::setHandler(c_data::CDataWrapper *data) {
         }
         
 	alarmMask = data->getInt64Value(CMD_ACT_ALRM);
-        if(std::isnan(alarmMask)==true)
+        if(std::isnan((double)alarmMask)==true)
         {
             SCLERR_ << "Reset alarms parameter is nan";
             metadataLogging(chaos::common::metadata_logging::StandardLoggingChannel::LogLevelInfo,boost::str( boost::format("performing reset alarms: argument is a nan")) );

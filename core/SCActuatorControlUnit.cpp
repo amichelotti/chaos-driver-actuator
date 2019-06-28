@@ -302,11 +302,11 @@ void ::driver::actuator::SCActuatorControlUnit::unitDefineActionAndDataset()
                         DataType::TYPE_STRING,
                         DataType::Input, 1024);
 
-  addAttributeToDataSet("driver_timeout",
+  /*addAttributeToDataSet("driver_timeout",
                         "Driver timeout in milliseconds",
                         DataType::TYPE_INT32,
                         DataType::Input);
-
+						*/
   addAttributeToDataSet("setTimeout",
                         "Command timeout in milliseconds",
                         DataType::TYPE_INT32,
@@ -358,6 +358,7 @@ void ::driver::actuator::SCActuatorControlUnit::unitDefineActionAndDataset()
   SCCUAPP << "DATASETVARIABLE getting dataset from driver "; //<< dataset;
   Json::Value json_parameter;
   Json::Reader json_reader;
+  
 
   //parse json string
   if (!json_reader.parse(dataset, json_parameter))
@@ -577,7 +578,12 @@ void ::driver::actuator::SCActuatorControlUnit::unitInit()
   *homingDone = 0;
   //parsing di auxiliary
 
-  char *cloneOfAuxStr = strdup(auxStr);
+  char* cloneOfAuxStr;
+#ifdef _MSC_VER
+  cloneOfAuxStr= _strdup(auxStr);
+#else
+  cloneOfAuxStr = strdup(auxStr);
+#endif
   SCCUAPP << "parsing auxiliary string " << auxStr;
   {
     char *param = NULL;
@@ -673,7 +679,7 @@ void ::driver::actuator::SCActuatorControlUnit::unitInit()
   {
     SCCUAPP << "hardware found: \"" << device_hw << "\"";
   }
-  getAttributeCache()->setOutputDomainAsChanged();
+  
   ::common::actuators::AbstractActuator::readingTypes readTyp;
   double tmp_float = 0.0F;
   const int32_t *tmpInt = getAttributeCache()->getROPtr<int32_t>(DOMAIN_INPUT, "readingType");
@@ -687,7 +693,8 @@ void ::driver::actuator::SCActuatorControlUnit::unitInit()
   {
     throw chaos::CFatalException(err, "Error getting initial position of the actuator", __FUNCTION__);
   }
-
+  getAttributeCache()->setOutputDomainAsChanged();
+  getAttributeCache()->setInputDomainAsChanged();
   metadataLogging(chaos::common::metadata_logging::StandardLoggingChannel::LogLevelInfo, boost::str(boost::format("Initialization of axis '%1% done configuration '%2%' ") % *axID % ptStr));
 }
 

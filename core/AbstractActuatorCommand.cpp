@@ -135,20 +135,14 @@ void AbstractActuatorCommand::setHandler(c_data::CDataWrapper *data) {
 
 
 	i_speed = ( double*) getAttributeCache()->getROPtr<double>(DOMAIN_INPUT, "speed");
-	highspeed_homing= ( double*) getAttributeCache()->getROPtr<double>(DOMAIN_INPUT, "highspeedhoming");
+	
 
 	p_setTimeout = getAttributeCache()->getROPtr<uint32_t>(DOMAIN_INPUT, "setTimeout");
 
 	p_resolution = getAttributeCache()->getROPtr<double>(DOMAIN_INPUT, "resolution");
     *o_alarm_str=0;
     *o_status_str=0;
-	//...
-	//...
-
-
-	//...
-	//...
-	//...
+	
 
 	//get pointer to the output datase variable
 	chaos::cu::driver_manager::driver::DriverAccessor *actuator_accessor = driverAccessorsErogator->getAccessoInstanceByIndex(0);

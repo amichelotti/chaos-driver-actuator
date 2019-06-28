@@ -22,6 +22,7 @@
 
 #include <chaos/cu_toolkit/control_manager/SCAbstractControlUnit.h>
 #include <driver/actuator/core/ChaosActuatorInterface.h>
+#include <chaos/cu_toolkit/windowsCompliant.h>
 
 using namespace chaos;
 namespace driver {
