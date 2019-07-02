@@ -348,17 +348,17 @@ int ChaosActuatorInterface::getState(int32_t axisID,int* state,std::string& desc
 
 
 int ChaosActuatorInterface::sendDataset(std::string& dataset){
-    int state;
+    int state=0;
     READ_OP_INT_STRING_TIM(OP_SENDDATASET, &state, dataset,0);
 }
 
 int ChaosActuatorInterface::getSWVersion(int32_t axisID,std::string& ver){
-    int state;
+    int state=0;
     READ_OP_AX_INT_STRING_TIM(OP_GET_SWVERSION,axisID, &state, ver,0);
 }
 
 int ChaosActuatorInterface::getHWVersion(int32_t axisID,std::string&ver){
-    int state;
+    int state=0;
     READ_OP_AX_INT_STRING_TIM(OP_GET_HWVERSION,axisID, &state, ver,0);
 
 }
