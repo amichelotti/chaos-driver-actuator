@@ -281,7 +281,7 @@ int ChaosActuatorInterface::init(void*d){
     WRITE_OP_STRING_TIM(OP_INIT,(char*)d,0);
 }
 int ChaosActuatorInterface::configAxis(void*d){
-    WRITE_OP_STRING_TIM(OP_CONFIGAXIS,(char*)d,0);
+    WRITE_OP_STRING_TIM(OP_CONFIGAXIS,(char*)d,60000);
 }
 
 int ChaosActuatorInterface::deinit(int32_t axisID){

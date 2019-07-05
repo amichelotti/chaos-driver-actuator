@@ -679,7 +679,6 @@ void ::driver::actuator::SCActuatorControlUnit::unitInit()
   {
     SCCUAPP << "hardware found: \"" << device_hw << "\"";
   }
-  
   ::common::actuators::AbstractActuator::readingTypes readTyp;
   double tmp_float = 0.0F;
   const int32_t *tmpInt = getAttributeCache()->getROPtr<int32_t>(DOMAIN_INPUT, "readingType");

@@ -18,7 +18,7 @@
  *    	limitations under the License.
  */
 #include "CmdACTMoveAbsolute.h"
-
+#include <chaos/cu_toolkit/windowsCompliant.h>
 #include <cmath>
 #include <boost/format.hpp>
 #include <boost/lexical_cast.hpp>
@@ -169,6 +169,7 @@ void own::CmdACTMoveAbsolute::setHandler(c_data::CDataWrapper *data) {
 		BC_FAULT_RUNNING_PROPERTY;
 		return;
 	}
+	sleep(1);
 	*o_home=false;
 	metadataLogging(chaos::common::metadata_logging::StandardLoggingChannel::LogLevelInfo,boost::str( boost::format("performing command move absolute :%1% timeout %2%") % positionToReach % computed_timeout) );
 	BC_NORMAL_RUNNING_PROPERTY;
