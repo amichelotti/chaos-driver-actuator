@@ -20,7 +20,7 @@
 
 
 #include "CmdACTMoveRelative.h"
-
+#include <chaos/cu_toolkit/windowsCompliant.h>
 #include <cmath>
 #include <boost/format.hpp>
 #include <boost/lexical_cast.hpp>
@@ -154,7 +154,7 @@ void own::CmdACTMoveRelative::setHandler(c_data::CDataWrapper *data) {
 		return;
 	}
 	*o_home=false;
-
+	sleep(1);
 	metadataLogging(chaos::common::metadata_logging::StandardLoggingChannel::LogLevelInfo,boost::str( boost::format("performing command move relative :%1% timeout %2%") % offset_mm % computed_timeout) );
 	//************* actuator_drv->accessor->base_opcode_priority=100; ********************* commentato
 	BC_NORMAL_RUNNING_PROPERTY;
