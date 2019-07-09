@@ -221,7 +221,7 @@ void ::driver::actuator::SCActuatorControlUnit::unitDefineCustomAttribute() {
     getAttributeCache()->setCustomAttributeValue("stopHoming", &stop_homing, sizeof(bool));
 
 	getAttributeCache()->addCustomAttribute("auxiliaryDataset", sizeof(char) * 8192, chaos::DataType::TYPE_STRING);
-	getAttributeCache()->setCustomAttributeValue("auxiliaryDataset", "", sizeof(char) * 8192);
+	getAttributeCache()->setCustomAttributeValue("auxiliaryDataset",(void*) "", sizeof(char) * 8192);
 }
 /*
  Return the default configuration
