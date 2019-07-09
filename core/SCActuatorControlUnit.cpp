@@ -132,8 +132,11 @@ bool ::driver::actuator::SCActuatorControlUnit::setProp(const std::string &name,
   {
 	  int32_t* o_useUI = getAttributeCache()->getRWPtr<int32_t>(DOMAIN_OUTPUT, "useSteps");
 	  *o_useUI = atoi(valStr.c_str());
-	  SCCUAPP << "ALEDEBUG setting new value for useSteps";
+	  SCCUAPP << "setting new value for useSteps then updating auxiliary parameters";
 	  getAttributeCache()->setOutputDomainAsChanged();
+	  this->updateAuxiliaryParameters();
+
+	  
   }
 
   return (ret == 0);
@@ -223,6 +226,53 @@ bool ::driver::actuator::SCActuatorControlUnit::moveAt(const std::string &name, 
   return true;
 }
 
+void ::driver::actuator::SCActuatorControlUnit::updateAuxiliaryParameters()
+{
+	for (std::list<SimplifiedAttribute>::iterator it = this->DriverDefinedAttributes.begin(); it != this->DriverDefinedAttributes.end(); it++)
+	{
+		std::string tmpStr;
+		actuator_drv->getParameter(*axID, (*it).Name, tmpStr);
+		switch ((*it).dtType)
+		{
+		case chaos::DataType::TYPE_DOUBLE:
+		{
+			double* tmpPointer = getAttributeCache()->getRWPtr<double>(DOMAIN_INPUT, (*it).Name);
+			*tmpPointer = (double)atof(tmpStr.c_str());
+			break;
+		}
+		case chaos::DataType::TYPE_INT32:
+		{
+			int32_t* tmpPointer = getAttributeCache()->getRWPtr<int32_t>(DOMAIN_INPUT, (*it).Name);
+			*tmpPointer = (int32_t)atoi(tmpStr.c_str());
+			break;
+		}
+		case chaos::DataType::TYPE_INT64:
+		{
+			int64_t* tmpPointer = getAttributeCache()->getRWPtr<int64_t>(DOMAIN_INPUT, (*it).Name);
+			*tmpPointer = (int64_t)atol(tmpStr.c_str());
+			break;
+		}
+		case chaos::DataType::TYPE_BOOLEAN:
+		{
+			bool* tmpPointer = getAttributeCache()->getRWPtr<bool>(DOMAIN_INPUT, (*it).Name);
+			*tmpPointer = (atoi(tmpStr.c_str()) == 0) ? false : true;
+			break;
+		}
+		case chaos::DataType::TYPE_STRING:
+		{
+			char* tmpPointer = getAttributeCache()->getRWPtr<char>(DOMAIN_INPUT, (*it).Name);
+			//*tmpPointer=( char*)tmpStr.c_str();
+			tmpPointer = (char*)tmpStr.c_str();
+			break;
+		}
+
+		default:
+			break;
+		}
+	}
+	getAttributeCache()->setInputDomainAsChanged();
+
+}
 void ::driver::actuator::SCActuatorControlUnit::unitDefineCustomAttribute() {
     //here are defined the custom shared variable
     bool stop_homing=0;

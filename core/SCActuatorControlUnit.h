@@ -88,7 +88,7 @@ protected:
 	    const uint32_t *axID;
         std::list<SimplifiedAttribute> DriverDefinedAttributes;
 		std::string  auxiliarydataset;
-
+	void updateAuxiliaryParameters();
 
 public:
 	/*
