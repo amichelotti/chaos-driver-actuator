@@ -153,7 +153,7 @@ void CmdACTDefault::acquireHandler() {
 		alreadyLogged=0;
             }
         }
-
+	this->lastUseUI = *o_useUI;
     CMDCU_ << "Axis ID ->" << (int) *axID;
     CMDCU_ << "Reading Type ->" << (int) readTyp;
     CMDCU_ << "position_sp ->" << *pos_sp;

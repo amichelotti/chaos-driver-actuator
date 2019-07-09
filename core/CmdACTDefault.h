@@ -51,6 +51,7 @@ namespace driver {
                         int32_t lastState;
                         double lastPosition;
                         uint64_t lastAlarms;
+						bool  lastUseUI;
 			int32_t alreadyLogged;
   			int32_t BackupAxID;
 			c_data::CDataWrapper *BackupData;
