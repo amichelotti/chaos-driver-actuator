@@ -219,6 +219,9 @@ void ::driver::actuator::SCActuatorControlUnit::unitDefineCustomAttribute() {
     bool stop_homing=0;
     getAttributeCache()->addCustomAttribute("stopHoming", sizeof(bool), chaos::DataType::TYPE_BOOLEAN);
     getAttributeCache()->setCustomAttributeValue("stopHoming", &stop_homing, sizeof(bool));
+
+	getAttributeCache()->addCustomAttribute("auxiliaryDataset", sizeof(char) * 8192, chaos::DataType::TYPE_STRING);
+	getAttributeCache()->setCustomAttributeValue("auxiliaryDataset", "", sizeof(char) * 8192);
 }
 /*
  Return the default configuration
@@ -363,10 +366,12 @@ void ::driver::actuator::SCActuatorControlUnit::unitDefineActionAndDataset()
   //parse json string
   if (!json_reader.parse(dataset, json_parameter))
   {
+	this->auxiliarydataset = "";
     SCCUAPP << "Bad Json parameter " << json_parameter;
   }
   else
   {
+	this->auxiliarydataset = dataset;
     const Json::Value &dataset_description = json_parameter["attributes"];
     for (Json::ValueConstIterator it = dataset_description.begin(); it != dataset_description.end(); it++)
     {
@@ -552,7 +557,7 @@ void ::driver::actuator::SCActuatorControlUnit::unitInit()
   double *o_position = getAttributeCache()->getRWPtr<double>(DOMAIN_OUTPUT, "position");
   axID = getAttributeCache()->getROPtr<uint32_t>(DOMAIN_INPUT, "axisID");
   int32_t *inSteps = getAttributeCache()->getRWPtr<int32_t>(DOMAIN_OUTPUT, "useSteps");
-
+  char* auxData = getAttributeCache()->getRWPtr<char>(DOMAIN_CUSTOM, "auxiliaryDataset");
   chaos::cu::driver_manager::driver::DriverAccessor *actuator_accessor = getAccessoInstanceByIndex(0);
   if (actuator_accessor == NULL)
   {
@@ -564,7 +569,7 @@ void ::driver::actuator::SCActuatorControlUnit::unitInit()
     throw chaos::CFatalException(-2, "Cannot allocate driver resources", __FUNCTION__);
   }
   char *ptStr = NULL, *auxStr = NULL;
-
+  strncpy(auxData,this->auxiliarydataset.c_str(),sizeof(char)*this->auxiliarydataset.length);
   //actuator_drv->init(actuator_drv->jsonConfiguration);
   ptStr = (char *)getAttributeCache()->getROPtr<char>(DOMAIN_INPUT, "ConfigString");
   auxStr = (char *)getAttributeCache()->getROPtr<char>(DOMAIN_INPUT, "auxiliaryConfigParameters");
