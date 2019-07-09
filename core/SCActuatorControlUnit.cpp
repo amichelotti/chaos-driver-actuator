@@ -569,7 +569,7 @@ void ::driver::actuator::SCActuatorControlUnit::unitInit()
     throw chaos::CFatalException(-2, "Cannot allocate driver resources", __FUNCTION__);
   }
   char *ptStr = NULL, *auxStr = NULL;
-  strncpy(auxData,this->auxiliarydataset.c_str(),sizeof(char)*this->auxiliarydataset.length);
+  strncpy(auxData,this->auxiliarydataset.c_str(),sizeof(char)*this->auxiliarydataset.length());
   //actuator_drv->init(actuator_drv->jsonConfiguration);
   ptStr = (char *)getAttributeCache()->getROPtr<char>(DOMAIN_INPUT, "ConfigString");
   auxStr = (char *)getAttributeCache()->getROPtr<char>(DOMAIN_INPUT, "auxiliaryConfigParameters");
@@ -699,6 +699,7 @@ void ::driver::actuator::SCActuatorControlUnit::unitInit()
   }
   getAttributeCache()->setOutputDomainAsChanged();
   getAttributeCache()->setInputDomainAsChanged();
+  getAttributeCache()->setCustomDomainAsChanged();
   metadataLogging(chaos::common::metadata_logging::StandardLoggingChannel::LogLevelInfo, boost::str(boost::format("Initialization of axis '%1% done configuration '%2%' ") % *axID % ptStr));
 }
 
