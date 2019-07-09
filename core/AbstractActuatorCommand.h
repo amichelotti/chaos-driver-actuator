@@ -50,7 +50,7 @@ protected:
 	double *i_position;
 	::common::actuators::AbstractActuator::readingTypes readTyp;
 	int *tmpInt;
-	bool    *o_useUI;
+	int    *o_useUI;
 	bool *o_home;
 	bool		*o_stby;
 	bool		*o_pswitch;
