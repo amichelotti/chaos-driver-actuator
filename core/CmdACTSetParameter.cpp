@@ -79,12 +79,7 @@ void own::CmdACTSetParameter::setHandler(c_data::CDataWrapper *data) {
 	}
 	else
 	{
-		if (parName == "useIU")
-		{
-			*o_useUI = atoi(value.c_str());
-			SCLDBG_ << "ALEDEBUG setting new value for useSteps";
-			getAttributeCache()->setOutputDomainAsChanged();
-		}
+		
 	}
 	
        
