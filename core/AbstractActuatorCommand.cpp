@@ -126,7 +126,7 @@ void AbstractActuatorCommand::setHandler(c_data::CDataWrapper *data) {
 
 	p_stopCommandInExecution = getAttributeCache()->getRWPtr<bool>(DOMAIN_CUSTOM, "stopHoming");
 	o_lasthoming = getAttributeCache()->getRWPtr<uint64_t>(DOMAIN_OUTPUT, "LastHomingTime");
-	o_useUI  = getAttributeCache()->getRWPtr<bool>(DOMAIN_OUTPUT, "useSteps"); 
+	o_useUI  = getAttributeCache()->getRWPtr<int32_t>(DOMAIN_OUTPUT, "useSteps"); 
 	o_home = getAttributeCache()->getRWPtr<bool>(DOMAIN_OUTPUT, "home");
 
 	axID = getAttributeCache()->getROPtr<uint32_t>(DOMAIN_INPUT, "axisID");
