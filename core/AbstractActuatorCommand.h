@@ -51,6 +51,7 @@ protected:
 	::common::actuators::AbstractActuator::readingTypes readTyp;
 	int *tmpInt;
 	int    *o_useUI;
+
 	bool *o_home;
 	bool		*o_stby;
 	bool		*o_pswitch;
