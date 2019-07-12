@@ -154,7 +154,7 @@ void CmdACTDefault::acquireHandler() {
             }
         }
 	
-    CMDCU_ << "Axis ID:" << (int) *axID<< ",Reading Type:" << (int) readTyp<< ",position_sp:" << *pos_sp<< ",position:" << *o_position<< ",alarms:" << *o_alarm<< ",alarm desc:" << o_alarm_str<< ",status_id:" << *o_status_id<< ",status desc:" << o_status_str;
+    CMDCU_ << "Axis ID:" << (int) *axID<< ",Reading Type:" << (int) readTyp<< ",position_sp:" << *pos_sp<< ",position:" << *o_position<< ",alarms:" << *o_alarms<< ",alarm desc:" << o_alarm_str<< ",status_id:" << *o_status_id<< ",status desc" << o_status_str;
 	
 	//force output dataset as changed
     if (  (lastState!=*o_status_id) || 

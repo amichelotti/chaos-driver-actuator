@@ -45,7 +45,6 @@ namespace driver {
                         const double          *posRes;
 			int32_t         *o_warning;
 			int32_t		*o_on;
-			int32_t		*o_alarm;
                         
                             //Last values for choose to push or not
                         int32_t lastState;
