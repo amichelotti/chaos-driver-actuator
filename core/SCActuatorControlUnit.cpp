@@ -565,6 +565,9 @@ void ::driver::actuator::SCActuatorControlUnit::unitDefineActionAndDataset()
 
   addStateVariable(StateVariableTypeAlarmCU, "command_error",
                    "Notify when a command action fails");
+
+  addStateVariable(StateVariableTypeAlarmCU, "user_command_failed",
+	  "Notify when a batch command action fails");
   /***************************ALARMS******************************************/
   addStateVariable(StateVariableTypeAlarmDEV, "EMERGENCY_LOCK_ENABLED",
                    "Notify when the emergency lock is active");
