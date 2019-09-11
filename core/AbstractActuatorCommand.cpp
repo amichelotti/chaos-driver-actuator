@@ -287,6 +287,16 @@ void AbstractActuatorCommand::acquireHandler(){
 		else
 			*o_stby=false;
 
+		if (state & ::common::actuators::ACTUATOR_UNKNOWN_STATUS)
+		{
+			o_lasthoming = 0;
+			o_home = false;
+			setStateVariableSeverity(StateVariableTypeAlarmCU, "home_lost", chaos::common::alarm::MultiSeverityAlarmLevelWarning);
+		}
+		else
+		{
+			setStateVariableSeverity(StateVariableTypeAlarmCU, "home_lost", chaos::common::alarm::MultiSeverityAlarmLevelClear);
+		}
 
 		strncpy(o_status_str, descStr.c_str(), 256);
 	} else {

@@ -563,6 +563,9 @@ void ::driver::actuator::SCActuatorControlUnit::unitDefineActionAndDataset()
   addStateVariable(StateVariableTypeAlarmCU, "homing_operation_failed",
                    "Notify when a homing operation has failed");
 
+  addStateVariable(StateVariableTypeAlarmCU, "home_lost",
+	  "Notify when the current home position is no more valid");
+
   addStateVariable(StateVariableTypeAlarmCU, "command_error",
                    "Notify when a command action fails");
 
