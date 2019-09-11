@@ -289,8 +289,8 @@ void AbstractActuatorCommand::acquireHandler(){
 
 		if (state & ::common::actuators::ACTUATOR_UNKNOWN_STATUS)
 		{
-			o_lasthoming = 0;
-			o_home = false;
+			*o_lasthoming = 0;
+			*o_home = false;
 			setStateVariableSeverity(StateVariableTypeAlarmCU, "home_lost", chaos::common::alarm::MultiSeverityAlarmLevelWarning);
 		}
 		else
