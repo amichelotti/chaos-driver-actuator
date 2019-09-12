@@ -12,6 +12,7 @@ using namespace chaos::driver::actuator;
 #define PREPARE_OP_RET_INT_TIMEOUT(op,tim) \
 actuator_oparams_t ret;\
 actuator_iparams_t idata;\
+memset(&ret,0,sizeof(ret));memset(&idata,0,sizeof(idata));\
 ret.result=DRV_BYPASS_DEFAULT_CODE;\
 message.opcode = op; \
 message.inputData=(void*)&idata;\
@@ -212,13 +213,13 @@ accessor->send(&message);\
 pstring2=ret.str; \
 return ret.result;
 /***************************/
-
+/* 
 #define READ_OP_INT_TIM(op,pival,timeout) \
 PREPARE_OP_RET_INT_TIMEOUT(op,timeout); \
 accessor->send(&message);\
 *pival = ret.ivalue;\
 return ret.result;
-
+*/
 
 /***************************/
 #define READ_OP_64INT_TIM(op,pival,timeout) \

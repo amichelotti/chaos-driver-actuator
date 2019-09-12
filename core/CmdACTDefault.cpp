@@ -66,11 +66,11 @@ void CmdACTDefault::setHandler(c_data::CDataWrapper *data) {
         
         
         
-	CMDCU_ << "Set Handler";
+	CMDCUDBG_ << "Set Handler";
 	AbstractActuatorCommand::setHandler(data);
 	BackupAxID=*axID;
 	setStateVariableSeverity(StateVariableTypeAlarmCU,"command_error", chaos::common::alarm::MultiSeverityAlarmLevelClear);
-	CMDCU_ << "After parental Set Handler";
+	CMDCUDBG_ << "After parental Set Handler";
 	//set the default scheduling to one seconds
 	setFeatures(features::FeaturesFlagTypes::FF_SET_SCHEDULER_DELAY, (uint64_t)1000000);
 	//get channel pointer
@@ -101,7 +101,7 @@ void CmdACTDefault::acquireHandler() {
         
       
         
-	CMDCU_ << "Acquiring data";
+	CMDCUDBG_ << "Acquiring data";
         
         
         //acquire the current readout
@@ -153,16 +153,8 @@ void CmdACTDefault::acquireHandler() {
 		alreadyLogged=0;
             }
         }
-
-    CMDCU_ << "Axis ID ->" << (int) *axID;
-    CMDCU_ << "Reading Type ->" << (int) readTyp;
-    CMDCU_ << "position_sp ->" << *pos_sp;
-    CMDCU_ << "position ->" << *o_position;
-    //CMDCU_ << "position by encoder ->" << EncRead;
-    CMDCU_ << "alarms ->" << *o_alarms;
-    CMDCU_ << "alarm desc -> " << o_alarm_str;
-    CMDCU_ << "status_id -> " << *o_status_id;
-    CMDCU_ << "status desc -> " << o_status_str;
+	
+    CMDCUDBG_ << "Axis ID:" << (int) *axID<< ",Reading Type:" << (int) readTyp<< ",position_sp:" << *pos_sp<< ",position:" << *o_position<< ",alarms:" << *o_alarms<< ",alarm desc:" << o_alarm_str<< ",status_id:" << *o_status_id<< ",status desc" << o_status_str;
 	
 	//force output dataset as changed
     if (  (lastState!=*o_status_id) || 

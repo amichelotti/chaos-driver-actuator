@@ -126,7 +126,7 @@ void AbstractActuatorCommand::setHandler(c_data::CDataWrapper *data) {
 
 	p_stopCommandInExecution = getAttributeCache()->getRWPtr<bool>(DOMAIN_CUSTOM, "stopHoming");
 	o_lasthoming = getAttributeCache()->getRWPtr<uint64_t>(DOMAIN_OUTPUT, "LastHomingTime");
-	o_useUI  = getAttributeCache()->getRWPtr<bool>(DOMAIN_OUTPUT, "useSteps"); 
+	o_useUI  = getAttributeCache()->getRWPtr<int32_t>(DOMAIN_OUTPUT, "useSteps"); 
 	o_home = getAttributeCache()->getRWPtr<bool>(DOMAIN_OUTPUT, "home");
 
 	axID = getAttributeCache()->getROPtr<uint32_t>(DOMAIN_INPUT, "axisID");
@@ -287,6 +287,16 @@ void AbstractActuatorCommand::acquireHandler(){
 		else
 			*o_stby=false;
 
+		if (state & ::common::actuators::ACTUATOR_UNKNOWN_STATUS)
+		{
+			*o_lasthoming = 0;
+			*o_home = false;
+			setStateVariableSeverity(StateVariableTypeAlarmCU, "home_lost", chaos::common::alarm::MultiSeverityAlarmLevelWarning);
+		}
+		else
+		{
+			setStateVariableSeverity(StateVariableTypeAlarmCU, "home_lost", chaos::common::alarm::MultiSeverityAlarmLevelClear);
+		}
 
 		strncpy(o_status_str, descStr.c_str(), 256);
 	} else {

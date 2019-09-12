@@ -45,7 +45,7 @@ BATCH_COMMAND_CLOSE_DESCRIPTION()
 void own::CmdACTStopMotion::setHandler(c_data::CDataWrapper *data) {
 	int err=0;
 	AbstractActuatorCommand::setHandler(data);
-	setStateVariableSeverity(StateVariableTypeAlarmCU,"command_error", chaos::common::alarm::MultiSeverityAlarmLevelClear);
+	setStateVariableSeverity(StateVariableTypeAlarmCU,"user_command_failed", chaos::common::alarm::MultiSeverityAlarmLevelClear);
 
 	SCLDBG_ << "Stop Motion " ;
 
@@ -55,7 +55,7 @@ void own::CmdACTStopMotion::setHandler(c_data::CDataWrapper *data) {
 	if((err = actuator_drv->stopMotion(*axID)) != 0) {
 
 		metadataLogging(chaos::common::metadata_logging::StandardLoggingChannel::LogLevelError,boost::str( boost::format("error stopping motion")) );
-		setStateVariableSeverity(StateVariableTypeAlarmCU,"command_error", chaos::common::alarm::MultiSeverityAlarmLevelHigh);
+		setStateVariableSeverity(StateVariableTypeAlarmCU,"user_command_failed", chaos::common::alarm::MultiSeverityAlarmLevelHigh);
 		BC_FAULT_RUNNING_PROPERTY;
 		return;
 	}
