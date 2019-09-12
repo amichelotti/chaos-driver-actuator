@@ -127,6 +127,18 @@ bool ::driver::actuator::SCActuatorControlUnit::setProp(const std::string &name,
   SCCUAPP << "SET IPROP:" << name << " VALUE:" << value;
   string valStr = boost::lexical_cast<std::string>(value);
   ret = actuator_drv->setParameter(*axID, (std::string)name, valStr);
+
+  if (name == "useIU")
+  {
+	  int32_t* o_useUI = getAttributeCache()->getRWPtr<int32_t>(DOMAIN_OUTPUT, "useSteps");
+	  *o_useUI = atoi(valStr.c_str());
+	  SCCUAPP << "setting new value for useSteps then updating auxiliary parameters";
+	  getAttributeCache()->setOutputDomainAsChanged();
+	  this->updateAuxiliaryParameters();
+
+	  
+  }
+
   return (ret == 0);
 }
 
@@ -214,11 +226,61 @@ bool ::driver::actuator::SCActuatorControlUnit::moveAt(const std::string &name, 
   return true;
 }
 
+void ::driver::actuator::SCActuatorControlUnit::updateAuxiliaryParameters()
+{
+	for (std::list<SimplifiedAttribute>::iterator it = this->DriverDefinedAttributes.begin(); it != this->DriverDefinedAttributes.end(); it++)
+	{
+		std::string tmpStr;
+		actuator_drv->getParameter(*axID, (*it).Name, tmpStr);
+		switch ((*it).dtType)
+		{
+		case chaos::DataType::TYPE_DOUBLE:
+		{
+			double* tmpPointer = getAttributeCache()->getRWPtr<double>(DOMAIN_INPUT, (*it).Name);
+			*tmpPointer = (double)atof(tmpStr.c_str());
+			break;
+		}
+		case chaos::DataType::TYPE_INT32:
+		{
+			int32_t* tmpPointer = getAttributeCache()->getRWPtr<int32_t>(DOMAIN_INPUT, (*it).Name);
+			*tmpPointer = (int32_t)atoi(tmpStr.c_str());
+			break;
+		}
+		case chaos::DataType::TYPE_INT64:
+		{
+			int64_t* tmpPointer = getAttributeCache()->getRWPtr<int64_t>(DOMAIN_INPUT, (*it).Name);
+			*tmpPointer = (int64_t)atol(tmpStr.c_str());
+			break;
+		}
+		case chaos::DataType::TYPE_BOOLEAN:
+		{
+			bool* tmpPointer = getAttributeCache()->getRWPtr<bool>(DOMAIN_INPUT, (*it).Name);
+			*tmpPointer = (atoi(tmpStr.c_str()) == 0) ? false : true;
+			break;
+		}
+		case chaos::DataType::TYPE_STRING:
+		{
+			char* tmpPointer = getAttributeCache()->getRWPtr<char>(DOMAIN_INPUT, (*it).Name);
+			//*tmpPointer=( char*)tmpStr.c_str();
+			tmpPointer = (char*)tmpStr.c_str();
+			break;
+		}
+
+		default:
+			break;
+		}
+	}
+	getAttributeCache()->setInputDomainAsChanged();
+
+}
 void ::driver::actuator::SCActuatorControlUnit::unitDefineCustomAttribute() {
     //here are defined the custom shared variable
     bool stop_homing=0;
     getAttributeCache()->addCustomAttribute("stopHoming", sizeof(bool), chaos::DataType::TYPE_BOOLEAN);
     getAttributeCache()->setCustomAttributeValue("stopHoming", &stop_homing, sizeof(bool));
+
+	getAttributeCache()->addCustomAttribute("auxiliaryDataset", sizeof(char) * 8192, chaos::DataType::TYPE_STRING);
+	getAttributeCache()->setCustomAttributeValue("auxiliaryDataset",(void*) "", sizeof(char) * 8192);
 }
 /*
  Return the default configuration
@@ -363,10 +425,12 @@ void ::driver::actuator::SCActuatorControlUnit::unitDefineActionAndDataset()
   //parse json string
   if (!json_reader.parse(dataset, json_parameter))
   {
+	this->auxiliarydataset = "";
     SCCUAPP << "Bad Json parameter " << json_parameter;
   }
   else
   {
+	this->auxiliarydataset = dataset;
     const Json::Value &dataset_description = json_parameter["attributes"];
     for (Json::ValueConstIterator it = dataset_description.begin(); it != dataset_description.end(); it++)
     {
@@ -499,8 +563,14 @@ void ::driver::actuator::SCActuatorControlUnit::unitDefineActionAndDataset()
   addStateVariable(StateVariableTypeAlarmCU, "homing_operation_failed",
                    "Notify when a homing operation has failed");
 
+  addStateVariable(StateVariableTypeAlarmCU, "home_lost",
+	  "Notify when the current home position is no more valid");
+
   addStateVariable(StateVariableTypeAlarmCU, "command_error",
                    "Notify when a command action fails");
+
+  addStateVariable(StateVariableTypeAlarmCU, "user_command_failed",
+	  "Notify when a batch command action fails");
   /***************************ALARMS******************************************/
   addStateVariable(StateVariableTypeAlarmDEV, "EMERGENCY_LOCK_ENABLED",
                    "Notify when the emergency lock is active");
@@ -552,7 +622,7 @@ void ::driver::actuator::SCActuatorControlUnit::unitInit()
   double *o_position = getAttributeCache()->getRWPtr<double>(DOMAIN_OUTPUT, "position");
   axID = getAttributeCache()->getROPtr<uint32_t>(DOMAIN_INPUT, "axisID");
   int32_t *inSteps = getAttributeCache()->getRWPtr<int32_t>(DOMAIN_OUTPUT, "useSteps");
-
+  char* auxData = getAttributeCache()->getRWPtr<char>(DOMAIN_CUSTOM, "auxiliaryDataset");
   chaos::cu::driver_manager::driver::DriverAccessor *actuator_accessor = getAccessoInstanceByIndex(0);
   if (actuator_accessor == NULL)
   {
@@ -564,7 +634,7 @@ void ::driver::actuator::SCActuatorControlUnit::unitInit()
     throw chaos::CFatalException(-2, "Cannot allocate driver resources", __FUNCTION__);
   }
   char *ptStr = NULL, *auxStr = NULL;
-
+  strncpy(auxData,this->auxiliarydataset.c_str(),sizeof(char)*this->auxiliarydataset.length());
   //actuator_drv->init(actuator_drv->jsonConfiguration);
   ptStr = (char *)getAttributeCache()->getROPtr<char>(DOMAIN_INPUT, "ConfigString");
   auxStr = (char *)getAttributeCache()->getROPtr<char>(DOMAIN_INPUT, "auxiliaryConfigParameters");
@@ -694,6 +764,7 @@ void ::driver::actuator::SCActuatorControlUnit::unitInit()
   }
   getAttributeCache()->setOutputDomainAsChanged();
   getAttributeCache()->setInputDomainAsChanged();
+  getAttributeCache()->setCustomDomainAsChanged();
   metadataLogging(chaos::common::metadata_logging::StandardLoggingChannel::LogLevelInfo, boost::str(boost::format("Initialization of axis '%1% done configuration '%2%' ") % *axID % ptStr));
 }
 
