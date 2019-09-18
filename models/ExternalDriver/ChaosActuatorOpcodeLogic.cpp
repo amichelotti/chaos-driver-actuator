@@ -389,6 +389,7 @@ MsgManagmentResultType::MsgManagmentResult ChaosActuatorOpcodeLogic::execOpcode(
     memset(cmd->err_dom, 0, 255);
     switch(cmd->opcode) {
         case OP_INIT:
+			deinit(cmd, in->axis);
             out->result = sendInit(cmd);
             break;
         case OP_DEINIT:
