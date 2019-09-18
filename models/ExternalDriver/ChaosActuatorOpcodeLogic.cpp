@@ -363,7 +363,15 @@ int ChaosActuatorOpcodeLogic::getTimeout(DrvMsgPtr cmd, int32_t axisID, uint64_t
 	return cmd->ret;
 }
 
-
+int ChaosActuatorOpcodeLogic::deinit(DrvMsgPtr cmd, int32_t axisID)
+{
+	CDWShrdPtr response;
+	CDWUniquePtr para_pack(new CDataWrapper());
+	para_pack->addInt32Value("axisID", axisID);
+	SEND_REQUEST_OPC("deinit", cmd, para_pack, response);
+	if (response.get()) { DBG << response->getJSONString(); }
+	return cmd->ret;
+}
 
 
 
