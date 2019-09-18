@@ -309,8 +309,10 @@ int ChaosActuatorOpcodeLogic::getSWVersion(DrvMsgPtr cmd, int32_t axisID, std::s
 int ChaosActuatorOpcodeLogic::getHWVersion(DrvMsgPtr cmd, int32_t axisID, std::string &version) {
 	CDWShrdPtr response;
     CDWUniquePtr init_pack(new CDataWrapper());
+	init_pack->addInt32Value("axisID", axisID);
     DBG<<"GETTING HW VERSION...";
     SEND_REQUEST_OPC("get_hw_ver",cmd, init_pack, response);
+	
     if(response.get()){DBG << response->getJSONString();}
     if(cmd->ret) {return cmd->ret;}
     CHECK_KEY_IN_RESPONSE(response, "value", -1);
