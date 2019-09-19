@@ -134,11 +134,11 @@ bool ::driver::actuator::SCActuatorControlUnit::setProp(const std::string &name,
 	  *o_useUI = atoi(valStr.c_str());
 	  SCCUAPP << "setting new value for useSteps then updating auxiliary parameters";
 	  getAttributeCache()->setOutputDomainAsChanged();
-	  this->updateAuxiliaryParameters();
+	  
 
 	  
   }
-
+  this->updateAuxiliaryParameters();
   return (ret == 0);
 }
 
@@ -148,6 +148,7 @@ bool ::driver::actuator::SCActuatorControlUnit::setProp(const std::string &name,
   SCCUAPP << "SET IPROP:" << name << " VALUE:" << value;
   string valStr = boost::lexical_cast<std::string>(value);
   ret = actuator_drv->setParameter(*axID, (std::string)name, valStr);
+  this->updateAuxiliaryParameters();
   return (ret == 0);
 }
 
@@ -157,6 +158,7 @@ bool ::driver::actuator::SCActuatorControlUnit::setProp(const std::string &name,
   SCCUAPP << "SET IPROP:" << name << " VALUE:" << value;
   string valStr = boost::lexical_cast<std::string>(value);
   ret = actuator_drv->setParameter(*axID, (std::string)name, valStr);
+  this->updateAuxiliaryParameters();
   return (ret == 0);
 }
 
@@ -166,6 +168,7 @@ bool ::driver::actuator::SCActuatorControlUnit::setProp(const std::string &name,
   SCCUAPP << "SET IPROP:" << name << " VALUE:" << value;
   string valStr = boost::lexical_cast<std::string>(value);
   ret = actuator_drv->setParameter(*axID, (std::string)name, valStr);
+  this->updateAuxiliaryParameters();
   return (ret == 0);
 }
 
@@ -175,6 +178,7 @@ bool ::driver::actuator::SCActuatorControlUnit::setProp(const std::string &name,
   SCCUAPP << "SET IPROP:" << name << " VALUE:" << value;
   //string valStr=boost::lexical_cast<std::string>(value);
   ret = actuator_drv->setParameter(*axID, (std::string)name, value);
+  this->updateAuxiliaryParameters();
   return (ret == 0);
 }
 

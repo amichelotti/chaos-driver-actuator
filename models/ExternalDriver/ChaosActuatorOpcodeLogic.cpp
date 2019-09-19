@@ -309,8 +309,10 @@ int ChaosActuatorOpcodeLogic::getSWVersion(DrvMsgPtr cmd, int32_t axisID, std::s
 int ChaosActuatorOpcodeLogic::getHWVersion(DrvMsgPtr cmd, int32_t axisID, std::string &version) {
 	CDWShrdPtr response;
     CDWUniquePtr init_pack(new CDataWrapper());
+	init_pack->addInt32Value("axisID", axisID);
     DBG<<"GETTING HW VERSION...";
     SEND_REQUEST_OPC("get_hw_ver",cmd, init_pack, response);
+	
     if(response.get()){DBG << response->getJSONString();}
     if(cmd->ret) {return cmd->ret;}
     CHECK_KEY_IN_RESPONSE(response, "value", -1);
@@ -361,7 +363,15 @@ int ChaosActuatorOpcodeLogic::getTimeout(DrvMsgPtr cmd, int32_t axisID, uint64_t
 	return cmd->ret;
 }
 
-
+int ChaosActuatorOpcodeLogic::deinit(DrvMsgPtr cmd, int32_t axisID)
+{
+	CDWShrdPtr response;
+	CDWUniquePtr para_pack(new CDataWrapper());
+	para_pack->addInt32Value("axisID", axisID);
+	SEND_REQUEST_OPC("deinit", cmd, para_pack, response);
+	if (response.get()) { DBG << response->getJSONString(); }
+	return cmd->ret;
+}
 
 
 
@@ -379,9 +389,11 @@ MsgManagmentResultType::MsgManagmentResult ChaosActuatorOpcodeLogic::execOpcode(
     memset(cmd->err_dom, 0, 255);
     switch(cmd->opcode) {
         case OP_INIT:
+			
             out->result = sendInit(cmd);
             break;
         case OP_DEINIT:
+			//deinit(cmd, in->axis);
             out->result = sendDeinit(cmd);
             break;
         case OP_CONFIGAXIS:
