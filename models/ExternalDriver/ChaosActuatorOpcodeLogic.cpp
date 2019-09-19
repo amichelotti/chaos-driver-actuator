@@ -393,7 +393,7 @@ MsgManagmentResultType::MsgManagmentResult ChaosActuatorOpcodeLogic::execOpcode(
             out->result = sendInit(cmd);
             break;
         case OP_DEINIT:
-			//deinit(cmd, in->axis);
+			deinit(cmd, in->axis);
             out->result = sendDeinit(cmd);
             break;
         case OP_CONFIGAXIS:
