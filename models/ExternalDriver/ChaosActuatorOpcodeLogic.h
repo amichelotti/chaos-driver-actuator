@@ -100,7 +100,7 @@ namespace chaos {
 				 //int init(void*);
              
                 int configAxis(cu::driver_manager::driver::DrvMsgPtr cmd,void*);
-                //int  deinit(int32_t axisID);
+                int  deinit(cu::driver_manager::driver::DrvMsgPtr cmd, int32_t axisID);
                 int setTimeout(cu::driver_manager::driver::DrvMsgPtr cmd,int32_t axisID,uint64_t timeo_ms);
                 int getTimeout(cu::driver_manager::driver::DrvMsgPtr cmd,int32_t axisID,uint64_t* timeo_ms);
 
