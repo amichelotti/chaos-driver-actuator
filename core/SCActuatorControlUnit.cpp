@@ -132,7 +132,7 @@ bool ::driver::actuator::SCActuatorControlUnit::setProp(const std::string &name,
   {
 	  int32_t* o_useUI = getAttributeCache()->getRWPtr<int32_t>(DOMAIN_OUTPUT, "useSteps");
 	  *o_useUI = atoi(valStr.c_str());
-	  SCCUAPP << "setting new value for useSteps then updating auxiliary parameters";
+	  SCCUAPP <<"ret is" << ret << " setting new value for useSteps then updating auxiliary parameters";
 	  getAttributeCache()->setOutputDomainAsChanged();
 	  
 

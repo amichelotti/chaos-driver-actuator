@@ -480,8 +480,8 @@ MsgManagmentResultType::MsgManagmentResult ChaosActuatorOpcodeLogic::execOpcode(
 
         case OP_SETPARAMETER:
 	out->result = this->setParameter(cmd,in->axis,in->str,in->str2);
-	DBG << "Sending SetParameter  " << in->str2 <<"  on Parameter " << in->str <<"axis " <<in->axis;
-	DBG << " result " << out->result ;
+	DBG << "Sending SetParameter  " << in->str2 <<"  on Parameter " << in->str <<" axis " <<in->axis
+	<< " result " << out->result ;
         break;
 
         case OP_GETPARAMETER: {
