@@ -142,7 +142,7 @@ void AbstractActuatorCommand::setHandler(c_data::CDataWrapper *data) {
 	p_resolution = getAttributeCache()->getROPtr<double>(DOMAIN_INPUT, "resolution");
     *o_alarm_str=0;
     *o_status_str=0;
-	
+	loggedPositionError = loggedStateError= loggedAlarmError = false;
 
 	//get pointer to the output datase variable
 	chaos::cu::driver_manager::driver::DriverAccessor *actuator_accessor = driverAccessorsErogator->getAccessoInstanceByIndex(0);
@@ -260,9 +260,14 @@ void AbstractActuatorCommand::acquireHandler(){
 		strncpy(o_alarm_str, descStr.c_str(), 256);
 		//decode and raise alarms
 		DecodeAndRaiseAlarms(tmp_uint64);
+		loggedAlarmError = false;
 	}else{
 		CMDCUERR_<<boost::str( boost::format("Error calling driver on get alarms readout with code %1%") % err);
-		metadataLogging(chaos::common::metadata_logging::StandardLoggingChannel::LogLevelError,CHAOS_FORMAT("axis %1% error getting alarms, err:%2%'",%*axID  %err));
+		if (!loggedAlarmError)
+		{
+			metadataLogging(chaos::common::metadata_logging::StandardLoggingChannel::LogLevelError, CHAOS_FORMAT("axis %1% error getting alarms, err:%2%'", %* axID % err));
+			loggedAlarmError = true;
+		}
 		setStateVariableSeverity(StateVariableTypeAlarmCU,"command_error", chaos::common::alarm::MultiSeverityAlarmLevelHigh);
 
 		return;
@@ -309,10 +314,15 @@ void AbstractActuatorCommand::acquireHandler(){
 	if ((err = actuator_drv->getPosition(*axID,readTyp,&position))==0) {
 		//LOG_AND_TROW(SCLERR_, 1, boost::str(boost::format("Error fetching position with code %1%") % err));
 		*o_position = position;
+		loggedPositionError = false;
 	} else {
 		//*o_position = position;
 		CMDCUERR_ <<boost::str( boost::format("Error calling driver on get Position readout with code %1%") % err);
-		metadataLogging(chaos::common::metadata_logging::StandardLoggingChannel::LogLevelError,CHAOS_FORMAT("axis %1% error getting position, using type %2%, err:%3%'",%*axID %readTyp %err));
+		if (!loggedPositionError)
+		{
+			metadataLogging(chaos::common::metadata_logging::StandardLoggingChannel::LogLevelError, CHAOS_FORMAT("axis %1% error getting position, using type %2%, err:%3%'", %* axID % readTyp % err));
+			loggedPositionError = true;
+		}
 		setStateVariableSeverity(StateVariableTypeAlarmCU,"command_error", chaos::common::alarm::MultiSeverityAlarmLevelHigh);
 
 		return;;

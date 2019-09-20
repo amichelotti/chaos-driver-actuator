@@ -67,7 +67,7 @@ protected:
 
 	bool *p_stopCommandInExecution;
 	double max_position,min_position;
-
+	bool loggedPositionError, loggedStateError,loggedAlarmError;
 
 
 	//reference of the chaos bastraction ofactuator driver
