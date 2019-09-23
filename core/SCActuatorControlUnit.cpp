@@ -128,11 +128,11 @@ bool ::driver::actuator::SCActuatorControlUnit::setProp(const std::string &name,
   string valStr = boost::lexical_cast<std::string>(value);
   ret = actuator_drv->setParameter(*axID, (std::string)name, valStr);
 
-  if (name == "useIU")
+  if ((name == "useIU") && (ret==0))
   {
 	  int32_t* o_useUI = getAttributeCache()->getRWPtr<int32_t>(DOMAIN_OUTPUT, "useSteps");
 	  *o_useUI = atoi(valStr.c_str());
-	  SCCUAPP << "setting new value for useSteps then updating auxiliary parameters";
+	  SCCUAPP <<" ret is" << ret << " setting new value for useSteps then updating auxiliary parameters";
 	  getAttributeCache()->setOutputDomainAsChanged();
 	  
 
