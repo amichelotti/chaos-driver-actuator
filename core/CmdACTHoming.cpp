@@ -123,7 +123,7 @@ void own::CmdACTHoming::setHandler(c_data::CDataWrapper *data)
 		BC_FAULT_RUNNING_PROPERTY;
 		return;
 	}
-
+	*o_lasthoming = 0;
 	if((err = actuator_drv->homing(*axID,(::common::actuators::AbstractActuator::homingType) homType)) < 0)
 	{
 		setStateVariableSeverity(StateVariableTypeAlarmCU,"homing_operation_failed", chaos::common::alarm::MultiSeverityAlarmLevelHigh);
