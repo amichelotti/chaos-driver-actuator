@@ -921,6 +921,9 @@ bool ::driver::actuator::SCActuatorControlUnit::setPowerOn(int32_t value, bool s
 bool ::driver::actuator::SCActuatorControlUnit::waitOnCommandID(uint64_t cmd_id)
 {
   ChaosUniquePtr<chaos::common::batch_command::CommandState> cmd_state;
+  if(getState()!=chaos::CUStateKey::START){
+		return true;
+	}
   do
   {
     cmd_state = getStateForCommandID(cmd_id);
