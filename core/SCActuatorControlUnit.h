@@ -23,7 +23,7 @@
 #include <chaos/cu_toolkit/control_manager/SCAbstractControlUnit.h>
 #include <driver/actuator/core/ChaosActuatorInterface.h>
 #include <chaos/cu_toolkit/windowsCompliant.h>
-
+#include <chaos/common/data/CDataVariant.h>
 using namespace chaos;
 namespace driver {
 namespace actuator {
@@ -85,9 +85,11 @@ protected:
         bool setProp(const std::string &name, int64_t value, uint32_t size);
         bool setProp(const std::string &name, bool value, uint32_t size);
         bool setProp(const std::string &name, std::string  value, uint32_t size);
+		bool setProp(const std::string &name, const chaos::common::data::CDataVariant&  value);
+
 	    const uint32_t *axID;
         std::list<SimplifiedAttribute> DriverDefinedAttributes;
-		std::string  auxiliarydataset;
+		chaos::common::data::CDataWrapper  auxiliarydataset;
 	void updateAuxiliaryParameters();
 
 public:

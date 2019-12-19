@@ -141,7 +141,6 @@ return ret.result;
 PREPARE_OP_RET_INT_TIMEOUT(op,timeout); \
 idata.axis=ax;\
 ret.fvalue0=*pfval;\
-ret.result=0;\
 accessor->send(&message);\
 *pival = ret.ivalue;\
 return ret.result;
@@ -149,7 +148,6 @@ return ret.result;
 #define READ_OP_INT_TIM(op,pival,timeout) \
 PREPARE_OP_RET_INT_TIMEOUT(op,timeout); \
 ret.ivalue=*pival;\
-ret.result=0;\
 accessor->send(&message);\
 *pival = ret.ivalue;\
 return ret.result;
@@ -160,7 +158,6 @@ PREPARE_OP_RET_INT_TIMEOUT(op,timeout); \
 idata.axis=ax;\
 ret.alarm_mask=*pival ;\
 *ret.str=0;\
-ret.result=0;\
 accessor->send(&message);\
 *pival = ret.alarm_mask;\
 pstring = ret.str;\
@@ -171,7 +168,6 @@ PREPARE_OP_RET_INT_TIMEOUT(op,timeout); \
 idata.axis=ax;\
 *ret.str=0;\
 ret.ivalue=*pival;\
-ret.result=0;\
 accessor->send(&message);\
 *pival = ret.ivalue;\
 pstring = ret.str;\
@@ -181,7 +177,6 @@ return ret.result;
 PREPARE_OP_RET_INT_TIMEOUT(op,timeout); \
 *ret.str=0;\
 ret.ivalue=*pival;\
-ret.result=0;\
 accessor->send(&message);\
 *pival = ret.ivalue;\
 pstring = ret.str;\
@@ -192,15 +187,13 @@ return ret.result;
 #define WRITE_OP_AX_STRING_TIM(op,ax,pstring,timeout) \
 PREPARE_OP_RET_INT_TIMEOUT(op,timeout); \
 idata.axis=ax;\
-ret.result=0;\
 strncpy(idata.str,(char*)pstring,MAX_STR_SIZE); \
 accessor->send(&message);\
 return ret.result;
 
 #define WRITE_OP_STRING_TIM(op,pstring,timeout) \
 PREPARE_OP_RET_INT_TIMEOUT(op,timeout); \
-strncpy(idata.str,(char*)pstring,MAX_STR_SIZE); \
-ret.result=0;\
+if(pstring) strncpy(idata.str,(char*)pstring,MAX_STR_SIZE); \
 accessor->send(&message);\
 return ret.result;
 
@@ -209,26 +202,23 @@ return ret.result;
 
 #define WRITE_OP_STRING_STRING_TIM(op,pstring,pstring2,timeout) \
 PREPARE_OP_RET_INT_TIMEOUT(op,timeout); \
-strncpy(idata.str,(char*)pstring,MAX_STR_SIZE); \
-strncpy(idata.str2,(char*)pstring2,MAX_STR_SIZE); \
-ret.result=0;\
+if(pstring) strncpy(idata.str,(char*)pstring,MAX_STR_SIZE); \
+if(pstring2) strncpy(idata.str2,(char*)pstring2,MAX_STR_SIZE); \
 accessor->send(&message);\
 return ret.result;
 
 #define WRITE_OP_AX_STRING_STRING_TIM(op,ax,pstring,pstring2,timeout) \
 PREPARE_OP_RET_INT_TIMEOUT(op,timeout); \
-strncpy(idata.str,(char*)pstring,MAX_STR_SIZE); \
-strncpy(idata.str2,(char*)pstring2,MAX_STR_SIZE); \
+if(pstring) strncpy(idata.str,(char*)pstring,MAX_STR_SIZE); \
+if(pstring2) strncpy(idata.str2,(char*)pstring2,MAX_STR_SIZE); \
 idata.axis=ax;\
-ret.result=0;\
 accessor->send(&message);\
 return ret.result;
 /***************************/
 #define READ_OP_AX_STRING_RETSTRING_TIM(op,ax,pstring,pstring2,timeout) \
 PREPARE_OP_RET_INT_TIMEOUT(op,timeout); \
-strncpy(idata.str,pstring.c_str(),MAX_STR_SIZE); \
+if(pstring.size()) strncpy(idata.str,pstring.c_str(),MAX_STR_SIZE); \
 idata.axis=ax;\
-ret.result=0;\
 accessor->send(&message);\
 pstring2=ret.str; \
 return ret.result;
@@ -244,7 +234,6 @@ return ret.result;
 /***************************/
 #define READ_OP_64INT_TIM(op,pival,timeout) \
 PREPARE_OP_RET_INT_TIMEOUT(op,timeout); \
-ret.result=0;\
 accessor->send(&message);\
 *pival = ret.alarm_mask;\
 return ret.result;
@@ -252,7 +241,6 @@ return ret.result;
 #define READ_OP_AX_64INT_TIM(op,ax,pival,timeout) \
 PREPARE_OP_RET_INT_TIMEOUT(op,timeout); \
 idata.axis=ax;\
-ret.result=0;\
 ret.alarm_mask=0;\
 accessor->send(&message);\
 *pival = ret.alarm_mask;\

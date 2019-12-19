@@ -121,6 +121,10 @@ int ::driver::actuator::SCActuatorControlUnit::decodeType(const std::string &str
 
   return err;
 }
+bool ::driver::actuator::SCActuatorControlUnit::setProp(const std::string &name, const chaos::common::data::CDataVariant&  value){
+  return true;
+}
+
 bool ::driver::actuator::SCActuatorControlUnit::setProp(const std::string &name, int32_t value, uint32_t size)
 {
   int ret;
@@ -283,8 +287,8 @@ void ::driver::actuator::SCActuatorControlUnit::unitDefineCustomAttribute() {
     getAttributeCache()->addCustomAttribute("stopHoming", sizeof(bool), chaos::DataType::TYPE_BOOLEAN);
     getAttributeCache()->setCustomAttributeValue("stopHoming", &stop_homing, sizeof(bool));
 
-	getAttributeCache()->addCustomAttribute("auxiliaryDataset", sizeof(char) * 8192, chaos::DataType::TYPE_STRING);
-	getAttributeCache()->setCustomAttributeValue("auxiliaryDataset",(void*) "", sizeof(char) * 8192);
+//	getAttributeCache()->addCustomAttribute("auxiliaryDataset", sizeof(char) * 8192, chaos::DataType::TYPE_STRING);
+//	getAttributeCache()->setCustomAttributeValue("auxiliaryDataset",(void*) "", sizeof(char) * 8192);
 }
 /*
  Return the default configuration
@@ -357,7 +361,7 @@ void ::driver::actuator::SCActuatorControlUnit::unitDefineActionAndDataset()
                         "status",
                         DataType::TYPE_STRING,
                         DataType::Output, 256);
-
+/*
   addAttributeToDataSet("ConfigString",
                         "ConfigString complementary driver info. Unuseful if specified in driver Json parameters",
                         DataType::TYPE_STRING,
@@ -368,11 +372,11 @@ void ::driver::actuator::SCActuatorControlUnit::unitDefineActionAndDataset()
                         DataType::TYPE_STRING,
                         DataType::Input, 1024);
 
-  /*addAttributeToDataSet("driver_timeout",
+  addAttributeToDataSet("driver_timeout",
                         "Driver timeout in milliseconds",
                         DataType::TYPE_INT32,
                         DataType::Input);
-						*/
+	*/
   addAttributeToDataSet("setTimeout",
                         "Command timeout in milliseconds",
                         DataType::TYPE_INT32,
@@ -425,9 +429,15 @@ void ::driver::actuator::SCActuatorControlUnit::unitDefineActionAndDataset()
   Json::Value json_parameter;
   Json::Reader json_reader;
   
+  if(dataset.size()){
+      
+     auxiliarydataset.setSerializedJsonData(dataset.c_str());
+      setDriverInfo(auxiliarydataset); // create into custom dataset an entry with the key: CONTROL_UNIT_DRIVER_INFO = cudk_driver_info
+  } 
+
 
   //parse json string
-  if (!json_reader.parse(dataset, json_parameter))
+  /*if (!json_reader.parse(dataset, json_parameter))
   {
 	this->auxiliarydataset = "";
     SCCUAPP << "Bad Json parameter " << json_parameter;
@@ -494,6 +504,7 @@ void ::driver::actuator::SCActuatorControlUnit::unitDefineActionAndDataset()
       std::string attrDesc = json_attribute_description.asString();
       std::string datatype = json_attribute_type.asString();
       std::string datadirection = json_attribute_dir.asString();
+
       //SCCUAPP << attrName <<" " <<  attrDesc <<" " << datatype << "("<<dtt<<")" << " " << datadirection;
 
       addAttributeToDataSet(attrName, attrDesc, dtt, DataType::Input);
@@ -552,6 +563,10 @@ void ::driver::actuator::SCActuatorControlUnit::unitDefineActionAndDataset()
 
   
   /***************************ALARMS******************************************/
+  addInputAndHandlerOnEachKeyOf<::driver::actuator::SCActuatorControlUnit>(this,                                                                             
+                                                                                 &::driver::actuator::SCActuatorControlUnit::setProp,
+                                                                                 auxiliarydataset);
+
   addStateVariable(StateVariableTypeAlarmCU, "position_out_of_set",
                    "Notify when a position has drifted away from set");
 
@@ -626,7 +641,7 @@ void ::driver::actuator::SCActuatorControlUnit::unitInit()
   double *o_position = getAttributeCache()->getRWPtr<double>(DOMAIN_OUTPUT, "position");
   axID = getAttributeCache()->getROPtr<uint32_t>(DOMAIN_INPUT, "axisID");
   int32_t *inSteps = getAttributeCache()->getRWPtr<int32_t>(DOMAIN_OUTPUT, "useSteps");
-  char* auxData = getAttributeCache()->getRWPtr<char>(DOMAIN_CUSTOM, "auxiliaryDataset");
+ // char* auxData = getAttributeCache()->getRWPtr<char>(DOMAIN_CUSTOM, "auxiliaryDataset");
   chaos::cu::driver_manager::driver::DriverAccessor *actuator_accessor = getAccessoInstanceByIndex(0);
   if (actuator_accessor == NULL)
   {
@@ -637,27 +652,36 @@ void ::driver::actuator::SCActuatorControlUnit::unitInit()
   {
     throw chaos::CFatalException(-2, "Cannot allocate driver resources", __FUNCTION__);
   }
-  char *ptStr = NULL, *auxStr = NULL;
-  strncpy(auxData,this->auxiliarydataset.c_str(),sizeof(char)*this->auxiliarydataset.length());
+//  strncpy(auxData,this->auxiliarydataset.c_str(),sizeof(char)*this->auxiliarydataset.length());
   //actuator_drv->init(actuator_drv->jsonConfiguration);
+  // auxStr = (char *)getAttributeCache()->getROPtr<char>(DOMAIN_INPUT, "auxiliaryConfigParameters");
+  //SCCUDBG << "configuring driver from Control Unit ";
+ // SCCUDBG << "config string is '" << ptStr << "'";
+  char *ptStr = NULL;
+
+/** NOT USED
   ptStr = (char *)getAttributeCache()->getROPtr<char>(DOMAIN_INPUT, "ConfigString");
-  auxStr = (char *)getAttributeCache()->getROPtr<char>(DOMAIN_INPUT, "auxiliaryConfigParameters");
-  SCCUDBG << "configuring driver from Control Unit ";
-  SCCUDBG << "config string is '" << ptStr << "'";
   // perfomed in driver initialization
   if ((err = actuator_drv->configAxis((void *)ptStr)) != 0)
   {
     throw chaos::CFatalException(err, "Cannot configure axis " + getDeviceID(), __FUNCTION__);
   }
+  */
+ // use the JSON configuration parameter on device driver param
+ if ((err = actuator_drv->configAxis((void *)NULL)) != 0){
+    throw chaos::CFatalException(err, "Cannot configure axis " + getDeviceID(), __FUNCTION__);
+  }
   *homingDone = 0;
   //parsing di auxiliary
+  //char* cloneOfAuxStr;
 
-  char* cloneOfAuxStr;
 #ifdef _MSC_VER
-  cloneOfAuxStr= _strdup(auxStr);
+//  cloneOfAuxStr= _strdup(auxStr);
 #else
-  cloneOfAuxStr = strdup(auxStr);
+
+//cloneOfAuxStr = strdup(auxStr);
 #endif
+/** DA RIMUOVERE 
   SCCUAPP << "parsing auxiliary string " << auxStr;
   {
     char *param = NULL;
@@ -740,10 +764,10 @@ void ::driver::actuator::SCActuatorControlUnit::unitInit()
       break;
     }
   }
-
+*/
   if ((err = actuator_drv->getState(*axID, &state_id, state_str)) != 0)
   {
-    throw chaos::CFatalException(err, "Error getting the state of the actuator", __FUNCTION__);
+   throw chaos::CFatalException(err, "Error getting the state of the actuator", __FUNCTION__);
   }
 
   *status_id = state_id;
