@@ -86,11 +86,11 @@ protected:
         bool setProp(const std::string &name, bool value, uint32_t size);
         bool setProp(const std::string &name, std::string  value, uint32_t size);
 		bool setProp(const std::string &name, const chaos::common::data::CDataVariant&  value);
+		bool setProp(const std::string &name, const chaos::common::data::CDataWrapper&  value);
 
 	    const uint32_t *axID;
-        std::list<SimplifiedAttribute> DriverDefinedAttributes;
 		chaos::common::data::CDataWrapper  auxiliarydataset;
-	void updateAuxiliaryParameters();
+	//void updateAuxiliaryParameters();
 
 public:
 	/*
