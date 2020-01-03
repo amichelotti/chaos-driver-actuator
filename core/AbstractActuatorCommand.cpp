@@ -261,7 +261,7 @@ void AbstractActuatorCommand::acquireHandler(){
 		//decode and raise alarms
 		DecodeAndRaiseAlarms(tmp_uint64);
 		loggedAlarmError = false;
-	}else{
+	}else if(err!=DRV_BYPASS_DEFAULT_CODE){
 		CMDCUERR_<<boost::str( boost::format("Error calling driver on get alarms readout with code %1%") % err);
 		if (!loggedAlarmError)
 		{
@@ -304,7 +304,7 @@ void AbstractActuatorCommand::acquireHandler(){
 		}
 
 		strncpy(o_status_str, descStr.c_str(), 256);
-	} else {
+	} else if(err!=DRV_BYPASS_DEFAULT_CODE) {
 		CMDCUERR_ <<boost::str( boost::format("Error calling driver on get state readout with code %1%") % err);
 		setStateVariableSeverity(StateVariableTypeAlarmCU,"command_error", chaos::common::alarm::MultiSeverityAlarmLevelHigh);
 		return;
@@ -315,7 +315,7 @@ void AbstractActuatorCommand::acquireHandler(){
 		//LOG_AND_TROW(SCLERR_, 1, boost::str(boost::format("Error fetching position with code %1%") % err));
 		*o_position = position;
 		loggedPositionError = false;
-	} else {
+	} else if(err!=DRV_BYPASS_DEFAULT_CODE) {
 		//*o_position = position;
 		CMDCUERR_ <<boost::str( boost::format("Error calling driver on get Position readout with code %1%") % err);
 		if (!loggedPositionError)
@@ -343,7 +343,7 @@ void AbstractActuatorCommand::getState(int32_t axisID,int& current_state, std::s
         		int err = 0;
 	std::string state_str;
 	//int32_t i_driver_timeout = getAttributeCache()->getValue<int32_t>(DOMAIN_INPUT, "driver_timeout"); // *************** commentato *************
-	if((err=actuator_drv->getState(axisID,&current_state, state_str)) != 0) {
+	if(((err=actuator_drv->getState(axisID,&current_state, state_str)) != 0) &&(err!=DRV_BYPASS_DEFAULT_CODE) ) {
 		CMDCUERR_ << boost::str( boost::format("Error getting the actuator state = %1% ") % err);
 		metadataLogging(chaos::common::metadata_logging::StandardLoggingChannel::LogLevelError,CHAOS_FORMAT("axis %1% error getting state, err:%2%'",%*axID %err));
 
