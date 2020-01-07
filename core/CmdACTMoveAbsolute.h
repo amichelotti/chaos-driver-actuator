@@ -49,6 +49,7 @@ namespace driver {
 			//time_t launched;
 			//double affinity_set_delta;
                         //bool slow_acquisition_index;
+			
 		protected:
 			//implemented handler
 			//uint8_t implementedHandler();// ************ Commentato *************

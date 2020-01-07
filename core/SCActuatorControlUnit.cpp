@@ -59,13 +59,17 @@ PUBLISHABLE_CONTROL_UNIT_IMPLEMENTATION(::driver::actuator::SCActuatorControlUni
 ::driver::actuator::SCActuatorControlUnit::SCActuatorControlUnit(const string &_control_unit_id,
                                                                  const string &_control_unit_param,
                                                                  const ControlUnitDriverList &_control_unit_drivers)
-    : //call base constructor
+    : hasPoi(false),//call base constructor
       chaos::cu::control_manager::SCAbstractControlUnit(_control_unit_id,
                                                         _control_unit_param,
                                                         _control_unit_drivers)
 {
 
   actuator_drv = NULL;
+ 	chaos::common::data::CDataWrapper p;
+	if(getCUParam(p)==0){
+    hasPoi=p.hasKey(CMD_ACT_MOVE_POI)&&(p.getAllKey().size()>0); 
+  }	
 }
 
 /*
@@ -226,6 +230,26 @@ bool ::driver::actuator::SCActuatorControlUnit::moveAt(const std::string &name, 
   SCCUAPP << "HANDLER Move at " << value;
   std::auto_ptr<CDataWrapper> cmd_pack(new CDataWrapper());
   cmd_pack->addDoubleValue(CMD_ACT_MM_OFFSET, value);
+
+  //send command
+  submitBatchCommand(CMD_ACT_MOVE_ABSOLUTE_ALIAS,
+                     cmd_pack.release(),
+                     cmd_id,
+                     0,
+                     50,
+                     SubmissionRuleType::SUBMIT_NORMAL);
+  SCCUAPP << "move to:" << value;
+
+  return true;
+}
+
+bool ::driver::actuator::SCActuatorControlUnit::moveAt(const std::string &name, std::string value, uint32_t size)
+{
+  uint64_t cmd_id;
+
+  SCCUAPP << "HANDLER Move at '" << value<<"'";
+  std::auto_ptr<CDataWrapper> cmd_pack(new CDataWrapper());
+  cmd_pack->addStringValue(CMD_ACT_MOVE_POI, value);
 
   //send command
   submitBatchCommand(CMD_ACT_MOVE_ABSOLUTE_ALIAS,
@@ -416,6 +440,16 @@ void ::driver::actuator::SCActuatorControlUnit::unitDefineActionAndDataset()
                         DataType::TYPE_BOOLEAN,
                         DataType::Output);
 
+if(hasPoi){
+  addAttributeToDataSet("POI",
+                        "Point of Interest",
+                        DataType::TYPE_STRING,
+                        DataType::Bidirectional,256);
+  addHandlerOnInputAttributeName<::driver::actuator::SCActuatorControlUnit, std::string>(this,
+                                                                                    &::driver::actuator::SCActuatorControlUnit::moveAt,
+                                                                                    "POI");                      
+
+}
   std::string dataset;
   actuator_drv->sendDataset(dataset);
   SCCUAPP << "DATASETVARIABLE getting dataset from driver "; //<< dataset;
@@ -502,14 +536,10 @@ void ::driver::actuator::SCActuatorControlUnit::unitDefineActionAndDataset()
 void ::driver::actuator::SCActuatorControlUnit::unitInit()
 {
   SCCUAPP << "Starting unitInit";
-
+  std::string state_str;
   int err = -1;
   int state_id;
-  std::string max_range;
-  std::string min_range;
-  std::string state_str;
-  RangeValueInfo attr_info;
-
+  
   int32_t *status_id = getAttributeCache()->getRWPtr<int32_t>(DOMAIN_OUTPUT, "status_id");
 
   double *o_positionSP = (double *)getAttributeCache()->getRWPtr<double>(DOMAIN_INPUT, "position");

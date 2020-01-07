@@ -79,6 +79,8 @@ protected:
 
 	//-----------handler definition
 	bool moveAt(const std::string &name,double value,uint32_t size);
+	bool moveAt(const std::string &name,std::string value,uint32_t size);
+
 	bool setPower(const std::string &name,bool value,uint32_t size);
         bool setProp(const std::string &name, int32_t value, uint32_t size);
         bool setProp(const std::string &name, double value, uint32_t size);
@@ -93,6 +95,7 @@ protected:
 	//void updateAuxiliaryParameters();
 
 public:
+	bool hasPoi;
 	/*
 			 Construct a new CU with an identifier
 	 */

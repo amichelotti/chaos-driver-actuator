@@ -29,8 +29,16 @@ using namespace driver::actuator;
 namespace chaos_batch = chaos::common::batch_command;
 using namespace chaos::cu::control_manager;
 
+
 AbstractActuatorCommand::AbstractActuatorCommand() {
 	actuator_drv = NULL;
+	chaos::common::data::CDataWrapper p;
+	poi.reset();
+	hasPOI=false;
+	if(getDeviceLoadParams(p)==0){
+		p.getCSDataValue(CMD_ACT_MOVE_POI,poi);
+		hasPOI=(poi.getAllKey().size()>0);
+    }	
 }
 AbstractActuatorCommand::~AbstractActuatorCommand() {
 
@@ -75,14 +83,13 @@ void AbstractActuatorCommand::checkEndMove(){
 }
 
 int AbstractActuatorCommand::performCheck(){
-	chaos::common::data::RangeValueInfo attr_info;
-	getDeviceDatabase()->getAttributeRangeValueInfo("position", attr_info);
+	getDeviceDatabase()->getAttributeRangeValueInfo("position", position_info);
 	setStateVariableSeverity(StateVariableTypeAlarmCU,"command_error", chaos::common::alarm::MultiSeverityAlarmLevelClear);// ********** aggiunto **************
 
 	// REQUIRE MIN MAX SET IN THE MDS
 
-	if (attr_info.maxRange.size()) {
-		max_position = atof(attr_info.maxRange.c_str());
+	if (position_info.maxRange.size()) {
+		max_position = atof(position_info.maxRange.c_str());
 		CMDCUDBG_ << "max_position max=" << max_position;
 
 	} else {
@@ -93,8 +100,8 @@ int AbstractActuatorCommand::performCheck(){
 	}
 
 	// REQUIRE MIN MAX POSITION IN THE MDS
-	if (attr_info.minRange.size()) {
-		min_position = atof(attr_info.minRange.c_str());
+	if (position_info.minRange.size()) {
+		min_position = atof(position_info.minRange.c_str());
 
 		CMDCUDBG_<< "min_position min=" << min_position;
 	} else {
@@ -240,6 +247,18 @@ void AbstractActuatorCommand::DecodeAndRaiseAlarms(uint64_t mask)
 
 
 }
+std::string AbstractActuatorCommand::position2POI(double pos){
+	ChaosStringVector st=poi.getAllKey();
+	for(ChaosStringVector::iterator i=st.begin();i!=st.end();i++){
+		double pval=poi.getDoubleValue(*i);
+		if(getDeviceDatabase()->compareTo("position",pos,pval)){
+			return *i;
+		}
+		
+	}
+	return std::string();
+}
+
 void AbstractActuatorCommand::acquireHandler(){
 
 	int err;
@@ -315,6 +334,10 @@ void AbstractActuatorCommand::acquireHandler(){
 		//LOG_AND_TROW(SCLERR_, 1, boost::str(boost::format("Error fetching position with code %1%") % err));
 		*o_position = position;
 		loggedPositionError = false;
+		if(hasPOI){
+				getAttributeCache()->setOutputAttributeValue("POI",position2POI(position));
+
+		}
 	} else if(err!=DRV_BYPASS_DEFAULT_CODE) {
 		//*o_position = position;
 		CMDCUERR_ <<boost::str( boost::format("Error calling driver on get Position readout with code %1%") % err);

@@ -36,9 +36,10 @@ using namespace chaos::cu::control_manager;
 
 
 BATCH_COMMAND_OPEN_DESCRIPTION_ALIAS(driver::actuator::,CmdACTMoveAbsolute,CMD_ACT_MOVE_ABSOLUTE_ALIAS,
-		"Move from current position to an absolute position (mm)",
+		"Move from current position to an absolute position",
 		"0cf52f76-55eb-4rt3-8712-3d54484043d8")
-BATCH_COMMAND_ADD_DOUBLE_PARAM(CMD_ACT_MM_OFFSET, "position mm",chaos::common::batch_command::BatchCommandAndParameterDescriptionkey::BC_PARAMETER_FLAG_MANDATORY)
+BATCH_COMMAND_ADD_DOUBLE_PARAM(CMD_ACT_MM_OFFSET, "position mm",chaos::common::batch_command::BatchCommandAndParameterDescriptionkey::BC_PARAMETER_FLAG_OPTIONAL)
+BATCH_COMMAND_ADD_STRING_PARAM(CMD_ACT_MOVE_POI, "point of interest",chaos::common::batch_command::BatchCommandAndParameterDescriptionkey::BC_PARAMETER_FLAG_OPTIONAL)
 BATCH_COMMAND_CLOSE_DESCRIPTION()
 
 //// return the implemented handler           //************************** commentato *****************************
@@ -82,11 +83,29 @@ void own::CmdACTMoveAbsolute::setHandler(c_data::CDataWrapper *data) {
 	//SCLDBG_<<"minimum working value:"<<*p_minimumWorkingValue;
 	//SCLDBG_<<"maximum, working value:"<<*p_maximumWorkingValue;
 
+	
+	if(data && data->hasKey(CMD_ACT_MM_OFFSET)){
+		positionToReach = static_cast<float>(data->getDoubleValue(CMD_ACT_MM_OFFSET));
 
-	if(!data ||
-			!data->hasKey(CMD_ACT_MM_OFFSET)) {
-		SCLERR_ << "Position millimeters parameter not present";
-		metadataLogging(chaos::common::metadata_logging::StandardLoggingChannel::LogLevelError,"Position millimeters parameter is missing");
+	} else if(data && data->hasKey(CMD_ACT_MOVE_POI)&& data->isStringValue(CMD_ACT_MOVE_POI)){
+		std::string pname=data->getStringValue(CMD_ACT_MOVE_POI);
+		
+		std::stringstream ss;
+		if(poi.hasKey(pname)){
+			positionToReach=poi.getDoubleValue(pname);
+		} else {
+			ss<<"POI '"<<data->getStringValue(CMD_ACT_MOVE_POI)<<"' does not map to a value";
+			metadataLogging(chaos::common::metadata_logging::StandardLoggingChannel::LogLevelError,ss.str());
+			BC_FAULT_RUNNING_PROPERTY;
+			setStateVariableSeverity(StateVariableTypeAlarmCU, "user_command_failed", chaos::common::alarm::MultiSeverityAlarmLevelHigh);
+
+			return;
+		}
+
+
+	} else {
+		metadataLogging(chaos::common::metadata_logging::StandardLoggingChannel::LogLevelError,"Position not specified ");
+		setStateVariableSeverity(StateVariableTypeAlarmCU, "user_command_failed", chaos::common::alarm::MultiSeverityAlarmLevelHigh);
 		BC_FAULT_RUNNING_PROPERTY;
 		return;
 	}
@@ -96,8 +115,7 @@ void own::CmdACTMoveAbsolute::setHandler(c_data::CDataWrapper *data) {
 	BC_FAULT_RUNNING_PROPERTY;
 	return;
     }
-  i*/      
-	positionToReach = static_cast<float>(data->getDoubleValue(CMD_ACT_MM_OFFSET));
+  	*/      
 	if(std::isnan(positionToReach)==true){
 		metadataLogging(chaos::common::metadata_logging::StandardLoggingChannel::LogLevelError,"Position parameter is not a valid double number (nan?)" );
 		BC_FAULT_RUNNING_PROPERTY;
@@ -106,10 +124,11 @@ void own::CmdACTMoveAbsolute::setHandler(c_data::CDataWrapper *data) {
 
 	// Controllo setpoint finale: se tale valore appartiene al range [min_position-tolmin,max_position+tolmax]
 
-	if ((positionToReach > max_position) || (positionToReach< min_position))
+	if (getDeviceDatabase()->isValid("position", positionToReach))
 	{
-		SCLERR_ << "Finale position "<<positionToReach<< " out of range ( " << min_position << ","<< max_position <<") the command won't be executed";
-		metadataLogging(chaos::common::metadata_logging::StandardLoggingChannel::LogLevelError,CHAOS_FORMAT("Final set point %1% outside the maximum/minimum 'position_sp' = tolerance \"max_position\":%2% \"min_position\":%3%" , % positionToReach % max_position % min_position));
+		metadataLogging(chaos::common::metadata_logging::StandardLoggingChannel::LogLevelError,CHAOS_FORMAT("Final set point %1% outside the maximum/minimum" , % positionToReach ));
+		setStateVariableSeverity(StateVariableTypeAlarmCU, "user_command_failed", chaos::common::alarm::MultiSeverityAlarmLevelHigh);
+
 		BC_FAULT_RUNNING_PROPERTY;
 		return;
 	}
