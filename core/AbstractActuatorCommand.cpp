@@ -32,13 +32,7 @@ using namespace chaos::cu::control_manager;
 
 AbstractActuatorCommand::AbstractActuatorCommand() {
 	actuator_drv = NULL;
-	chaos::common::data::CDataWrapper p;
-	poi.reset();
-	hasPOI=false;
-	if(getDeviceLoadParams(p)==0){
-		p.getCSDataValue(CMD_ACT_MOVE_POI,poi);
-		hasPOI=(poi.getAllKey().size()>0);
-    }	
+		
 }
 AbstractActuatorCommand::~AbstractActuatorCommand() {
 
@@ -116,7 +110,13 @@ int AbstractActuatorCommand::performCheck(){
 }
 void AbstractActuatorCommand::setHandler(c_data::CDataWrapper *data) {
 
-
+	chaos::common::data::CDataWrapper p;
+	poi.reset();
+	hasPOI=false;
+	if(getDeviceLoadParams(p)==0){
+		p.getCSDataValue(CMD_ACT_MOVE_POI,poi);
+		hasPOI=(poi.getAllKey().size()>0);
+    }
 
 	o_nswitch=getAttributeCache()->getRWPtr<bool>(DOMAIN_OUTPUT, "NegativeLimitSwitchActive");
 	o_pswitch=getAttributeCache()->getRWPtr<bool>(DOMAIN_OUTPUT, "PositiveLimitSwitchActive");
