@@ -69,6 +69,9 @@ PUBLISHABLE_CONTROL_UNIT_IMPLEMENTATION(::driver::actuator::SCActuatorControlUni
  	chaos::common::data::CDataWrapper p;
 	if(getCUParam(p)==0){
     hasPoi=p.hasKey(CMD_ACT_MOVE_POI)&&(p.getAllKey().size()>0); 
+    if(hasPoi){
+      SCCUDBG<<"POI:"<<p.getCompliantJSONString();
+    }
   }	
 }
 

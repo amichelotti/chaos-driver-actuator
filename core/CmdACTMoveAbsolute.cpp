@@ -124,7 +124,7 @@ void own::CmdACTMoveAbsolute::setHandler(c_data::CDataWrapper *data) {
 
 	// Controllo setpoint finale: se tale valore appartiene al range [min_position-tolmin,max_position+tolmax]
 
-	if (getDeviceDatabase()->isValid("position", positionToReach))
+	if (!getDeviceDatabase()->isValid("position", positionToReach))
 	{
 		metadataLogging(chaos::common::metadata_logging::StandardLoggingChannel::LogLevelError,CHAOS_FORMAT("Final set point %1% outside the maximum/minimum" , % positionToReach ));
 		setStateVariableSeverity(StateVariableTypeAlarmCU, "user_command_failed", chaos::common::alarm::MultiSeverityAlarmLevelHigh);

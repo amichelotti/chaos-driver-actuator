@@ -116,6 +116,7 @@ void AbstractActuatorCommand::setHandler(c_data::CDataWrapper *data) {
 	if(getDeviceLoadParams(p)==0){
 		p.getCSDataValue(CMD_ACT_MOVE_POI,poi);
 		hasPOI=(poi.getAllKey().size()>0);
+		
     }
 
 	o_nswitch=getAttributeCache()->getRWPtr<bool>(DOMAIN_OUTPUT, "NegativeLimitSwitchActive");
@@ -251,7 +252,7 @@ std::string AbstractActuatorCommand::position2POI(double pos){
 	ChaosStringVector st=poi.getAllKey();
 	for(ChaosStringVector::iterator i=st.begin();i!=st.end();i++){
 		double pval=poi.getDoubleValue(*i);
-		if(getDeviceDatabase()->compareTo("position",pos,pval)){
+		if(getDeviceDatabase()->compareTo("position",pos,pval)==0){
 			return *i;
 		}
 		
@@ -270,7 +271,6 @@ void AbstractActuatorCommand::acquireHandler(){
 	int state=0;
 
 
-	CMDCUDBG_ << "AbstractActuatorCommand::acquireHandler() " ;
 
 
 	if((err = actuator_drv->getAlarms(*axID,&tmp_uint64,descStr))==0){
@@ -335,7 +335,12 @@ void AbstractActuatorCommand::acquireHandler(){
 		*o_position = position;
 		loggedPositionError = false;
 		if(hasPOI){
-				getAttributeCache()->setOutputAttributeValue("POI",position2POI(position));
+				std::string ret=position2POI(position);
+				CMDCUERR_ <<"POI:'"<<ret<<"' ="<<position<<" polist:"<<poi.getJSONString();
+
+				//getAttributeCache()->setOutputAttributeValue("POI",(void*)ret.c_str(),ret.size()+1);
+				getAttributeCache()->setOutputAttributeValue("POI",ret);
+
 
 		}
 	} else if(err!=DRV_BYPASS_DEFAULT_CODE) {
