@@ -50,15 +50,27 @@ void AbstractActuatorCommand::checkEndMove(){
 		//SCLDBG_ << "ccH MoveABsolute Readout: "<< *o_position <<" SetPoint: "<< *o_position_sp <<" Delta to reach: " << delta_position_reached << " computed Timeout " << computed_timeout ;
 		CMDCUDBG_ << "Readout: "<< *o_position <<" SetPoint: "<< *i_position <<" Delta to reach: " << delta_position_reached;
 
+	if(getDeviceDatabase()->compareTo("position",*i_position,*o_position)==0){
+		uint64_t elapsed_msec = chaos::common::utility::TimingUtil::getTimeStamp() - getSetTime();
+		std::stringstream ss;
+		ss<< "Setpoint reached set point " << *i_position<< " readout position" << *o_position << " in " << elapsed_msec << " milliseconds";
 
-		if(delta_position_reached <= *p_resolution){
+		metadataLogging(chaos::common::metadata_logging::StandardLoggingChannel::LogLevelInfo,ss.str() );
+
+		BC_END_RUNNING_PROPERTY;
+		return;
+	} else {
+		setStateVariableSeverity(StateVariableTypeAlarmCU,"position_value_not_reached", chaos::common::alarm::MultiSeverityAlarmLevelWarning);
+
+	}
+	/*	if(delta_position_reached <= *p_resolution){
 				uint64_t elapsed_msec = chaos::common::utility::TimingUtil::getTimeStamp() - getSetTime();
 				//the command is endedn because we have reached the affinitut delta set
 				CMDCUDBG_ << "[metric ]Set point reached with - delta: "<< delta_position_reached <<" sp: "<< *i_position <<" affinity check " << *p_resolution << " mm in " << elapsed_msec << " milliseconds";
 				BC_END_RUNNING_PROPERTY;
 				return;
 		}
-
+*/
 //if (! *o_useUI)
 {
 		if ((((*o_status_id) & ::common::actuators::ACTUATOR_INMOTION)==0) ||(((*o_status_id) & ::common::actuators::ACTUATOR_POWER_SUPPLIED)==0)){
@@ -248,10 +260,10 @@ void AbstractActuatorCommand::DecodeAndRaiseAlarms(uint64_t mask)
 
 
 }
-std::string AbstractActuatorCommand::position2POI(double pos){
+std::string AbstractActuatorCommand::position2POI(float pos){
 	ChaosStringVector st=poi.getAllKey();
 	for(ChaosStringVector::iterator i=st.begin();i!=st.end();i++){
-		double pval=poi.getDoubleValue(*i);
+		float pval=poi.getDoubleValue(*i);
 		if(getDeviceDatabase()->compareTo("position",pos,pval)==0){
 			return *i;
 		}

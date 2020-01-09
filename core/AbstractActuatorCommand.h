@@ -46,7 +46,7 @@ protected:
 	bool hasPOI;
 	chaos::common::data::RangeValueInfo position_info;
 
-	std::string position2POI(double pos);
+	std::string position2POI(float pos);
 
 	int32_t		*o_status_id;
 	char            *o_status_str;

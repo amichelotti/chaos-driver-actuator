@@ -52,7 +52,7 @@ void own::CmdACTMoveAbsolute::setHandler(c_data::CDataWrapper *data) {
 	//    chaos::common::data::RangeValueInfo position_sp_attr_info;
 	//    chaos::common::data::RangeValueInfo attributeInfo;
 
-	double currentPosition;
+	float currentPosition;
 	int err = 0;
 
 	float positionToReach = 0.f;
@@ -139,7 +139,7 @@ void own::CmdACTMoveAbsolute::setHandler(c_data::CDataWrapper *data) {
 
 
 	currentPosition=*o_position;
-	double deltaPosition = std::abs(positionToReach-currentPosition);
+	float deltaPosition = std::abs(positionToReach-currentPosition);
 
 	SCLDBG_ << "compute timeout for moving Absolute = " << positionToReach;
 	std::string retStr="NULLA";
@@ -209,8 +209,18 @@ void own::CmdACTMoveAbsolute::ccHandler() {
 bool own::CmdACTMoveAbsolute::timeoutHandler() {
 	uint64_t elapsed_msec = chaos::common::utility::TimingUtil::getTimeStamp() - getSetTime();
 	double delta_position_reached = std::abs(*i_position - *o_position);
+	if(getDeviceDatabase()->compareTo("position",*i_position,*o_position)==0){
+		std::stringstream ss;
+		ss<< "Setpoint reached on timeout set point " << *i_position<< " readout position" << *o_position << " in " << elapsed_msec << " milliseconds";
 
-	metadataLogging(chaos::common::metadata_logging::StandardLoggingChannel::LogLevelWarning,CHAOS_FORMAT("timeout, delta position remaining %1%",%delta_position_reached));
+		metadataLogging(chaos::common::metadata_logging::StandardLoggingChannel::LogLevelInfo,ss.str() );
+
+	} else {
+		setStateVariableSeverity(StateVariableTypeAlarmCU,"position_value_not_reached", chaos::common::alarm::MultiSeverityAlarmLevelWarning);
+
+	}
+
+/*	metadataLogging(chaos::common::metadata_logging::StandardLoggingChannel::LogLevelWarning,CHAOS_FORMAT("timeout, delta position remaining %1%",%delta_position_reached));
 
 	SCLDBG_ << "  TIM MoveABsolute Readout: "<< *o_position <<" SetPoint: "<< *i_position<<" Delta to reach: " << delta_position_reached;
 	SCLDBG_ << "  TIM MoveABsolute  resolution: " << *p_resolution;
@@ -221,7 +231,7 @@ bool own::CmdACTMoveAbsolute::timeoutHandler() {
 
 		SCLERR_ << "[metric] Setpoint NOT reached on timeout with readout position " << *o_position << " in " << elapsed_msec << " milliseconds";
 		setStateVariableSeverity(StateVariableTypeAlarmCU,"position_value_not_reached", chaos::common::alarm::MultiSeverityAlarmLevelWarning);
-	}
+	}*/
 	BC_END_RUNNING_PROPERTY;
 	return false;
 }
