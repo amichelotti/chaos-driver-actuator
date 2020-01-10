@@ -39,7 +39,7 @@ BATCH_COMMAND_OPEN_DESCRIPTION_ALIAS(driver::actuator::,CmdACTMoveAbsolute,CMD_A
 		"Move from current position to an absolute position",
 		"0cf52f76-55eb-4rt3-8712-3d54484043d8")
 BATCH_COMMAND_ADD_DOUBLE_PARAM(CMD_ACT_MM_OFFSET, "position mm",chaos::common::batch_command::BatchCommandAndParameterDescriptionkey::BC_PARAMETER_FLAG_OPTIONAL)
-BATCH_COMMAND_ADD_STRING_PARAM(CMD_ACT_MOVE_POI, "point of interest",chaos::common::batch_command::BatchCommandAndParameterDescriptionkey::BC_PARAMETER_FLAG_OPTIONAL)
+BATCH_COMMAND_ADD_STRING_PARAM(CMD_ACT_MOVE_POI, "position of interest",chaos::common::batch_command::BatchCommandAndParameterDescriptionkey::BC_PARAMETER_FLAG_OPTIONAL)
 BATCH_COMMAND_CLOSE_DESCRIPTION()
 
 //// return the implemented handler           //************************** commentato *****************************
@@ -180,6 +180,11 @@ void own::CmdACTMoveAbsolute::setHandler(c_data::CDataWrapper *data) {
 	SCLDBG_ << "Move to position " << positionToReach << "reading type " << readTyp;
 
 	*i_position=positionToReach;
+	if(hasPOI){
+			std::string ret=position2POI(positionToReach);
+
+		getAttributeCache()->setInputAttributeValue("POI",ret);
+	}
 	getAttributeCache()->setInputDomainAsChanged();
 	SCLDBG_ << "o_position_sp is = " << *i_position;
 	if((err = actuator_drv->moveAbsoluteMillimeters(*axID,positionToReach)) != 0) {
