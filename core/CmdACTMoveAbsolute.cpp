@@ -208,7 +208,6 @@ void own::CmdACTMoveAbsolute::ccHandler() {
 
 bool own::CmdACTMoveAbsolute::timeoutHandler() {
 	uint64_t elapsed_msec = chaos::common::utility::TimingUtil::getTimeStamp() - getSetTime();
-	double delta_position_reached = std::abs(*i_position - *o_position);
 	if(getDeviceDatabase()->compareTo("position",*i_position,*o_position)==0){
 		std::stringstream ss;
 		ss<< "Setpoint reached on timeout set point " << *i_position<< " readout position" << *o_position << " in " << elapsed_msec << " milliseconds";
@@ -220,7 +219,10 @@ bool own::CmdACTMoveAbsolute::timeoutHandler() {
 
 	}
 
-/*	metadataLogging(chaos::common::metadata_logging::StandardLoggingChannel::LogLevelWarning,CHAOS_FORMAT("timeout, delta position remaining %1%",%delta_position_reached));
+/*	
+	double delta_position_reached = std::abs(*i_position - *o_position);
+
+metadataLogging(chaos::common::metadata_logging::StandardLoggingChannel::LogLevelWarning,CHAOS_FORMAT("timeout, delta position remaining %1%",%delta_position_reached));
 
 	SCLDBG_ << "  TIM MoveABsolute Readout: "<< *o_position <<" SetPoint: "<< *i_position<<" Delta to reach: " << delta_position_reached;
 	SCLDBG_ << "  TIM MoveABsolute  resolution: " << *p_resolution;
