@@ -29,8 +29,10 @@ using namespace driver::actuator;
 namespace chaos_batch = chaos::common::batch_command;
 using namespace chaos::cu::control_manager;
 
+
 AbstractActuatorCommand::AbstractActuatorCommand() {
 	actuator_drv = NULL;
+		
 }
 AbstractActuatorCommand::~AbstractActuatorCommand() {
 
@@ -48,15 +50,27 @@ void AbstractActuatorCommand::checkEndMove(){
 		//SCLDBG_ << "ccH MoveABsolute Readout: "<< *o_position <<" SetPoint: "<< *o_position_sp <<" Delta to reach: " << delta_position_reached << " computed Timeout " << computed_timeout ;
 		CMDCUDBG_ << "Readout: "<< *o_position <<" SetPoint: "<< *i_position <<" Delta to reach: " << delta_position_reached;
 
+	if(getDeviceDatabase()->compareTo("position",*i_position,*o_position)==0){
+		uint64_t elapsed_msec = chaos::common::utility::TimingUtil::getTimeStamp() - getSetTime();
+		std::stringstream ss;
+		ss<< "Setpoint reached set point " << *i_position<< " readout position" << *o_position << " in " << elapsed_msec << " milliseconds";
 
-		if(delta_position_reached <= *p_resolution){
+		metadataLogging(chaos::common::metadata_logging::StandardLoggingChannel::LogLevelInfo,ss.str() );
+
+		BC_END_RUNNING_PROPERTY;
+		return;
+	} else {
+		setStateVariableSeverity(StateVariableTypeAlarmCU,"position_value_not_reached", chaos::common::alarm::MultiSeverityAlarmLevelWarning);
+
+	}
+	/*	if(delta_position_reached <= *p_resolution){
 				uint64_t elapsed_msec = chaos::common::utility::TimingUtil::getTimeStamp() - getSetTime();
 				//the command is endedn because we have reached the affinitut delta set
 				CMDCUDBG_ << "[metric ]Set point reached with - delta: "<< delta_position_reached <<" sp: "<< *i_position <<" affinity check " << *p_resolution << " mm in " << elapsed_msec << " milliseconds";
 				BC_END_RUNNING_PROPERTY;
 				return;
 		}
-
+*/
 //if (! *o_useUI)
 {
 		if ((((*o_status_id) & ::common::actuators::ACTUATOR_INMOTION)==0) ||(((*o_status_id) & ::common::actuators::ACTUATOR_POWER_SUPPLIED)==0)){
@@ -75,14 +89,13 @@ void AbstractActuatorCommand::checkEndMove(){
 }
 
 int AbstractActuatorCommand::performCheck(){
-	chaos::common::data::RangeValueInfo attr_info;
-	getDeviceDatabase()->getAttributeRangeValueInfo("position", attr_info);
+	getDeviceDatabase()->getAttributeRangeValueInfo("position", position_info);
 	setStateVariableSeverity(StateVariableTypeAlarmCU,"command_error", chaos::common::alarm::MultiSeverityAlarmLevelClear);// ********** aggiunto **************
 
 	// REQUIRE MIN MAX SET IN THE MDS
 
-	if (attr_info.maxRange.size()) {
-		max_position = atof(attr_info.maxRange.c_str());
+	if (position_info.maxRange.size()) {
+		max_position = atof(position_info.maxRange.c_str());
 		CMDCUDBG_ << "max_position max=" << max_position;
 
 	} else {
@@ -93,8 +106,8 @@ int AbstractActuatorCommand::performCheck(){
 	}
 
 	// REQUIRE MIN MAX POSITION IN THE MDS
-	if (attr_info.minRange.size()) {
-		min_position = atof(attr_info.minRange.c_str());
+	if (position_info.minRange.size()) {
+		min_position = atof(position_info.minRange.c_str());
 
 		CMDCUDBG_<< "min_position min=" << min_position;
 	} else {
@@ -109,7 +122,14 @@ int AbstractActuatorCommand::performCheck(){
 }
 void AbstractActuatorCommand::setHandler(c_data::CDataWrapper *data) {
 
-
+	chaos::common::data::CDataWrapper p;
+	poi.reset();
+	hasPOI=false;
+	if(getDeviceLoadParams(p)==0){
+		p.getCSDataValue(CMD_ACT_MOVE_POI,poi);
+		hasPOI=(poi.getAllKey().size()>0);
+		
+    }
 
 	o_nswitch=getAttributeCache()->getRWPtr<bool>(DOMAIN_OUTPUT, "NegativeLimitSwitchActive");
 	o_pswitch=getAttributeCache()->getRWPtr<bool>(DOMAIN_OUTPUT, "PositiveLimitSwitchActive");
@@ -240,6 +260,18 @@ void AbstractActuatorCommand::DecodeAndRaiseAlarms(uint64_t mask)
 
 
 }
+std::string AbstractActuatorCommand::position2POI(float pos){
+	ChaosStringVector st=poi.getAllKey();
+	for(ChaosStringVector::iterator i=st.begin();i!=st.end();i++){
+		float pval=poi.getDoubleValue(*i);
+		if(getDeviceDatabase()->compareTo("position",pos,pval)==0){
+			return *i;
+		}
+		
+	}
+	return std::string();
+}
+
 void AbstractActuatorCommand::acquireHandler(){
 
 	int err;
@@ -251,7 +283,6 @@ void AbstractActuatorCommand::acquireHandler(){
 	int state=0;
 
 
-	CMDCUDBG_ << "AbstractActuatorCommand::acquireHandler() " ;
 
 
 	if((err = actuator_drv->getAlarms(*axID,&tmp_uint64,descStr))==0){
@@ -315,6 +346,15 @@ void AbstractActuatorCommand::acquireHandler(){
 		//LOG_AND_TROW(SCLERR_, 1, boost::str(boost::format("Error fetching position with code %1%") % err));
 		*o_position = position;
 		loggedPositionError = false;
+		if(hasPOI){
+				std::string ret=position2POI(position);
+				CMDCUERR_ <<"POI:'"<<ret<<"' ="<<position<<" polist:"<<poi.getJSONString();
+
+				//getAttributeCache()->setOutputAttributeValue("POI",(void*)ret.c_str(),ret.size()+1);
+				getAttributeCache()->setOutputAttributeValue("POI",ret);
+
+
+		}
 	} else if(err!=DRV_BYPASS_DEFAULT_CODE) {
 		//*o_position = position;
 		CMDCUERR_ <<boost::str( boost::format("Error calling driver on get Position readout with code %1%") % err);
