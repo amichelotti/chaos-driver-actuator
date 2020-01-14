@@ -101,7 +101,7 @@ void own::CmdACTMoveRelative::setHandler(c_data::CDataWrapper *data) {
 
 	currentPosition=*o_position;
 	double newPosition=currentPosition+offset_mm;
-	if(getDeviceDatabase()->isValid("position", newPosition)){ // nota: *o_position aggiornata inizialmente da AbstractActuatorCommand::acquireHandler();
+	if(!getDeviceDatabase()->isValid("position", newPosition)){ // nota: *o_position aggiornata inizialmente da AbstractActuatorCommand::acquireHandler();
 		metadataLogging(chaos::common::metadata_logging::StandardLoggingChannel::LogLevelError,CHAOS_FORMAT("Final set point %1% outside the maximum/minimum 'position' = tolerance \"max_position\":%2% \"min_position\":%3%" , % (currentPosition + offset_mm) % max_position % min_position));
 		BC_FAULT_RUNNING_PROPERTY;
 		return;
