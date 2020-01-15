@@ -154,7 +154,7 @@ bool ::driver::actuator::SCActuatorControlUnit::setProp(const std::string &name,
 
 	  
   }
- // this->updateAuxiliaryParameters();
+  this->updateAuxiliaryParameters();
   return (ret == 0);
 }
 
@@ -164,7 +164,7 @@ bool ::driver::actuator::SCActuatorControlUnit::setProp(const std::string &name,
   SCCUAPP << "SET IPROP:" << name << " VALUE:" << value;
   string valStr = boost::lexical_cast<std::string>(value);
   ret = actuator_drv->setParameter(*axID, (std::string)name, valStr);
-//  this->updateAuxiliaryParameters();
+  this->updateAuxiliaryParameters();
   return (ret == 0);
 }
 
@@ -174,7 +174,7 @@ bool ::driver::actuator::SCActuatorControlUnit::setProp(const std::string &name,
   SCCUAPP << "SET IPROP:" << name << " VALUE:" << value;
   string valStr = boost::lexical_cast<std::string>(value);
   ret = actuator_drv->setParameter(*axID, (std::string)name, valStr);
- // this->updateAuxiliaryParameters();
+  this->updateAuxiliaryParameters();
   return (ret == 0);
 }
 
@@ -184,7 +184,7 @@ bool ::driver::actuator::SCActuatorControlUnit::setProp(const std::string &name,
   SCCUAPP << "SET IPROP:" << name << " VALUE:" << value;
   string valStr = boost::lexical_cast<std::string>(value);
   ret = actuator_drv->setParameter(*axID, (std::string)name, valStr);
- // this->updateAuxiliaryParameters();
+  this->updateAuxiliaryParameters();
   return (ret == 0);
 }
 
@@ -194,7 +194,7 @@ bool ::driver::actuator::SCActuatorControlUnit::setProp(const std::string &name,
   SCCUAPP << "SET IPROP:" << name << " VALUE:" << value;
   //string valStr=boost::lexical_cast<std::string>(value);
   ret = actuator_drv->setParameter(*axID, (std::string)name, value);
-  //this->updateAuxiliaryParameters();
+  this->updateAuxiliaryParameters();
   return (ret == 0);
 }
 
@@ -265,42 +265,51 @@ bool ::driver::actuator::SCActuatorControlUnit::moveAt(const std::string &name, 
 
   return true;
 }
-/*
+
 void ::driver::actuator::SCActuatorControlUnit::updateAuxiliaryParameters()
 {
-	for (std::list<SimplifiedAttribute>::iterator it = this->DriverDefinedAttributes.begin(); it != this->DriverDefinedAttributes.end(); it++)
+	int32_t* inSteps = getAttributeCache()->getRWPtr<int32_t>(DOMAIN_OUTPUT, "useSteps");
+	ChaosStringVector driverDefinedAttributes;
+	auxiliarydataset.getAllKey(driverDefinedAttributes);
+	
+	for (ChaosStringVector::iterator it = driverDefinedAttributes.begin(); it != driverDefinedAttributes.end(); it++)
 	{
+		SCCUAPP << "Getting Parameter over key : " << (*it);
+		CDWUniquePtr auxVar=auxiliarydataset.getCSDataValue(*it);
+		
 		std::string tmpStr;
-		actuator_drv->getParameter(*axID, (*it).Name, tmpStr);
-		switch ((*it).dtType)
+		actuator_drv->getParameter(*axID, (*it), tmpStr);
+		switch ((*auxVar).getInt32Value("cudk_ds_attr_type"))
 		{
 		case chaos::DataType::TYPE_DOUBLE:
 		{
-			double* tmpPointer = getAttributeCache()->getRWPtr<double>(DOMAIN_INPUT, (*it).Name);
+			double* tmpPointer = getAttributeCache()->getRWPtr<double>(DOMAIN_INPUT, (*it));
 			*tmpPointer = (double)atof(tmpStr.c_str());
 			break;
 		}
 		case chaos::DataType::TYPE_INT32:
 		{
-			int32_t* tmpPointer = getAttributeCache()->getRWPtr<int32_t>(DOMAIN_INPUT, (*it).Name);
+			int32_t* tmpPointer = getAttributeCache()->getRWPtr<int32_t>(DOMAIN_INPUT, (*it));
 			*tmpPointer = (int32_t)atoi(tmpStr.c_str());
+			if ((*it) == "useIU")
+				*inSteps = atoi(tmpStr.c_str());
 			break;
 		}
 		case chaos::DataType::TYPE_INT64:
 		{
-			int64_t* tmpPointer = getAttributeCache()->getRWPtr<int64_t>(DOMAIN_INPUT, (*it).Name);
+			int64_t* tmpPointer = getAttributeCache()->getRWPtr<int64_t>(DOMAIN_INPUT, (*it));
 			*tmpPointer = (int64_t)atol(tmpStr.c_str());
 			break;
 		}
 		case chaos::DataType::TYPE_BOOLEAN:
 		{
-			bool* tmpPointer = getAttributeCache()->getRWPtr<bool>(DOMAIN_INPUT, (*it).Name);
+			bool* tmpPointer = getAttributeCache()->getRWPtr<bool>(DOMAIN_INPUT, (*it));
 			*tmpPointer = (atoi(tmpStr.c_str()) == 0) ? false : true;
 			break;
 		}
 		case chaos::DataType::TYPE_STRING:
 		{
-			char* tmpPointer = getAttributeCache()->getRWPtr<char>(DOMAIN_INPUT, (*it).Name);
+			char* tmpPointer = getAttributeCache()->getRWPtr<char>(DOMAIN_INPUT, (*it));
 			//*tmpPointer=( char*)tmpStr.c_str();
 			tmpPointer = (char*)tmpStr.c_str();
 			break;
@@ -313,7 +322,7 @@ void ::driver::actuator::SCActuatorControlUnit::updateAuxiliaryParameters()
 	getAttributeCache()->setInputDomainAsChanged();
 
 }
-*/
+
 void ::driver::actuator::SCActuatorControlUnit::unitDefineCustomAttribute() {
     //here are defined the custom shared variable
     bool stop_homing=0;
@@ -352,9 +361,7 @@ void ::driver::actuator::SCActuatorControlUnit::unitDefineActionAndDataset()
     throw chaos::CException(-2, "Cannot allocate driver resources", __FUNCTION__);
   }
 
-  //	AttributeSharedCacheWrapper::addCustomAttribute("customName",32, DataType::TYPE_BOOLEAN);
-
-  addAttributeToDataSet("axisID",
+   addAttributeToDataSet("axisID",
                         "axis ID for the motor",
                         DataType::TYPE_INT32,
                         DataType::Input);
@@ -368,11 +375,11 @@ void ::driver::actuator::SCActuatorControlUnit::unitDefineActionAndDataset()
                         "position",
                         DataType::TYPE_DOUBLE,
                         DataType::Bidirectional);
-  addAttributeToDataSet("speed",
+  /*addAttributeToDataSet("speed",
                         "Speed",
                         DataType::TYPE_DOUBLE,
                         DataType::Input);
-                        
+    */                    
   addAttributeToDataSet("LastHomingTime",
                         "timestamp with the last homing",
                         DataType::TYPE_INT64,
@@ -472,9 +479,9 @@ if(hasPoi){
                                                                                   &::driver::actuator::SCActuatorControlUnit::setPower,
                                                                                   "powerOn");
 
-   /*addInputAndHandlerOnEachKeyOf<::driver::actuator::SCActuatorControlUnit>(this,                                                                             
+   addInputAndHandlerOnEachKeyOf<::driver::actuator::SCActuatorControlUnit>(this,                                                                             
                                                                                  &::driver::actuator::SCActuatorControlUnit::setProp,
-                                                                                 auxiliarydataset);*/
+                                                                                 auxiliarydataset);
   addHandlerOnCustomDriverAttributes<::driver::actuator::SCActuatorControlUnit>(this,                                                                             
                                                                                  &::driver::actuator::SCActuatorControlUnit::setProp);                                                                               
   /***************************ALARMS******************************************/
@@ -568,7 +575,7 @@ void ::driver::actuator::SCActuatorControlUnit::unitInit()
     throw chaos::CFatalException(err, "Cannot configure axis " + getDeviceID(), __FUNCTION__);
   }
   *homingDone = 0;
-  
+  this->updateAuxiliaryParameters();
   if ((err = actuator_drv->getState(*axID, &state_id, state_str)) != 0)
   {
    throw chaos::CFatalException(err, "Error getting the state of the actuator", __FUNCTION__);
