@@ -129,6 +129,7 @@ int ::driver::actuator::SCActuatorControlUnit::decodeType(const std::string &str
   return err;
 }
 bool ::driver::actuator::SCActuatorControlUnit::setProp(const std::string &name, const chaos::common::data::CDataVariant&  value){
+  int ret;
   SCCUAPP << "Variant PROP:" << name << " VALUE:" << value.asString();
   ret = actuator_drv->setParameter(*axID, name, value.asString());
   this->updateAuxiliaryParameters();
