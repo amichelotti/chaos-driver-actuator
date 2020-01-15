@@ -63,6 +63,9 @@ namespace driver {
 		//! The alias of the offset  to set
 		const char * const CMD_ACT_MM_OFFSET = "offset_mm";
         
+		//! The alias for Point of Interest
+		const char * const CMD_ACT_MOVE_POI = "poi";
+
             //! The alias of the "set polarity" command
 		const char * const CMD_ACT_RESETALARMS_ALIAS = "reset_alarms";
             //! the alarm mask for reset

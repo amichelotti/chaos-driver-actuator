@@ -23,7 +23,7 @@
 #include <chaos/cu_toolkit/control_manager/SCAbstractControlUnit.h>
 #include <driver/actuator/core/ChaosActuatorInterface.h>
 #include <chaos/cu_toolkit/windowsCompliant.h>
-
+#include <chaos/common/data/CDataVariant.h>
 using namespace chaos;
 namespace driver {
 namespace actuator {
@@ -79,18 +79,23 @@ protected:
 
 	//-----------handler definition
 	bool moveAt(const std::string &name,double value,uint32_t size);
+	bool moveAt(const std::string &name,std::string value,uint32_t size);
+
 	bool setPower(const std::string &name,bool value,uint32_t size);
         bool setProp(const std::string &name, int32_t value, uint32_t size);
         bool setProp(const std::string &name, double value, uint32_t size);
         bool setProp(const std::string &name, int64_t value, uint32_t size);
         bool setProp(const std::string &name, bool value, uint32_t size);
         bool setProp(const std::string &name, std::string  value, uint32_t size);
+		bool setProp(const std::string &name, const chaos::common::data::CDataVariant&  value);
+		bool setProp(const std::string &name, const chaos::common::data::CDataWrapper&  value);
+
 	    const uint32_t *axID;
-        std::list<SimplifiedAttribute> DriverDefinedAttributes;
-		std::string  auxiliarydataset;
-	void updateAuxiliaryParameters();
+		chaos::common::data::CDataWrapper  auxiliarydataset;
+	//void updateAuxiliaryParameters();
 
 public:
+	bool hasPoi;
 	/*
 			 Construct a new CU with an identifier
 	 */

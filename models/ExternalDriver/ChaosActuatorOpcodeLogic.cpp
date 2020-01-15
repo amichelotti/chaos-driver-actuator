@@ -322,8 +322,13 @@ int ChaosActuatorOpcodeLogic::getHWVersion(DrvMsgPtr cmd, int32_t axisID, std::s
 
 int ChaosActuatorOpcodeLogic::configAxis(DrvMsgPtr cmd, void *configuration) {
 	CDWShrdPtr response;
-    	CDWUniquePtr para_pack(new CDataWrapper());
-	para_pack->addStringValue("configString",(char*)configuration);
+    CDWUniquePtr para_pack(new CDataWrapper());
+    if(configuration){
+	    para_pack->addStringValue("configString",(char*)configuration);
+    } else {
+        para_pack->addStringValue("configString","");
+
+    }
 	SEND_REQUEST_OPC("configAxis",cmd, para_pack, response);
 	if(response.get()){DBG << response->getJSONString();}
     	return cmd->ret;

@@ -40,7 +40,14 @@ class AbstractActuatorCommand : public ccc_slow_command::SlowCommand {
 public:
 	AbstractActuatorCommand();
 	~AbstractActuatorCommand();
+
 protected:
+	chaos::common::data::CDataWrapper poi;
+	bool hasPOI;
+	chaos::common::data::RangeValueInfo position_info;
+
+	std::string position2POI(float pos);
+
 	int32_t		*o_status_id;
 	char            *o_status_str;
 	uint64_t	*o_alarms;
