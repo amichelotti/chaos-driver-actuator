@@ -130,6 +130,8 @@ int ::driver::actuator::SCActuatorControlUnit::decodeType(const std::string &str
 }
 bool ::driver::actuator::SCActuatorControlUnit::setProp(const std::string &name, const chaos::common::data::CDataVariant&  value){
   SCCUAPP << "Variant PROP:" << name << " VALUE:" << value.asString();
+  ret = actuator_drv->setParameter(*axID, name, value.asString());
+  this->updateAuxiliaryParameters();
   return true;
 }
 bool ::driver::actuator::SCActuatorControlUnit::setProp(const std::string &name, const chaos::common::data::CDataWrapper&  value){
@@ -143,6 +145,7 @@ bool ::driver::actuator::SCActuatorControlUnit::setProp(const std::string &name,
   SCCUAPP << "SET IPROP:" << name << " VALUE:" << value;
   string valStr = boost::lexical_cast<std::string>(value);
   ret = actuator_drv->setParameter(*axID, (std::string)name, valStr);
+
 
   if ((name == "useIU") && (ret==0))
   {
@@ -292,7 +295,10 @@ void ::driver::actuator::SCActuatorControlUnit::updateAuxiliaryParameters()
 			int32_t* tmpPointer = getAttributeCache()->getRWPtr<int32_t>(DOMAIN_INPUT, (*it));
 			*tmpPointer = (int32_t)atoi(tmpStr.c_str());
 			if ((*it) == "useIU")
+			{
 				*inSteps = atoi(tmpStr.c_str());
+				getAttributeCache()->setOutputDomainAsChanged();
+			}
 			break;
 		}
 		case chaos::DataType::TYPE_INT64:
