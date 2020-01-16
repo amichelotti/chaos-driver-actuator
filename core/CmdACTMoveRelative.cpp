@@ -142,7 +142,7 @@ void own::CmdACTMoveRelative::setHandler(c_data::CDataWrapper *data) {
 			BC_FAULT_RUNNING_PROPERTY;
 			return;
 		}
-	SCLDBG_ << "Move to position " << newPosition << "reading type " << readTyp;
+	SCLDBG_ << "Move to position " << newPosition << " reading type " << readTyp;
 
 	*i_position=newPosition; 
 	getAttributeCache()->setInputDomainAsChanged();

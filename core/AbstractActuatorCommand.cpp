@@ -60,6 +60,7 @@ void AbstractActuatorCommand::checkEndMove(){
 		BC_END_RUNNING_PROPERTY;
 		return;
 	} else {
+		CMDCUDBG_ << " checkEndMove getDeviceDatabase()->compareTo raising alarm ";
 		setStateVariableSeverity(StateVariableTypeAlarmCU,"position_value_not_reached", chaos::common::alarm::MultiSeverityAlarmLevelWarning);
 
 	}
