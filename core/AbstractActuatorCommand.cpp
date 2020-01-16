@@ -75,8 +75,8 @@ void AbstractActuatorCommand::checkEndMove(){
 //if (! *o_useUI)
 {
 		if ((((*o_status_id) & ::common::actuators::ACTUATOR_INMOTION)==0) ||(((*o_status_id) & ::common::actuators::ACTUATOR_POWER_SUPPLIED)==0)){
-			CMDCUDBG_ << " checkEndMove : motor moving state is " << (!((*o_status_id) & ::common::actuators::ACTUATOR_INMOTION) == 0));
-			CMDCUDBG_ << " checkEndMove : motor power supply state is " << (!((*o_status_id) & ::common::actuators::ACTUATOR_POWER_SUPPLIED) == 0));
+			CMDCUDBG_ << " checkEndMove : motor moving state is " << (!(((*o_status_id) & ::common::actuators::ACTUATOR_INMOTION) == 0));
+			CMDCUDBG_ << " checkEndMove : motor power supply state is " << (!(((*o_status_id) & ::common::actuators::ACTUATOR_POWER_SUPPLIED) == 0));
 			setStateVariableSeverity(StateVariableTypeAlarmCU,"position_value_not_reached", chaos::common::alarm::MultiSeverityAlarmLevelWarning);
 			metadataLogging(chaos::common::metadata_logging::StandardLoggingChannel::LogLevelError,CHAOS_FORMAT("checkendmove stopping motion because motors seems not moving anymore,or without power motor axis %1% has stopped before reach setpoint, delta %2% %3%",%*axID %delta_position_reached %(((*o_status_id) & ::common::actuators::ACTUATOR_INMOTION)==0)));
 			if ((err=actuator_drv->stopMotion(*axID))!= 0){
