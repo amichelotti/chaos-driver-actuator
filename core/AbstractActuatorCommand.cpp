@@ -50,7 +50,7 @@ void AbstractActuatorCommand::checkEndMove(){
 		//SCLDBG_ << "ccH MoveABsolute Readout: "<< *o_position <<" SetPoint: "<< *o_position_sp <<" Delta to reach: " << delta_position_reached << " computed Timeout " << computed_timeout ;
 		CMDCUDBG_ << "Readout: "<< *o_position <<" SetPoint: "<< *i_position <<" Delta to reach: " << delta_position_reached;
 
-	if(getDeviceDatabase()->compareTo("position",*i_position,*o_position)==0){
+	if(delta_position_reached=getDeviceDatabase()->compareTo("position",*i_position,*o_position)==0){
 		uint64_t elapsed_msec = chaos::common::utility::TimingUtil::getTimeStamp() - getSetTime();
 		std::stringstream ss;
 		ss<< "Setpoint reached set point " << *i_position<< " readout position" << *o_position << " in " << elapsed_msec << " milliseconds";
@@ -60,7 +60,7 @@ void AbstractActuatorCommand::checkEndMove(){
 		BC_END_RUNNING_PROPERTY;
 		return;
 	} else {
-		CMDCUDBG_ << " checkEndMove getDeviceDatabase()->compareTo raising alarm ";
+		CMDCUDBG_ << " checkEndMove getDeviceDatabase()->compareTo returned " << delta_position_reached << " raising alarm ";
 		setStateVariableSeverity(StateVariableTypeAlarmCU,"position_value_not_reached", chaos::common::alarm::MultiSeverityAlarmLevelWarning);
 
 	}
