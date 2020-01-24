@@ -469,13 +469,61 @@ if(hasPoi){
 }
   std::string dataset;
   actuator_drv->sendDataset(dataset);
-  SCCUAPP << "DATASETVARIABLE getting dataset from driver "; //<< dataset;
+  SCCUAPP << "DATASETVARIABLE getting dataset from driver :'"<< dataset<<"'";
   
   if(dataset.size()){
-      
-     auxiliarydataset.setSerializedJsonData(dataset.c_str());
-      setDriverInfo(auxiliarydataset); // create into custom dataset an entry with the key: CONTROL_UNIT_DRIVER_INFO = cudk_driver_info
-  } 
+      CDataWrapper conf;
+      // translate from user to chaos keys
+      int         typ  = chaos::DataType::TYPE_UNDEFINED;
+      conf.setSerializedJsonData(dataset.c_str());
+      if(conf.hasKey("attributes")&&conf.isVectorValue("attributes")){
+        chaos::common::data::CMultiTypeDataArrayWrapperSPtr  v=conf.getVectorValue("attributes");
+        for(int cnt=0;cnt<v->size();cnt++){
+          chaos::common::data::CDWUniquePtr val=v->getCDataWrapperElementAtIndex(cnt);
+          std::string name=val->getStringValue("name");
+          std::string desc;
+          CDataWrapper norm;
+          if (val->hasKey("description")) {  // TO REMOVE SOON
+            desc = val->getStringValue("description");
+           }
+           const std::string str_type = boost::algorithm::to_lower_copy(val->getStringValue("datatype"));
+          if (str_type.compare("int32") == 0) {
+            typ = DataType::TYPE_INT32;
+          } else if (str_type.compare("uint32") == 0) {
+            typ = DataType::TYPE_INT64;
+          } else if (str_type.compare("int64") == 0) {
+            typ = DataType::TYPE_INT64;
+          } else if (str_type.compare("uint64") == 0) {
+            typ = DataType::TYPE_INT64;
+          } else if (str_type.compare("double") == 0) {
+            typ = DataType::TYPE_DOUBLE;
+          } else if (str_type.compare("string") == 0) {
+            typ = DataType::TYPE_STRING;
+          } else if (str_type.compare("binary") == 0) {
+            typ = DataType::TYPE_BYTEARRAY;
+          } else if (str_type.compare("boolean") == 0) {
+            typ = DataType::TYPE_BOOLEAN;
+          } else {
+            typ = DataType::TYPE_DOUBLE;
+          }
+          norm.addStringValue(chaos::ControlUnitNodeDefinitionKey::CONTROL_UNIT_DATASET_ATTRIBUTE_NAME,name);
+          norm.addInt32Value(chaos::ControlUnitNodeDefinitionKey::CONTROL_UNIT_DATASET_ATTRIBUTE_TYPE,typ);
+          norm.addStringValue(chaos::ControlUnitNodeDefinitionKey::CONTROL_UNIT_DATASET_ATTRIBUTE_DESCRIPTION,desc);
+          //norm.addStringValue(chaos::ControlUnitNodeDefinitionKey::CONTROL_UNIT_DATASET_ATTRIBUTE_UNIT,desc);
+          //CONTROL_UNIT_DATASET_ATTRIBUTE_DIRECTION
+          auxiliarydataset.addCSDataValue(name,norm);
+
+
+        }
+          SCCUAPP << "Adding driver attributes :'"<< auxiliarydataset.getJSONString()<<"'";
+
+          setDriverInfo(auxiliarydataset); // create into custom dataset an entry with the key: CONTROL_UNIT_DRIVER_INFO = cudk_driver_info
+
+        }
+ 
+      }
+     
+  
 
 
   addHandlerOnInputAttributeName<::driver::actuator::SCActuatorControlUnit, double>(this,
