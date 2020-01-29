@@ -92,7 +92,8 @@ protected:
 
 	    const uint32_t *axID;
 		chaos::common::data::CDataWrapper  auxiliarydataset;
-	//void updateAuxiliaryParameters();
+		
+	void updateAuxiliaryParameters();
 
 public:
 	bool hasPoi;
