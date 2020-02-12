@@ -677,8 +677,8 @@ void ::driver::actuator::SCActuatorControlUnit::unitDeinit()
 {
   SCCUAPP << "Stop Motion ";
   actuator_drv->stopMotion(*axID);
-  SCCUAPP << "Power off ";
-  actuator_drv->poweron(*axID, 0);
+  //SCCUAPP << "Power off ";
+  //actuator_drv->poweron(*axID, 0);
   SCCUAPP << "deinitializing ";
   actuator_drv->deinit(*axID);
 }
