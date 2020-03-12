@@ -633,7 +633,7 @@ void ::driver::actuator::SCActuatorControlUnit::unitInit()
   this->updateAuxiliaryParameters();
   if ((err = actuator_drv->getState(*axID, &state_id, state_str)) != 0)
   {
-   throw chaos::CFatalException(err, "Error getting the state of the actuator", __FUNCTION__);
+   throw chaos::CFatalException(err, "Error getting the state of the actuator:"+state_str, __FUNCTION__);
   }
 
   *status_id = state_id;
