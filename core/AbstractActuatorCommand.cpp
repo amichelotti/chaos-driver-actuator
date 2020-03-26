@@ -351,11 +351,11 @@ void AbstractActuatorCommand::acquireHandler(){
 		*o_position = position;
 		loggedPositionError = false;
 		if(hasPOI){
-				std::string ret=position2POI(position);
-				CMDCUERR_ <<"POI:'"<<ret<<"' ="<<position<<" polist:"<<poi.getJSONString();
+				std::string rets=position2POI(position);
+				//CMDCULOG_ <<"POI:'"<<ret<<"' ="<<position<<" polist:"<<poi.getJSONString();
 
 				//getAttributeCache()->setOutputAttributeValue("POI",(void*)ret.c_str(),ret.size()+1);
-				getAttributeCache()->setOutputAttributeValue("POI",ret);
+				getAttributeCache()->setOutputAttributeValue("POI",rets);
 
 
 		}
