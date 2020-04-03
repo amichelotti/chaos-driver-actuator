@@ -130,20 +130,20 @@ int ::driver::actuator::SCActuatorControlUnit::decodeType(const std::string &str
 }
 bool ::driver::actuator::SCActuatorControlUnit::setProp(const std::string &name, const chaos::common::data::CDataVariant&  value){
   int ret;
-  SCCUAPP << "Variant PROP:" << name << " VALUE:" << value.asString();
+  SCCUDBG << "Variant PROP:" << name << " VALUE:" << value.asString();
   ret = actuator_drv->setParameter(*axID, name, value.asString());
   this->updateAuxiliaryParameters();
   return true;
 }
 bool ::driver::actuator::SCActuatorControlUnit::setProp(const std::string &name, const chaos::common::data::CDataWrapper&  value){
-    SCCUAPP << "CDW PROP:" << name << " VALUE:" << value.getJSONString();
+    SCCUDBG << "CDW PROP:" << name << " VALUE:" << value.getJSONString();
 
   return true;
 }
 bool ::driver::actuator::SCActuatorControlUnit::setProp(const std::string &name, int32_t value, uint32_t size)
 {
   int ret;
-  SCCUAPP << "SET IPROP:" << name << " VALUE:" << value;
+  SCCUDBG << "SET IPROP:" << name << " VALUE:" << value;
   string valStr = boost::lexical_cast<std::string>(value);
   ret = actuator_drv->setParameter(*axID, (std::string)name, valStr);
 
@@ -152,7 +152,7 @@ bool ::driver::actuator::SCActuatorControlUnit::setProp(const std::string &name,
   {
 	  int32_t* o_useUI = getAttributeCache()->getRWPtr<int32_t>(DOMAIN_OUTPUT, "useSteps");
 	  *o_useUI = atoi(valStr.c_str());
-	  SCCUAPP <<" ret is" << ret << " setting new value for useSteps then updating auxiliary parameters";
+	  SCCUDBG <<" ret is" << ret << " setting new value for useSteps then updating auxiliary parameters";
 	  getAttributeCache()->setOutputDomainAsChanged();
 	  
 
@@ -165,7 +165,7 @@ bool ::driver::actuator::SCActuatorControlUnit::setProp(const std::string &name,
 bool ::driver::actuator::SCActuatorControlUnit::setProp(const std::string &name, double value, uint32_t size)
 {
   int ret;
-  SCCUAPP << "SET IPROP:" << name << " VALUE:" << value;
+  SCCUDBG << "SET IPROP:" << name << " VALUE:" << value;
   string valStr = boost::lexical_cast<std::string>(value);
   ret = actuator_drv->setParameter(*axID, (std::string)name, valStr);
   this->updateAuxiliaryParameters();
@@ -175,7 +175,7 @@ bool ::driver::actuator::SCActuatorControlUnit::setProp(const std::string &name,
 bool ::driver::actuator::SCActuatorControlUnit::setProp(const std::string &name, int64_t value, uint32_t size)
 {
   int ret;
-  SCCUAPP << "SET IPROP:" << name << " VALUE:" << value;
+  SCCUDBG << "SET IPROP:" << name << " VALUE:" << value;
   string valStr = boost::lexical_cast<std::string>(value);
   ret = actuator_drv->setParameter(*axID, (std::string)name, valStr);
   this->updateAuxiliaryParameters();
@@ -185,7 +185,7 @@ bool ::driver::actuator::SCActuatorControlUnit::setProp(const std::string &name,
 bool ::driver::actuator::SCActuatorControlUnit::setProp(const std::string &name, bool value, uint32_t size)
 {
   int ret;
-  SCCUAPP << "SET IPROP:" << name << " VALUE:" << value;
+  SCCUDBG << "SET IPROP:" << name << " VALUE:" << value;
   string valStr = boost::lexical_cast<std::string>(value);
   ret = actuator_drv->setParameter(*axID, (std::string)name, valStr);
   this->updateAuxiliaryParameters();
@@ -195,7 +195,7 @@ bool ::driver::actuator::SCActuatorControlUnit::setProp(const std::string &name,
 bool ::driver::actuator::SCActuatorControlUnit::setProp(const std::string &name, std::string value, uint32_t size)
 {
   int ret;
-  SCCUAPP << "SET IPROP:" << name << " VALUE:" << value;
+  SCCUDBG << "SET IPROP:" << name << " VALUE:" << value;
   //string valStr=boost::lexical_cast<std::string>(value);
   ret = actuator_drv->setParameter(*axID, (std::string)name, value);
   this->updateAuxiliaryParameters();
@@ -216,7 +216,7 @@ bool ::driver::actuator::SCActuatorControlUnit::setPower(const std::string &name
   {
     vvv = 0;
   }
-  SCCUAPP << "HANDLER set Power vslue = " << value << " and conversion is " << vvv;
+  SCCUDBG << "HANDLER set Power vslue = " << value << " and conversion is " << vvv;
 
   std::auto_ptr<CDataWrapper> cmd_pack(new CDataWrapper());
   cmd_pack->addInt32Value(CMD_ACT_POWERON_VALUE, vvv);
@@ -234,7 +234,7 @@ bool ::driver::actuator::SCActuatorControlUnit::moveAt(const std::string &name, 
 {
   uint64_t cmd_id;
 
-  SCCUAPP << "HANDLER Move at " << value;
+  SCCUDBG << "HANDLER Move at " << value;
   std::auto_ptr<CDataWrapper> cmd_pack(new CDataWrapper());
   cmd_pack->addDoubleValue(CMD_ACT_MM_OFFSET, value);
 
@@ -245,7 +245,7 @@ bool ::driver::actuator::SCActuatorControlUnit::moveAt(const std::string &name, 
                      0,
                      50,
                      SubmissionRuleType::SUBMIT_NORMAL);
-  SCCUAPP << "move to:" << value;
+  SCCUDBG << "move to:" << value;
 
   return true;
 }
@@ -254,7 +254,7 @@ bool ::driver::actuator::SCActuatorControlUnit::moveAt(const std::string &name, 
 {
   uint64_t cmd_id;
 
-  SCCUAPP << "HANDLER Move at '" << value<<"'";
+  SCCUDBG << "HANDLER Move at '" << value<<"'";
   std::auto_ptr<CDataWrapper> cmd_pack(new CDataWrapper());
   cmd_pack->addStringValue(CMD_ACT_MOVE_POI, value);
 
@@ -265,7 +265,7 @@ bool ::driver::actuator::SCActuatorControlUnit::moveAt(const std::string &name, 
                      0,
                      50,
                      SubmissionRuleType::SUBMIT_NORMAL);
-  SCCUAPP << "move to:" << value;
+  SCCUDBG << "move to:" << value;
 
   return true;
 }
@@ -278,7 +278,7 @@ void ::driver::actuator::SCActuatorControlUnit::updateAuxiliaryParameters()
 	
 	for (ChaosStringVector::iterator it = driverDefinedAttributes.begin(); it != driverDefinedAttributes.end(); it++)
 	{
-		SCCUAPP << "Getting Parameter over key : " << (*it);
+		SCCUDBG << "Getting Parameter over key : " << (*it);
 		CDWUniquePtr auxVar=auxiliarydataset.getCSDataValue(*it);
 		
 		std::string tmpStr;
@@ -469,7 +469,7 @@ if(hasPoi){
 }
   std::string dataset;
   actuator_drv->sendDataset(dataset);
-  SCCUAPP << "DATASETVARIABLE getting dataset from driver :'"<< dataset<<"'";
+  SCCUDBG << "DATASETVARIABLE getting dataset from driver :'"<< dataset<<"'";
   
   if(dataset.size()){
       CDataWrapper conf;
@@ -515,7 +515,7 @@ if(hasPoi){
 
 
         }
-          SCCUAPP << "Adding driver attributes :'"<< auxiliarydataset.getJSONString()<<"'";
+          SCCUDBG << "Adding driver attributes :'"<< auxiliarydataset.getJSONString()<<"'";
 
           setDriverInfo(auxiliarydataset); // create into custom dataset an entry with the key: CONTROL_UNIT_DRIVER_INFO = cudk_driver_info
 
@@ -600,7 +600,7 @@ if(hasPoi){
 // Abstract method for the initialization of the control unit
 void ::driver::actuator::SCActuatorControlUnit::unitInit()
 {
-  SCCUAPP << "Starting unitInit";
+  SCCUDBG << "Starting unitInit";
   std::string state_str;
   int err = -1;
   int state_id;
@@ -611,6 +611,10 @@ void ::driver::actuator::SCActuatorControlUnit::unitInit()
   uint64_t *homingDone = getAttributeCache()->getRWPtr<uint64_t>(DOMAIN_OUTPUT, "LastHomingTime");
   double *o_position = getAttributeCache()->getRWPtr<double>(DOMAIN_OUTPUT, "position");
   axID = getAttributeCache()->getROPtr<uint32_t>(DOMAIN_INPUT, "axisID");
+  if(axID==NULL){
+        throw chaos::CFatalException(-1, "axisID INPUT must be defined", __FUNCTION__);
+
+  }
   int32_t *inSteps = getAttributeCache()->getRWPtr<int32_t>(DOMAIN_OUTPUT, "useSteps");
  // char* auxData = getAttributeCache()->getRWPtr<char>(DOMAIN_CUSTOM, "auxiliaryDataset");
   chaos::cu::driver_manager::driver::DriverAccessor *actuator_accessor = getAccessoInstanceByIndex(0);
@@ -633,7 +637,7 @@ void ::driver::actuator::SCActuatorControlUnit::unitInit()
   this->updateAuxiliaryParameters();
   if ((err = actuator_drv->getState(*axID, &state_id, state_str)) != 0)
   {
-   throw chaos::CFatalException(err, "Error getting the state of the actuator", __FUNCTION__);
+   throw chaos::CFatalException(err, "Error getting the state of the actuator:"+state_str, __FUNCTION__);
   }
 
   *status_id = state_id;
@@ -641,7 +645,7 @@ void ::driver::actuator::SCActuatorControlUnit::unitInit()
 
   if (actuator_drv->getHWVersion(*axID, device_hw) == 0)
   {
-    SCCUAPP << "hardware found: \"" << device_hw << "\"";
+    SCCUDBG << "hardware found: \"" << device_hw << "\" axis:"<<*axID;
   }
   ::common::actuators::AbstractActuator::readingTypes readTyp;
   double tmp_float = 0.0F;
@@ -670,16 +674,19 @@ void ::driver::actuator::SCActuatorControlUnit::unitStart()
 // Abstract method for the stop of the control unit
 void ::driver::actuator::SCActuatorControlUnit::unitStop() 
 {
+  SCCUDBG << "Stop  "<<*axID;
+  actuator_drv->stopMotion(*axID);
+
 }
 
 // Abstract method for the deinit of the control unit
 void ::driver::actuator::SCActuatorControlUnit::unitDeinit()
 {
-  SCCUAPP << "Stop Motion ";
+  SCCUDBG << "Stop Motion "<<*axID;
   actuator_drv->stopMotion(*axID);
-  SCCUAPP << "Power off ";
-  actuator_drv->poweron(*axID, 0);
-  SCCUAPP << "deinitializing ";
+  //SCCUAPP << "Power off ";
+  //actuator_drv->poweron(*axID, 0);
+  SCCUDBG << "deinitializing "<<*axID;
   actuator_drv->deinit(*axID);
 }
 
@@ -790,7 +797,7 @@ bool ::driver::actuator::SCActuatorControlUnit::setPowerOn(int32_t value, bool s
   uint64_t cmd_id;
   bool result = true;
 
-  SCCUAPP << "LAUNCHING BATCH COMMAND setPowerOn " << value;
+  SCCUDBG << "LAUNCHING BATCH COMMAND setPowerOn " << value;
   ChaosUniquePtr<CDataWrapper> cmd_pack(new CDataWrapper());
   cmd_pack->addInt32Value(CMD_ACT_POWERON_VALUE, value);
   //send command
@@ -822,25 +829,25 @@ bool ::driver::actuator::SCActuatorControlUnit::waitOnCommandID(uint64_t cmd_id)
     switch (cmd_state->last_event)
     {
     case BatchCommandEventType::EVT_QUEUED:
-      SCCUAPP << cmd_id << " -> QUEUED";
+      SCCUDBG << cmd_id << " -> QUEUED";
       break;
     case BatchCommandEventType::EVT_RUNNING:
-      SCCUAPP << cmd_id << " -> RUNNING";
+      SCCUDBG << cmd_id << " -> RUNNING";
       break;
     case BatchCommandEventType::EVT_WAITING:
-      SCCUAPP << cmd_id << " -> WAITING";
+      SCCUDBG << cmd_id << " -> WAITING";
       break;
     case BatchCommandEventType::EVT_PAUSED:
-      SCCUAPP << cmd_id << " -> PAUSED";
+      SCCUDBG << cmd_id << " -> PAUSED";
       break;
     case BatchCommandEventType::EVT_KILLED:
-      SCCUAPP << cmd_id << " -> KILLED";
+      SCCUDBG << cmd_id << " -> KILLED";
       break;
     case BatchCommandEventType::EVT_COMPLETED:
-      SCCUAPP << cmd_id << " -> COMPLETED";
+      SCCUDBG << cmd_id << " -> COMPLETED";
       break;
     case BatchCommandEventType::EVT_FAULT:
-      SCCUAPP << cmd_id << " -> FAULT";
+      SCCUDBG << cmd_id << " -> FAULT";
       break;
     }
     //wait some times

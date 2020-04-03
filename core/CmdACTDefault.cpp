@@ -72,7 +72,7 @@ void CmdACTDefault::setHandler(c_data::CDataWrapper *data) {
 	setStateVariableSeverity(StateVariableTypeAlarmCU,"command_error", chaos::common::alarm::MultiSeverityAlarmLevelClear);
 	CMDCUDBG_ << "After parental Set Handler";
 	//set the default scheduling to one seconds
-	setFeatures(features::FeaturesFlagTypes::FF_SET_SCHEDULER_DELAY, (uint64_t)1000000);
+	//setFeatures(features::FeaturesFlagTypes::FF_SET_SCHEDULER_DELAY, (uint64_t)1000000);
 	//get channel pointer
         positionTHR= getAttributeCache()->getROPtr<double>(DOMAIN_INPUT, "positionWarningTHR");
         positionTHR_TIM=getAttributeCache()->getROPtr<double>(DOMAIN_INPUT, "positionWarningTHR_Timeout");
