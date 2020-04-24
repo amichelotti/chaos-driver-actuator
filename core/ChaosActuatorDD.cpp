@@ -155,12 +155,12 @@ cu_driver::MsgManagmentResultType::MsgManagmentResult ChaosActuatorDD::execOpcod
            }
             
          case OP_MOVE_RELATIVE_MM:
-            out->result = motor->moveRelativeMillimeters(in->axis,in->fvalue0);
+            out->result = motor->moveRelative(in->axis,in->fvalue0);
             ACDBG<<"Move relative result:"<<out->result;
             break;
         
         case OP_MOVE_ABSOLUTE_MM:
-            out->result = motor->moveAbsoluteMillimeters(in->axis,in->fvalue0);
+            out->result = motor->moveAbsolute(in->axis,in->fvalue0);
             ACDBG<<"Moved Absolute result:"<<out->result;
             break;
        
