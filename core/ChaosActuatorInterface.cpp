@@ -323,12 +323,12 @@ int ChaosActuatorInterface::getAlarms(int32_t axisID,uint64_t*alrm,std::string& 
     READ_OP_AX_INT64_STRING_TIM(OP_GET_ALARMS,axisID,alrm,desc,0);
 }
 
-int ChaosActuatorInterface::moveRelativeMillimeters(int32_t axisID,double mm) {
+int ChaosActuatorInterface::moveRelative(int32_t axisID,double mm) {
     float param=(float) mm;
     WRITE_OP_AX_FLOAT_TIM(OP_MOVE_RELATIVE_MM,axisID,param,0);
     
 }
-int ChaosActuatorInterface::moveAbsoluteMillimeters(int32_t axisID,double mm) {
+int ChaosActuatorInterface::moveAbsolute(int32_t axisID,double mm) {
     float param=(float) mm;
     WRITE_OP_AX_FLOAT_TIM(OP_MOVE_ABSOLUTE_MM,axisID,param,0);
     

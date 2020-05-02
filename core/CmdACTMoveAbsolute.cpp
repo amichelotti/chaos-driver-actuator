@@ -187,7 +187,7 @@ void own::CmdACTMoveAbsolute::setHandler(c_data::CDataWrapper *data) {
 	}
 	getAttributeCache()->setInputDomainAsChanged();
 	SCLDBG_ << "o_position_sp is = " << *i_position;
-	if((err = actuator_drv->moveAbsoluteMillimeters(*axID,positionToReach)) != 0) {
+	if((err = actuator_drv->moveAbsolute(*axID,positionToReach)) != 0) {
 		metadataLogging(chaos::common::metadata_logging::StandardLoggingChannel::LogLevelError,CHAOS_FORMAT("axis %1% cannot perform absolute move to '%2%'",%*axID %positionToReach));
 		setStateVariableSeverity(StateVariableTypeAlarmCU,"user_command_failed", chaos::common::alarm::MultiSeverityAlarmLevelHigh);
 		BC_FAULT_RUNNING_PROPERTY;

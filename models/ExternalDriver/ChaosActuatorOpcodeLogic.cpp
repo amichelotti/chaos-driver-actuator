@@ -240,7 +240,7 @@ int ChaosActuatorOpcodeLogic::getAlarms(DrvMsgPtr cmd, int32_t axisID, uint64_t 
     return cmd->ret;
 }
 
-int ChaosActuatorOpcodeLogic::moveRelativeMillimeters(DrvMsgPtr cmd, int32_t axisID, double delta) {
+int ChaosActuatorOpcodeLogic::moveRelative(DrvMsgPtr cmd, int32_t axisID, double delta) {
 	CDWShrdPtr response;
     CDWUniquePtr para_pack(new CDataWrapper());
 	para_pack->addInt32Value("axisID", axisID);
@@ -250,7 +250,7 @@ int ChaosActuatorOpcodeLogic::moveRelativeMillimeters(DrvMsgPtr cmd, int32_t axi
     return cmd->ret;
 }
 
-int ChaosActuatorOpcodeLogic::moveAbsoluteMillimeters(DrvMsgPtr cmd, int32_t axisID, double setPos) {
+int ChaosActuatorOpcodeLogic::moveAbsolute(DrvMsgPtr cmd, int32_t axisID, double setPos) {
 	CDWShrdPtr response;
     CDWUniquePtr para_pack(new CDataWrapper());
 	para_pack->addInt32Value("axisID", axisID);
@@ -431,12 +431,12 @@ MsgManagmentResultType::MsgManagmentResult ChaosActuatorOpcodeLogic::execOpcode(
        
         case OP_MOVE_RELATIVE_MM:
 	    DBG<< "Move relative offset: "<<in->fvalue0;
-            out->result = moveRelativeMillimeters(cmd,in->axis,in->fvalue0);
+            out->result = moveRelative(cmd,in->axis,in->fvalue0);
             break;
 
         case OP_MOVE_ABSOLUTE_MM:
             DBG<< "Move Absolute to position "<<in->fvalue0;
-            out->result = moveAbsoluteMillimeters(cmd,in->axis, in->fvalue0);
+            out->result = moveAbsolute(cmd,in->axis, in->fvalue0);
             break;
 
         case OP_STOP_MOTION: //stop motion

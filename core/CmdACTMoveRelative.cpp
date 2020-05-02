@@ -147,7 +147,7 @@ void own::CmdACTMoveRelative::setHandler(c_data::CDataWrapper *data) {
 	*i_position=newPosition; 
 	getAttributeCache()->setInputDomainAsChanged();
 	SCLDBG_ << "o_position_sp is = " << *i_position;
-	if((err = actuator_drv->moveRelativeMillimeters(*axID,offset_mm)) != 0) {
+	if((err = actuator_drv->moveRelative(*axID,offset_mm)) != 0) {
 		metadataLogging(chaos::common::metadata_logging::StandardLoggingChannel::LogLevelError,CHAOS_FORMAT("axis %1% cannot perform relative move to '%2%' mm",%*axID %offset_mm));
 		setStateVariableSeverity(StateVariableTypeAlarmCU,"user_command_failed", chaos::common::alarm::MultiSeverityAlarmLevelHigh);
 		BC_FAULT_RUNNING_PROPERTY;
