@@ -148,8 +148,8 @@ namespace chaos {
                 int getAlarms(int32_t axisID,uint64_t*alrm, std::string& desc);
                 
                 
-                int moveRelativeMillimeters(int32_t axisID,double mm);
-                int moveAbsoluteMillimeters(int32_t axisID,double mm);
+                int moveRelative(int32_t axisID,double mm);
+                int moveAbsolute(int32_t axisID,double mm);
                   /**
                  @brief stop the motion of the actuator (if is in movement)
                  @return 0 if success or an error code

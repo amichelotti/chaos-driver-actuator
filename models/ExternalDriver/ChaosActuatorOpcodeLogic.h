@@ -59,8 +59,8 @@ namespace chaos {
                  @return 0 if success or an error code
                  */
                 int getAlarms(cu::driver_manager::driver::DrvMsgPtr cmd,int32_t axisID,uint64_t*alrm, std::string& desc);
-				int moveRelativeMillimeters(cu::driver_manager::driver::DrvMsgPtr cmd,int32_t axisID,double delta);
-                int moveAbsoluteMillimeters(cu::driver_manager::driver::DrvMsgPtr cmd,int32_t axisID,double setPos);
+				int moveRelative(cu::driver_manager::driver::DrvMsgPtr cmd,int32_t axisID,double delta);
+                int moveAbsolute(cu::driver_manager::driver::DrvMsgPtr cmd,int32_t axisID,double setPos);
                   /**
                  @brief stop the motion of the actuator (if is in movement)
                  @return 0 if success or an error code
