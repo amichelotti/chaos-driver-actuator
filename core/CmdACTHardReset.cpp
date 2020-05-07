@@ -41,7 +41,7 @@ BATCH_COMMAND_CLOSE_DESCRIPTION()
 void own::CmdACTHardReset::setHandler(c_data::CDataWrapper *data) {
 	int err;
 	AbstractActuatorCommand::setHandler(data);
-	SCLDBG_ << "HardReset set handler " ;
+    SCLDBG_ << "HardReset set handler " ;
         if(!data ||
                 !data->hasKey(CMD_ACT_HARDRESET_MODE)) {
                 metadataLogging(chaos::common::metadata_logging::StandardLoggingChannel::LogLevelWarning,"mode parameter of hard reset  not specified ");
