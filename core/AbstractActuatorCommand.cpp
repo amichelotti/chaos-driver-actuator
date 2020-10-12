@@ -288,7 +288,7 @@ void AbstractActuatorCommand::acquireHandler(){
 
 
 
-
+	CMDCUINFO_ << "ALESTARV before getAlarms ax:" << *axID;
 	if((err = actuator_drv->getAlarms(*axID,&tmp_uint64,descStr))==0){
 		*o_alarms = tmp_uint64;
 		//copy up to 255 and put the termination character
@@ -308,7 +308,7 @@ void AbstractActuatorCommand::acquireHandler(){
 		return;
 
 	}
-
+	CMDCUINFO_ << "ALESTARV after getAlarms before getState ax:" << *axID;
 	if((err = actuator_drv->getState(*axID,&state, descStr))==0) {
 		*o_status_id = state;
 
@@ -346,6 +346,7 @@ void AbstractActuatorCommand::acquireHandler(){
 	}
 
 	readTyp=(::common::actuators::AbstractActuator::readingTypes) *tmpInt;
+	CMDCUINFO_ << "ALESTARV after getState before getPosition ax:" << *axID;
 	if ((err = actuator_drv->getPosition(*axID,readTyp,&position))==0) {
 		//LOG_AND_TROW(SCLERR_, 1, boost::str(boost::format("Error fetching position with code %1%") % err));
 		*o_position = position;
@@ -372,6 +373,7 @@ void AbstractActuatorCommand::acquireHandler(){
 		return;;
 
 	}
+	CMDCUINFO_ << "ALESTARV after getPosition end of Abstract acquirehandler:" << *axID;
 
 
 
