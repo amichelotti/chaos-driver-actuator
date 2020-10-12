@@ -288,8 +288,8 @@ idata.axis=ax;\
 accessor->send(&message);\
 return ret.result;
 /***************************/
-#define ACT_STD_TIMEOUT =4999
-uint64_t GeneralTimeout = ACT_STD_TIMEOUT
+#define ACT_STD_TIMEOUT 4999
+uint64_t GeneralTimeout = ACT_STD_TIMEOUT;
 int ChaosActuatorInterface::init(void*d){
     WRITE_OP_STRING_TIM(OP_INIT,(char*)d, GeneralTimeout);
 }
@@ -302,11 +302,20 @@ int ChaosActuatorInterface::deinit(int32_t axisID){
 
 }
 
+uint64_t ChaosActuatorInterface::setGeneralInterfaceTimeout(uint64_t timeo_ms)
+{
+
+	GeneralTimeout = timeo_ms;
+	return GeneralTimeout;
+}
 int ChaosActuatorInterface::setTimeout(int32_t axisID,uint64_t timeo_ms) {
     WRITE_OP_AX_TIM(OP_SET_TIMEOUT,axisID,timeo_ms);
     
 }
-
+uint64_t ChaosActuatorInterface::getGeneralInterfaceTimeout()
+{
+	return  GeneralTimeout;
+}
 int ChaosActuatorInterface::getTimeout(int32_t axisID,uint64_t* timeo_ms) {
     READ_OP_AX_64INT_TIM(OP_GET_TIMEOUT,axisID,timeo_ms, GeneralTimeout);
 }

@@ -97,6 +97,7 @@ namespace chaos {
                  @brief de-initialize the power supply and close the communication
                  @return 0 if success
                  */
+		uint64_t setGeneralInterfaceTimeout(uint64_t timeo_ms); 
                 int configAxis(void*);
                 int  deinit(int32_t axisID);
                 int setTimeout(int32_t axisID,uint64_t timeo_ms);   
@@ -104,6 +105,7 @@ namespace chaos {
                 
                 //int setSpeed(double speed_mm_per_sec);
                 //int setAcceleration(double acceleration_mm_per_sec2);
+		uint64_t getGeneralInterfaceTimeout(); 
                 int setAdditive(bool isAdditive);
                 int setReferenceBase(int32_t referenceBase);
                 //int setMovement(int32_t movement);
