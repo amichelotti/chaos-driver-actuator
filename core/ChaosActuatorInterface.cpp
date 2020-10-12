@@ -288,16 +288,17 @@ idata.axis=ax;\
 accessor->send(&message);\
 return ret.result;
 /***************************/
-
+#define ACT_STD_TIMEOUT =4999
+uint64_t GeneralTimeout = ACT_STD_TIMEOUT
 int ChaosActuatorInterface::init(void*d){
-    WRITE_OP_STRING_TIM(OP_INIT,(char*)d,0);
+    WRITE_OP_STRING_TIM(OP_INIT,(char*)d, GeneralTimeout);
 }
 int ChaosActuatorInterface::configAxis(void*d){
     WRITE_OP_STRING_TIM(OP_CONFIGAXIS,(char*)d,60000);
 }
 
 int ChaosActuatorInterface::deinit(int32_t axisID){
-    WRITE_OP_AX_TIM(OP_DEINIT,axisID,0);
+    WRITE_OP_AX_TIM(OP_DEINIT,axisID, GeneralTimeout);
 
 }
 
@@ -307,53 +308,53 @@ int ChaosActuatorInterface::setTimeout(int32_t axisID,uint64_t timeo_ms) {
 }
 
 int ChaosActuatorInterface::getTimeout(int32_t axisID,uint64_t* timeo_ms) {
-    READ_OP_AX_64INT_TIM(OP_GET_TIMEOUT,axisID,timeo_ms,0);
+    READ_OP_AX_64INT_TIM(OP_GET_TIMEOUT,axisID,timeo_ms, GeneralTimeout);
 }
 
 int ChaosActuatorInterface::getPosition(int32_t axisID,::common::actuators::AbstractActuator::readingTypes readingType,double *deltaPosition_mm) {
-    READ_OP_AX_FLOAT_PARAM_INT(OP_GET_POSITION,axisID,readingType,deltaPosition_mm,0);
+    READ_OP_AX_FLOAT_PARAM_INT(OP_GET_POSITION,axisID,readingType,deltaPosition_mm, GeneralTimeout);
 }
 
 int ChaosActuatorInterface::resetAlarms(int32_t axisID,uint64_t alrm){
     
-    WRITE_OP_AX_64INT_TIM(OP_RESET_ALARMS,axisID,alrm,0);
+    WRITE_OP_AX_64INT_TIM(OP_RESET_ALARMS,axisID,alrm, GeneralTimeout);
 }
 
 int ChaosActuatorInterface::getAlarms(int32_t axisID,uint64_t*alrm,std::string& desc){
-    READ_OP_AX_INT64_STRING_TIM(OP_GET_ALARMS,axisID,alrm,desc,0);
+    READ_OP_AX_INT64_STRING_TIM(OP_GET_ALARMS,axisID,alrm,desc, GeneralTimeout);
 }
 
 int ChaosActuatorInterface::moveRelative(int32_t axisID,double mm) {
     float param=(float) mm;
-    WRITE_OP_AX_FLOAT_TIM(OP_MOVE_RELATIVE_MM,axisID,param,0);
+    WRITE_OP_AX_FLOAT_TIM(OP_MOVE_RELATIVE_MM,axisID,param, GeneralTimeout);
     
 }
 int ChaosActuatorInterface::moveAbsolute(int32_t axisID,double mm) {
     float param=(float) mm;
-    WRITE_OP_AX_FLOAT_TIM(OP_MOVE_ABSOLUTE_MM,axisID,param,0);
+    WRITE_OP_AX_FLOAT_TIM(OP_MOVE_ABSOLUTE_MM,axisID,param, GeneralTimeout);
     
 }
 
 int ChaosActuatorInterface::stopMotion(int32_t axisID){
     //DPRINT("ALEDEBUG STOP MOTION IN INTERFACE\n");
-    WRITE_OP_AX_TIM(OP_STOP_MOTION,axisID,0);
+    WRITE_OP_AX_TIM(OP_STOP_MOTION,axisID, GeneralTimeout);
 }
 int ChaosActuatorInterface::hardreset(int32_t axisID,bool mode){
-    WRITE_OP_AX_INT_TIM(OP_HARD_RESET,axisID,mode,0);
+    WRITE_OP_AX_INT_TIM(OP_HARD_RESET,axisID,mode, GeneralTimeout);
 }
 int ChaosActuatorInterface::homing(int32_t axisID,homingType mode){
-    WRITE_OP_AX_INT_TIM(OP_HOMING,axisID,mode,0);
+    WRITE_OP_AX_INT_TIM(OP_HOMING,axisID,mode, GeneralTimeout);
 }
 
 
 int ChaosActuatorInterface::poweron(int32_t axisID,int on){
     
-    WRITE_OP_AX_INT_TIM(OP_POWERON,axisID,on,0);
+    WRITE_OP_AX_INT_TIM(OP_POWERON,axisID,on, GeneralTimeout);
 
 }
 
 int ChaosActuatorInterface::getState(int32_t axisID,int* state,std::string& desc){
-    READ_OP_AX_INT_STRING_TIM(OP_GET_STATE,axisID, state, desc,0);
+    READ_OP_AX_INT_STRING_TIM(OP_GET_STATE,axisID, state, desc, GeneralTimeout);
     //WRITE_OP_TIM(OP_GET_STATE,0);
 
 }
@@ -361,33 +362,33 @@ int ChaosActuatorInterface::getState(int32_t axisID,int* state,std::string& desc
 
 int ChaosActuatorInterface::sendDataset(std::string& dataset){
     int state=0;
-    READ_OP_INT_STRING_TIM(OP_SENDDATASET, &state, dataset,0);
+    READ_OP_INT_STRING_TIM(OP_SENDDATASET, &state, dataset, GeneralTimeout);
 }
 
 int ChaosActuatorInterface::getSWVersion(int32_t axisID,std::string& ver){
     int state=0;
-    READ_OP_AX_INT_STRING_TIM(OP_GET_SWVERSION,axisID, &state, ver,0);
+    READ_OP_AX_INT_STRING_TIM(OP_GET_SWVERSION,axisID, &state, ver, GeneralTimeout);
 }
 
 int ChaosActuatorInterface::getHWVersion(int32_t axisID,std::string&ver){
     int state=0;
-    READ_OP_AX_INT_STRING_TIM(OP_GET_HWVERSION,axisID, &state, ver,0);
+    READ_OP_AX_INT_STRING_TIM(OP_GET_HWVERSION,axisID, &state, ver, GeneralTimeout);
 
 }
 
 
 uint64_t ChaosActuatorInterface::getFeatures() {
     uint64_t feats=0;
-    READ_OP_64INT_TIM_NORET(OP_GET_FEATURE,&feats,0);
+    READ_OP_64INT_TIM_NORET(OP_GET_FEATURE,&feats, GeneralTimeout);
     return feats;
 }
 int ChaosActuatorInterface::setParameter(int32_t axisID,const std::string parName,const std::string value) {
-	WRITE_OP_AX_STRING_STRING_TIM(OP_SETPARAMETER,axisID,parName.c_str(),value.c_str(),0);
+	WRITE_OP_AX_STRING_STRING_TIM(OP_SETPARAMETER,axisID,parName.c_str(),value.c_str(), GeneralTimeout);
 }
 
 
 int ChaosActuatorInterface::getParameter(int axisID,std::string parName,std::string& resultString) {
-	READ_OP_AX_STRING_RETSTRING_TIM(OP_GETPARAMETER,axisID,parName,resultString,0);
+	READ_OP_AX_STRING_RETSTRING_TIM(OP_GETPARAMETER,axisID,parName,resultString, GeneralTimeout);
 }
 
 
