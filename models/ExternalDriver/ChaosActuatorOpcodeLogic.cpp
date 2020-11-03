@@ -297,9 +297,10 @@ int ChaosActuatorOpcodeLogic::getState(DrvMsgPtr cmd, int32_t axisID, int *state
     if(response.get()){DBG << response->getJSONString();}
     if(cmd->ret) {return cmd->ret;}
     CHECK_KEY_IN_RESPONSE(response, "value", -1);
-	CHECK_KEY_IN_RESPONSE(response, "description", -2);
-    *state = response->getVariantValue("value").asUInt64();
-	desc=response->getVariantValue("description").asString();
+    if(response->hasKey("description")){
+        desc=response->getStringValue("description");
+    }
+    *state = response->getInt32Value("value");
     return cmd->ret;
 }
 int ChaosActuatorOpcodeLogic::getSWVersion(DrvMsgPtr cmd, int32_t axisID, std::string &version) {
