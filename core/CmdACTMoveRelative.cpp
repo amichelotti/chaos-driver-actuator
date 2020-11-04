@@ -61,8 +61,10 @@ void own::CmdACTMoveRelative::setHandler(c_data::CDataWrapper *data) {
 	double currentPosition;
 	//std::string state_str;
 	float offset_mm = 0.f;
-	setStateVariableSeverity(StateVariableTypeAlarmCU, "user_command_failed", chaos::common::alarm::MultiSeverityAlarmLevelClear);
+	//setStateVariableSeverity(StateVariableTypeAlarmCU, "user_command_failed", chaos::common::alarm::MultiSeverityAlarmLevelClear);
 	if(performCheck()!=0){
+	//	setStateVariableSeverity(StateVariableTypeAlarmCU,"command_error", chaos::common::alarm::MultiSeverityAlarmLevelHigh);
+
 		BC_FAULT_RUNNING_PROPERTY;
 		return;
 	}

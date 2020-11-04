@@ -382,11 +382,11 @@ void ::driver::actuator::SCActuatorControlUnit::unitDefineActionAndDataset()
                         "position",
                         DataType::TYPE_DOUBLE,
                         DataType::Bidirectional);
-  /*addAttributeToDataSet("speed",
+  addAttributeToDataSet("speed",
                         "Speed",
                         DataType::TYPE_DOUBLE,
                         DataType::Input);
-    */                    
+                      
   addAttributeToDataSet("LastHomingTime",
                         "timestamp with the last homing",
                         DataType::TYPE_INT64,
@@ -563,8 +563,10 @@ if(hasPoi){
   addStateVariable(StateVariableTypeAlarmCU, "command_error",
                    "Notify when a command action fails");
 
-  addStateVariable(StateVariableTypeAlarmCU, "user_command_failed",
-	  "Notify when a batch command action fails");
+/* supported in framework*/
+  /*addStateVariable(StateVariableTypeAlarmCU, "user_command_failed",
+	  "Notify when a batch command action fails");*/
+
   /***************************ALARMS******************************************/
   addStateVariable(StateVariableTypeAlarmDEV, "EMERGENCY_LOCK_ENABLED",
                    "Notify when the emergency lock is active");

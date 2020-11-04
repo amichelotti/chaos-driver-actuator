@@ -234,9 +234,11 @@ int ChaosActuatorOpcodeLogic::getAlarms(DrvMsgPtr cmd, int32_t axisID, uint64_t 
     if(response.get()){DBG << response->getJSONString();}
     if(cmd->ret) {return cmd->ret;}
     CHECK_KEY_IN_RESPONSE(response, "value", -1);
-	CHECK_KEY_IN_RESPONSE(response, "description", -2);
-    *alrm = response->getVariantValue("value").asUInt64();
-	desc=response->getVariantValue("description").asString();
+    if(response->hasKey("description")){
+	    desc=response->getStringValue("description");
+
+    }
+    *alrm = response->getInt32Value("value");
     return cmd->ret;
 }
 

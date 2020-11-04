@@ -82,7 +82,8 @@ void AbstractActuatorCommand::checkEndMove(){
 			
 			if ((err=actuator_drv->stopMotion(*axID))!= 0){
 						metadataLogging(chaos::common::metadata_logging::StandardLoggingChannel::LogLevelError,CHAOS_FORMAT("cannot stop motion on axis '%1%'",%*axID));
-						setStateVariableSeverity(StateVariableTypeAlarmCU,"command_error", chaos::common::alarm::MultiSeverityAlarmLevelHigh);
+						//supported in framework whenever FAULT_RUNNING 
+		//				setStateVariableSeverity(StateVariableTypeAlarmCU,"command_error", chaos::common::alarm::MultiSeverityAlarmLevelHigh);
 						BC_FAULT_RUNNING_PROPERTY;
 						return;
 			}
@@ -94,7 +95,6 @@ void AbstractActuatorCommand::checkEndMove(){
 
 int AbstractActuatorCommand::performCheck(){
 	getDeviceDatabase()->getAttributeRangeValueInfo("position", position_info);
-	setStateVariableSeverity(StateVariableTypeAlarmCU,"command_error", chaos::common::alarm::MultiSeverityAlarmLevelClear);// ********** aggiunto **************
 
 	// REQUIRE MIN MAX SET IN THE MDS
 
@@ -104,7 +104,6 @@ int AbstractActuatorCommand::performCheck(){
 
 	} else {
 		metadataLogging(chaos::common::metadata_logging::StandardLoggingChannel::LogLevelError,"not defined maximum 'position' attribute, quitting command" );
-		setStateVariableSeverity(StateVariableTypeAlarmCU,"command_error", chaos::common::alarm::MultiSeverityAlarmLevelWarning);
 
 		return -1;
 	}
@@ -116,7 +115,6 @@ int AbstractActuatorCommand::performCheck(){
 		CMDCUDBG_<< "min_position min=" << min_position;
 	} else {
 		metadataLogging(chaos::common::metadata_logging::StandardLoggingChannel::LogLevelError,"not defined minimum 'position' attribute, quitting command" );
-		setStateVariableSeverity(StateVariableTypeAlarmCU,"command_error", chaos::common::alarm::MultiSeverityAlarmLevelWarning);
 
 		return -2;
 
@@ -303,8 +301,8 @@ void AbstractActuatorCommand::acquireHandler(){
 			metadataLogging(chaos::common::metadata_logging::StandardLoggingChannel::LogLevelError, CHAOS_FORMAT("axis %1% error getting alarms, err:%2%'", %* axID % err));
 			loggedAlarmError = true;
 		}
-		setStateVariableSeverity(StateVariableTypeAlarmCU,"command_error", chaos::common::alarm::MultiSeverityAlarmLevelHigh);
-
+	//	setStateVariableSeverity(StateVariableTypeAlarmCU,"command_error", chaos::common::alarm::MultiSeverityAlarmLevelHigh);
+		BC_FAULT_RUNNING_PROPERTY
 		return;
 
 	}
@@ -341,7 +339,8 @@ void AbstractActuatorCommand::acquireHandler(){
 		strncpy(o_status_str, descStr.c_str(), 256);
 	} else if(err!=DRV_BYPASS_DEFAULT_CODE) {
 		CMDCUERR_ <<boost::str( boost::format("Error calling driver on get state readout with code %1%") % err);
-		setStateVariableSeverity(StateVariableTypeAlarmCU,"command_error", chaos::common::alarm::MultiSeverityAlarmLevelHigh);
+		//setStateVariableSeverity(StateVariableTypeAlarmCU,"command_error", chaos::common::alarm::MultiSeverityAlarmLevelHigh);
+		BC_FAULT_RUNNING_PROPERTY
 		return;
 	}
 
@@ -368,7 +367,7 @@ void AbstractActuatorCommand::acquireHandler(){
 			metadataLogging(chaos::common::metadata_logging::StandardLoggingChannel::LogLevelError, CHAOS_FORMAT("axis %1% error getting position, using type %2%, err:%3%'", %* axID % readTyp % err));
 			loggedPositionError = true;
 		}
-		setStateVariableSeverity(StateVariableTypeAlarmCU,"command_error", chaos::common::alarm::MultiSeverityAlarmLevelHigh);
+	//	setStateVariableSeverity(StateVariableTypeAlarmCU,"command_error", chaos::common::alarm::MultiSeverityAlarmLevelHigh);
 
 		return;;
 
