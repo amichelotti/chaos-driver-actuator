@@ -65,6 +65,7 @@ namespace chaos {
                 int32_t ivalue;
                 uint32_t timeout;
                 uint64_t alarm_mask;
+                char cuname[MAX_STR_SIZE];
                 
             } actuator_iparams_t;
             
@@ -83,9 +84,9 @@ namespace chaos {
             protected:
 
                 chaos_driver::DrvMsg message;
-                
+                std::string owner;
             public:
-	    ChaosActuatorInterface(chaos_driver::DriverAccessor*_accessor):accessor(_accessor){};
+	    ChaosActuatorInterface(chaos_driver::DriverAccessor*_accessor,const std::string& _owner=""):owner(_owner),accessor(_accessor){};
 		chaos_driver::DriverAccessor* accessor;
                 
                      /**

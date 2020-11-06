@@ -31,6 +31,7 @@
 #define INFO INFO_LOG(ChaosActuatorOpcodeLogic)
 #define ERR ERR_LOG(ChaosActuatorOpcodeLogic)
 #define DBG DBG_LOG(ChaosActuatorOpcodeLogic)
+#define DBGO DBG_LOG(ChaosActuatorOpcodeLogic) <<"["<<in->cuname<<"]- "<<cmd->id<<" -"
 
 using namespace chaos::driver::actuator;
 using namespace chaos::common::data;
@@ -153,7 +154,6 @@ int ChaosActuatorOpcodeLogic::getParameter(DrvMsgPtr cmd,int axisID,std::string 
 	data_pack->addInt32Value("axisID", axisID);
 	data_pack->addStringValue("parameter_name",parName);
 	SEND_REQUEST_OPC("get_parameter",cmd, data_pack, response);
-	if(response.get()){DBG << response->getJSONString();}
     if(cmd->ret) {return cmd->ret;}
 	CHECK_KEY_IN_RESPONSE(response, "parameter_value", -2);
     resultString=response->getVariantValue("parameter_value").asString();
@@ -169,7 +169,6 @@ int ChaosActuatorOpcodeLogic::setParameter(DrvMsgPtr cmd,int axisID,std::string 
 	get_para_pack->addStringValue("parameter_name",parName);
 	get_para_pack->addStringValue("parameter_value",parValue);
     	SEND_REQUEST_OPC("set_parameter",cmd, get_para_pack, response);
-    	if(response.get()){DBG << response->getJSONString();}
     	return cmd->ret;
 }
 
@@ -178,10 +177,8 @@ int ChaosActuatorOpcodeLogic::getPosition(DrvMsgPtr cmd, int32_t axisID, ::commo
     CDWUniquePtr para_pack(new CDataWrapper());
 	para_pack->addInt32Value("axisID", axisID);
 	para_pack->addInt32Value("readingType", readingType);
-  
+
     SEND_REQUEST_OPC("get_pos",cmd, para_pack, response);
-	if(response.get()){DBG << response->getJSONString();}
-    DBG << "now cmd->ret is " << cmd->ret;
     if(cmd->ret) {return cmd->ret;}
 	CHECK_KEY_IN_RESPONSE(response, "value", -1);
 	*deltaPosition=response->getVariantValue("value").asDouble();
@@ -195,7 +192,6 @@ int ChaosActuatorOpcodeLogic::resetAlarms(DrvMsgPtr cmd, int32_t axisID, uint64_
 	para_pack->addInt64Value("alarms",alrm);
 	SEND_REQUEST_OPC("rst_alarm",cmd,para_pack,response);
 	
-	if(response.get()){DBG << response->getJSONString();}
     return cmd->ret;
 
 
@@ -208,7 +204,6 @@ int ChaosActuatorOpcodeLogic::hardreset(DrvMsgPtr cmd, int32_t axisID, bool mode
 	para_pack->addInt32Value("mode",(int) mode);
 	SEND_REQUEST_OPC("hard_reset",cmd,para_pack,response);
 	
-	if(response.get()){DBG << response->getJSONString();}
     return cmd->ret;
 }
 
@@ -218,7 +213,6 @@ int ChaosActuatorOpcodeLogic::sendDataset(DrvMsgPtr cmd, std::string &dataset) {
 	CDWShrdPtr response;
     CDWUniquePtr data_pack(new CDataWrapper());
 	SEND_REQUEST_OPC("get_dataset",cmd, data_pack, response);
-	if(response.get()){DBG << response->getJSONString();}
     if(cmd->ret) {return cmd->ret;}
 	CHECK_KEY_IN_RESPONSE(response, "dataset", -2);
     dataset=response->getVariantValue("dataset").asString();
@@ -231,7 +225,7 @@ int ChaosActuatorOpcodeLogic::getAlarms(DrvMsgPtr cmd, int32_t axisID, uint64_t 
     CDWUniquePtr para_pack(new CDataWrapper());
 	para_pack->addInt32Value("axisID", axisID);
 	SEND_REQUEST_OPC("get_alarm",cmd, para_pack, response);
-    if(response.get()){DBG << response->getJSONString();}
+   
     if(cmd->ret) {return cmd->ret;}
     CHECK_KEY_IN_RESPONSE(response, "value", -1);
     if(response->hasKey("description")){
@@ -286,6 +280,8 @@ int ChaosActuatorOpcodeLogic::poweron(DrvMsgPtr cmd, int32_t axisID, int on) {
     CDWUniquePtr para_pack(new CDataWrapper());
 	para_pack->addInt32Value("axisID", axisID);
 	para_pack->addInt32Value("on", on);
+    DBG<<"poweron "<<axisID;
+
 	SEND_REQUEST_OPC("poweron",cmd, para_pack, response);
 	if(response.get()){DBG << response->getJSONString();}
     return cmd->ret;
@@ -295,6 +291,8 @@ int ChaosActuatorOpcodeLogic::getState(DrvMsgPtr cmd, int32_t axisID, int *state
 	CDWShrdPtr response;
     CDWUniquePtr para_pack(new CDataWrapper());
 	para_pack->addInt32Value("axisID", axisID);
+    DBG<<"getHWVersion "<<axisID;
+
 	SEND_REQUEST_OPC("get_state",cmd, para_pack, response);
     if(response.get()){DBG << response->getJSONString();}
     if(cmd->ret) {return cmd->ret;}
@@ -313,7 +311,7 @@ int ChaosActuatorOpcodeLogic::getHWVersion(DrvMsgPtr cmd, int32_t axisID, std::s
 	CDWShrdPtr response;
     CDWUniquePtr init_pack(new CDataWrapper());
 	init_pack->addInt32Value("axisID", axisID);
-    DBG<<"GETTING HW VERSION...";
+    DBG<<"getHWVersion "<<axisID;
     SEND_REQUEST_OPC("get_hw_ver",cmd, init_pack, response);
 	
     if(response.get()){DBG << response->getJSONString();}
@@ -326,6 +324,7 @@ int ChaosActuatorOpcodeLogic::getHWVersion(DrvMsgPtr cmd, int32_t axisID, std::s
 int ChaosActuatorOpcodeLogic::configAxis(DrvMsgPtr cmd, void *configuration) {
 	CDWShrdPtr response;
     CDWUniquePtr para_pack(new CDataWrapper());
+
     if(configuration){
 	    para_pack->addStringValue("configString",(char*)configuration);
     } else {
@@ -333,8 +332,7 @@ int ChaosActuatorOpcodeLogic::configAxis(DrvMsgPtr cmd, void *configuration) {
 
     }
 	SEND_REQUEST_OPC("configAxis",cmd, para_pack, response);
-	if(response.get()){DBG << response->getJSONString();}
-    	return cmd->ret;
+    return cmd->ret;
 
 }
 
@@ -395,6 +393,8 @@ MsgManagmentResultType::MsgManagmentResult ChaosActuatorOpcodeLogic::execOpcode(
     cmd->ret = 0;
     memset(cmd->err_msg, 0, 255);
     memset(cmd->err_dom, 0, 255);
+    DBGO<<" START OPCODE:"<<cmd->opcode<<" timeo:"<<in->timeout;
+
     switch(cmd->opcode) {
         case OP_INIT:
 			
@@ -405,22 +405,22 @@ MsgManagmentResultType::MsgManagmentResult ChaosActuatorOpcodeLogic::execOpcode(
             out->result = sendDeinit(cmd);
             break;
         case OP_CONFIGAXIS:
-            DBG<< "Configuring with:"<<in->str<<" timeo:"<<in->timeout;
+            DBGO<< "Configuring with:"<<in->str<<" timeo:"<<in->timeout;
             out->result= configAxis(cmd,(void*) in->str);
             break;
 
         case OP_GET_POSITION:
             out->result = getPosition(cmd, in->axis,(::common::actuators::AbstractActuator::readingTypes)in->ivalue,&out->fvalue0);
-            DBG<< "Got Position :"<< out->fvalue0;
+            DBGO<< "Got Position :"<< out->fvalue0;
             break;
 
         case OP_RESET_ALARMS:
-            DBG<< "Reset alarms to:"<<in->alarm_mask << std::endl;
+            DBGO<< "Reset alarms to:"<<in->alarm_mask << std::endl;
             out->result = resetAlarms(cmd, in->axis,in->alarm_mask);
             break;
 
         case OP_HARD_RESET:
-            DBG<< "HARD Reset in axis "<< in->axis << std::endl;
+            DBGO<< "HARD Reset in axis "<< in->axis << std::endl;
             out->result = hardreset(cmd,in->axis,in->ivalue);
             break;
  	case OP_GET_ALARMS:
@@ -428,51 +428,56 @@ MsgManagmentResultType::MsgManagmentResult ChaosActuatorOpcodeLogic::execOpcode(
 		std::string desc;
             out->result = getAlarms(cmd,in->axis, &out->alarm_mask,desc);
 			strncpy(out->str,desc.c_str(),MAX_STR_SIZE);
-            DBG<<"Got alarms to: "<<out->alarm_mask << desc;
+            DBGO<<"Got alarms to: "<<out->alarm_mask << desc;
             }
             break;
        
         case OP_MOVE_RELATIVE_MM:
-	    DBG<< "Move relative offset: "<<in->fvalue0;
+	    DBGO<< "Move relative offset: "<<in->fvalue0;
             out->result = moveRelative(cmd,in->axis,in->fvalue0);
             break;
 
         case OP_MOVE_ABSOLUTE_MM:
-            DBG<< "Move Absolute to position "<<in->fvalue0;
+            DBGO<< "Move Absolute to position "<<in->fvalue0;
             out->result = moveAbsolute(cmd,in->axis, in->fvalue0);
             break;
 
         case OP_STOP_MOTION: //stop motion
             out->result = stopMotion(cmd, in->axis);
-			DBG<< "Stop Motion: result "<<out->result;
+			DBGO<< "Stop Motion: result "<<out->result;
             break;
 
         case OP_HOMING: 
             out->result = this->homing(cmd,in->axis,  (::common::actuators::AbstractActuator::homingType)in->ivalue );
-	DBG<< "Set homing, homing type: "<< in->ivalue << "result is " << out->result;
+	DBGO<< "Set homing, homing type: "<< in->ivalue << "result is " << out->result;
            break;
 		case OP_POWERON:
+        	DBGO<<"poweron" << in->axis;
+
             out->result = poweron(cmd, in->axis,in->ivalue);
-			DBG<<"Set Power" << in->ivalue <<" , result:"<< out->result;
+			DBGO<<"Set Power" << in->ivalue <<" , result:"<< out->result;
             break;
 		 case OP_GET_STATE:{
             std::string desc;
+            DBGO<<"getState axis:" << in->axis;
+
             out->result = getState(cmd,in->axis, &out->ivalue,desc);
             strncpy(out->str,desc.c_str(),MAX_STR_SIZE);
-            DBG<<"Got State: "<<out->ivalue<<" \""<<desc<<"\"";
+            DBGO<<"Got State: "<<out->ivalue<<" \""<<desc<<"\"";
 			break;
 						   }
 	    case OP_GET_SWVERSION:{
             std::string ver;
+
             out->result = getSWVersion(cmd, in->axis,ver);
-            DBG <<"Got SW Version:\""<<ver;
+            DBGO <<"Got SW Version:\""<<ver;
             strncpy(out->str,ver.c_str(),MAX_STR_SIZE);;
         }
             break;
         case OP_GET_HWVERSION:{
             std::string ver;
             out->result = getHWVersion(cmd,in->axis, ver);
-            DBG <<"Got HW Version:\""<<ver;
+            DBGO <<"Got HW Version:\""<<ver;
             strncpy(out->str,ver.c_str(),MAX_STR_SIZE);;
         }
             break;
@@ -488,7 +493,7 @@ MsgManagmentResultType::MsgManagmentResult ChaosActuatorOpcodeLogic::execOpcode(
 
         case OP_SETPARAMETER:
 	out->result = this->setParameter(cmd,in->axis,in->str,in->str2);
-	DBG << "Sending SetParameter  " << in->str2 <<"  on Parameter " << in->str <<" axis " <<in->axis
+	DBGO << "Sending SetParameter  " << in->str2 <<"  on Parameter " << in->str <<" axis " <<in->axis
 	<< " result " << out->result ;
         break;
 
@@ -496,7 +501,7 @@ MsgManagmentResultType::MsgManagmentResult ChaosActuatorOpcodeLogic::execOpcode(
                 std::string tempString;
                 out->result=this->getParameter(cmd,in->axis,in->str,tempString);
                 strncpy(out->str,tempString.c_str(),JSON_MAX_SIZE);
-                DBG << "GetParameter asked for " << in->str << " received " <<out->str;
+                DBGO << "GetParameter asked for " << in->str << " received " <<out->str;
         }
         break;
        
@@ -504,7 +509,7 @@ MsgManagmentResultType::MsgManagmentResult ChaosActuatorOpcodeLogic::execOpcode(
         case OP_GET_FEATURE:{
             uint64_t feat=getFeatures(cmd);
             out->alarm_mask=feat;
-            DBG<<"Got Features:"<<feat;
+            DBGO<<"Got Features:"<<feat;
         }
             break;
           
@@ -512,5 +517,7 @@ MsgManagmentResultType::MsgManagmentResult ChaosActuatorOpcodeLogic::execOpcode(
             ERR<<"Opcode not supported:"<<cmd->opcode;
 	    break;
     }
+    DBGO<<cmd->opcode<<" RETURNED:"<<result;
+
     return result;
 }

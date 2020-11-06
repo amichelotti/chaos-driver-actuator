@@ -362,7 +362,7 @@ void ::driver::actuator::SCActuatorControlUnit::unitDefineActionAndDataset()
     throw chaos::CException(-1, "Cannot retrieve the requested driver", __FUNCTION__);
   }
 
-  actuator_drv = new chaos::driver::actuator::ChaosActuatorInterface(actuator_accessor);
+  actuator_drv = new chaos::driver::actuator::ChaosActuatorInterface(actuator_accessor,getDeviceID());
   if (actuator_drv == NULL)
   {
     throw chaos::CException(-2, "Cannot allocate driver resources", __FUNCTION__);
@@ -602,7 +602,7 @@ if(hasPoi){
 // Abstract method for the initialization of the control unit
 void ::driver::actuator::SCActuatorControlUnit::unitInit()
 {
-  SCCUDBG << "Starting unitInit";
+  SCCUDBG << "unitInit";
   std::string state_str;
   int err = -1;
   int state_id;
@@ -619,16 +619,6 @@ void ::driver::actuator::SCActuatorControlUnit::unitInit()
   }
   int32_t *inSteps = getAttributeCache()->getRWPtr<int32_t>(DOMAIN_OUTPUT, "useSteps");
  // char* auxData = getAttributeCache()->getRWPtr<char>(DOMAIN_CUSTOM, "auxiliaryDataset");
-  chaos::cu::driver_manager::driver::DriverAccessor *actuator_accessor = getAccessoInstanceByIndex(0);
-  if (actuator_accessor == NULL)
-  {
-    throw chaos::CFatalException(-1, "Cannot retrieve the requested driver", __FUNCTION__);
-  }
-  actuator_drv = new chaos::driver::actuator::ChaosActuatorInterface(actuator_accessor);
-  if (actuator_drv == NULL)
-  {
-    throw chaos::CFatalException(-2, "Cannot allocate driver resources", __FUNCTION__);
-  }
 
 
  // use the JSON configuration parameter on device driver param
@@ -665,12 +655,14 @@ void ::driver::actuator::SCActuatorControlUnit::unitInit()
   getAttributeCache()->setOutputDomainAsChanged();
   getAttributeCache()->setInputDomainAsChanged();
   getAttributeCache()->setCustomDomainAsChanged();
-  metadataLogging(chaos::common::metadata_logging::StandardLoggingChannel::LogLevelInfo, boost::str(boost::format("Initialization of axis '%1% done  ") % *axID ));
+  metadataLogging(chaos::common::metadata_logging::StandardLoggingChannel::LogLevelInfo, boost::str(boost::format("Initialization of axis '%1%' done  ") % *axID ));
 }
 
 // Abstract method for the start of the control unit
 void ::driver::actuator::SCActuatorControlUnit::unitStart()
 {
+    SCCUDBG << "Starting";
+
 }
 
 // Abstract method for the stop of the control unit

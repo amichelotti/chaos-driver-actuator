@@ -170,7 +170,7 @@ void AbstractActuatorCommand::setHandler(c_data::CDataWrapper *data) {
 	chaos::cu::driver_manager::driver::DriverAccessor *actuator_accessor = driverAccessorsErogator->getAccessoInstanceByIndex(0);
 	if(actuator_accessor != NULL) {
 		if(actuator_drv == NULL){
-			actuator_drv = new chaos::driver::actuator::ChaosActuatorInterface(actuator_accessor);
+			actuator_drv = new chaos::driver::actuator::ChaosActuatorInterface(actuator_accessor,getDeviceID());
 		}
 	}
 }
