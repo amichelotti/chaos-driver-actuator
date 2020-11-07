@@ -393,7 +393,7 @@ MsgManagmentResultType::MsgManagmentResult ChaosActuatorOpcodeLogic::execOpcode(
     cmd->ret = 0;
     memset(cmd->err_msg, 0, 255);
     memset(cmd->err_dom, 0, 255);
-    DBGO<<" START OPCODE:"<<cmd->opcode<<" timeo:"<<in->timeout;
+   // DBGO<<" START OPCODE:"<<cmd->opcode<<" timeo:"<<in->timeout;
 
     switch(cmd->opcode) {
         case OP_INIT:
@@ -405,22 +405,22 @@ MsgManagmentResultType::MsgManagmentResult ChaosActuatorOpcodeLogic::execOpcode(
             out->result = sendDeinit(cmd);
             break;
         case OP_CONFIGAXIS:
-            DBGO<< "Configuring with:"<<in->str<<" timeo:"<<in->timeout;
+          //  DBGO<< "Configuring with:"<<in->str<<" timeo:"<<in->timeout;
             out->result= configAxis(cmd,(void*) in->str);
             break;
 
         case OP_GET_POSITION:
             out->result = getPosition(cmd, in->axis,(::common::actuators::AbstractActuator::readingTypes)in->ivalue,&out->fvalue0);
-            DBGO<< "Got Position :"<< out->fvalue0;
+      //      DBGO<< "Got Position :"<< out->fvalue0;
             break;
 
         case OP_RESET_ALARMS:
-            DBGO<< "Reset alarms to:"<<in->alarm_mask << std::endl;
+       //     DBGO<< "Reset alarms to:"<<in->alarm_mask << std::endl;
             out->result = resetAlarms(cmd, in->axis,in->alarm_mask);
             break;
 
         case OP_HARD_RESET:
-            DBGO<< "HARD Reset in axis "<< in->axis << std::endl;
+        //    DBGO<< "HARD Reset in axis "<< in->axis << std::endl;
             out->result = hardreset(cmd,in->axis,in->ivalue);
             break;
  	case OP_GET_ALARMS:
@@ -428,56 +428,56 @@ MsgManagmentResultType::MsgManagmentResult ChaosActuatorOpcodeLogic::execOpcode(
 		std::string desc;
             out->result = getAlarms(cmd,in->axis, &out->alarm_mask,desc);
 			strncpy(out->str,desc.c_str(),MAX_STR_SIZE);
-            DBGO<<"Got alarms to: "<<out->alarm_mask << desc;
+       //     DBGO<<"Got alarms to: "<<out->alarm_mask << desc;
             }
             break;
        
         case OP_MOVE_RELATIVE_MM:
-	    DBGO<< "Move relative offset: "<<in->fvalue0;
+	//    DBGO<< "Move relative offset: "<<in->fvalue0;
             out->result = moveRelative(cmd,in->axis,in->fvalue0);
             break;
 
         case OP_MOVE_ABSOLUTE_MM:
-            DBGO<< "Move Absolute to position "<<in->fvalue0;
+       //     DBGO<< "Move Absolute to position "<<in->fvalue0;
             out->result = moveAbsolute(cmd,in->axis, in->fvalue0);
             break;
 
         case OP_STOP_MOTION: //stop motion
             out->result = stopMotion(cmd, in->axis);
-			DBGO<< "Stop Motion: result "<<out->result;
+		//	DBGO<< "Stop Motion: result "<<out->result;
             break;
 
         case OP_HOMING: 
             out->result = this->homing(cmd,in->axis,  (::common::actuators::AbstractActuator::homingType)in->ivalue );
-	DBGO<< "Set homing, homing type: "<< in->ivalue << "result is " << out->result;
+	// DBGO<< "Set homing, homing type: "<< in->ivalue << "result is " << out->result;
            break;
 		case OP_POWERON:
-        	DBGO<<"poweron" << in->axis;
+     //   	DBGO<<"poweron" << in->axis;
 
             out->result = poweron(cmd, in->axis,in->ivalue);
-			DBGO<<"Set Power" << in->ivalue <<" , result:"<< out->result;
+	//		DBGO<<"Set Power" << in->ivalue <<" , result:"<< out->result;
             break;
 		 case OP_GET_STATE:{
             std::string desc;
-            DBGO<<"getState axis:" << in->axis;
+      //      DBGO<<"getState axis:" << in->axis;
 
             out->result = getState(cmd,in->axis, &out->ivalue,desc);
             strncpy(out->str,desc.c_str(),MAX_STR_SIZE);
-            DBGO<<"Got State: "<<out->ivalue<<" \""<<desc<<"\"";
+      //      DBGO<<"Got State: "<<out->ivalue<<" \""<<desc<<"\"";
 			break;
 						   }
 	    case OP_GET_SWVERSION:{
             std::string ver;
 
             out->result = getSWVersion(cmd, in->axis,ver);
-            DBGO <<"Got SW Version:\""<<ver;
+     //       DBGO <<"Got SW Version:\""<<ver;
             strncpy(out->str,ver.c_str(),MAX_STR_SIZE);;
         }
             break;
         case OP_GET_HWVERSION:{
             std::string ver;
             out->result = getHWVersion(cmd,in->axis, ver);
-            DBGO <<"Got HW Version:\""<<ver;
+     //       DBGO <<"Got HW Version:\""<<ver;
             strncpy(out->str,ver.c_str(),MAX_STR_SIZE);;
         }
             break;
@@ -493,15 +493,14 @@ MsgManagmentResultType::MsgManagmentResult ChaosActuatorOpcodeLogic::execOpcode(
 
         case OP_SETPARAMETER:
 	out->result = this->setParameter(cmd,in->axis,in->str,in->str2);
-	DBGO << "Sending SetParameter  " << in->str2 <<"  on Parameter " << in->str <<" axis " <<in->axis
-	<< " result " << out->result ;
+//	DBGO << "Sending SetParameter  " << in->str2 <<"  on Parameter " << in->str <<" axis " <<in->axis<< " result " << out->result ;
         break;
 
         case OP_GETPARAMETER: {
                 std::string tempString;
                 out->result=this->getParameter(cmd,in->axis,in->str,tempString);
                 strncpy(out->str,tempString.c_str(),JSON_MAX_SIZE);
-                DBGO << "GetParameter asked for " << in->str << " received " <<out->str;
+      //          DBGO << "GetParameter asked for " << in->str << " received " <<out->str;
         }
         break;
        
@@ -509,7 +508,7 @@ MsgManagmentResultType::MsgManagmentResult ChaosActuatorOpcodeLogic::execOpcode(
         case OP_GET_FEATURE:{
             uint64_t feat=getFeatures(cmd);
             out->alarm_mask=feat;
-            DBGO<<"Got Features:"<<feat;
+      //      DBGO<<"Got Features:"<<feat;
         }
             break;
           
@@ -517,7 +516,7 @@ MsgManagmentResultType::MsgManagmentResult ChaosActuatorOpcodeLogic::execOpcode(
             ERR<<"Opcode not supported:"<<cmd->opcode;
 	    break;
     }
-    DBGO<<cmd->opcode<<" RETURNED:"<<result;
+  //  DBGO<<cmd->opcode<<" RETURNED:"<<result;
 
     return result;
 }
