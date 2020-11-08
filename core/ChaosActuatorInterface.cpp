@@ -17,7 +17,6 @@ actuator_oparams_t ret;\
 actuator_iparams_t idata;\
 memset(&ret,0,sizeof(ret));memset(&idata,0,sizeof(idata));\
 ret.result=DRV_BYPASS_DEFAULT_CODE;\
-SCCUDBG<<"sending opcode:"<<op;\
 strncpy(idata.cuname,owner.c_str(),MAX_STR_SIZE);\
 message.opcode = op; \
 message.inputData=(void*)&idata;\
@@ -32,7 +31,6 @@ PREPARE_OP_RET_INT_TIMEOUT(op,timeout); \
 idata.ivalue=ival; \
 ret.fvalue0=*pfval;\
 accessor->send(&message); \
-SCCUDBG<<"received from opcode:"<<op;\
 *pfval = ret.fvalue0; \
 return ret.result; 
 
