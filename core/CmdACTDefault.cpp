@@ -102,7 +102,7 @@ void CmdACTDefault::acquireHandler() {
         
       
         
-	CMDCUDBG_ << "Acquiring data";
+//	CMDCUDBG_ << "Acquiring data";
         
         
         //acquire the current readout

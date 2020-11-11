@@ -135,7 +135,7 @@ cu_driver::MsgManagmentResultType::MsgManagmentResult ChaosActuatorDD::execOpcod
      */       
         case OP_GET_POSITION:
             out->result=motor->getPosition(in->axis,(::common::actuators::AbstractActuator::readingTypes)in->ivalue,&out->fvalue0);
-            ACDBG<<"Got Position :"<< out->fvalue0;
+          //  ACDBG<<"Got Position :"<< out->fvalue0;
             break; 
             
         case OP_RESET_ALARMS:
@@ -150,7 +150,7 @@ cu_driver::MsgManagmentResultType::MsgManagmentResult ChaosActuatorDD::execOpcod
 	    std::string desc;
             out->result = motor->getAlarms(in->axis,&out->alarm_mask,desc);
             strncpy(out->str,desc.c_str(),MAX_STR_SIZE);
-            ACDBG<<"Got alarms to: "<<out->alarm_mask << desc;
+        //    ACDBG<<"Got alarms to: "<<out->alarm_mask << desc;
             break;
            }
             
@@ -185,7 +185,7 @@ cu_driver::MsgManagmentResultType::MsgManagmentResult ChaosActuatorDD::execOpcod
             std::string desc;
             out->result = motor->getState(in->axis,&out->ivalue,desc);
             strncpy(out->str,desc.c_str(),MAX_STR_SIZE);
-            ACDBG<<"Got State: "<<out->ivalue<<" \""<<desc;
+        //    ACDBG<<"Got State: "<<out->ivalue<<" \""<<desc;
             break;
         }
             
@@ -235,7 +235,7 @@ cu_driver::MsgManagmentResultType::MsgManagmentResult ChaosActuatorDD::execOpcod
         case OP_GET_FEATURE:{
             uint64_t feat=motor->getFeatures();
             out->alarm_mask=feat;
-            ACDBG<<"Got Features:"<<feat;
+       //     ACDBG<<"Got Features:"<<feat;
         }
             break;
         
