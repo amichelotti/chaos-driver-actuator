@@ -156,7 +156,7 @@ void AbstractActuatorCommand::setHandler(c_data::CDataWrapper *data) {
 	readTyp=(::common::actuators::AbstractActuator::readingTypes) *tmpInt;
 
 
-	i_speed = ( double*) getAttributeCache()->getROPtr<double>(DOMAIN_INPUT, "speed");
+	//i_speed = ( double*) getAttributeCache()->getROPtr<double>(DOMAIN_INPUT, "speed");
 	
 
 	p_setTimeout = getAttributeCache()->getROPtr<uint32_t>(DOMAIN_INPUT, "setTimeout");

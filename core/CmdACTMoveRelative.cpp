@@ -112,9 +112,9 @@ void own::CmdACTMoveRelative::setHandler(c_data::CDataWrapper *data) {
 	double realSpeed=0;
 	if ((err = actuator_drv->getParameter(*axID,"speed",retStr)) != 0)
 	{
-	    	//SCLDBG_ << "ALEDEBUG failed to read speed from driver";
-	   	metadataLogging(chaos::common::metadata_logging::StandardLoggingChannel::LogLevelWarning,"Warning cannot know the real speed of motor. Using DB value instead");
-	   	realSpeed=(*i_speed);
+	   	//SCLDBG_ << "ALEDEBUG failed to read speed from driver";
+	   	metadataLogging(chaos::common::metadata_logging::StandardLoggingChannel::LogLevelWarning,"Warning cannot know the real speed of motor. Using setTimeout parameter for calculating timeout");
+	   	realSpeed=0;
     }
     else
     {
@@ -128,10 +128,15 @@ void own::CmdACTMoveRelative::setHandler(c_data::CDataWrapper *data) {
 	{
 		computed_timeout  = uint64_t((offset_mm / realSpeed)*1000000) + DEFAULT_MOVE_TIMETOL_OFFSET_MS;
 		computed_timeout=std::max(computed_timeout,(uint64_t)*p_setTimeout);
+		SCLDBG_ << "Calculated timeout is = " << computed_timeout;
 	}
-	else computed_timeout=(uint64_t)*p_setTimeout;
+	else
+	{
+		computed_timeout = (uint64_t)*p_setTimeout;
+		SCLDBG_ << "Standard  timeout used = " << computed_timeout;
+	}
 
-	SCLDBG_ << "Calculated timeout is = " << computed_timeout;
+	
 	setFeatures(chaos_batch::features::FeaturesFlagTypes::FF_SET_COMMAND_TIMEOUT, computed_timeout);
 
 

@@ -382,10 +382,10 @@ void ::driver::actuator::SCActuatorControlUnit::unitDefineActionAndDataset()
                         "position",
                         DataType::TYPE_DOUBLE,
                         DataType::Bidirectional);
-  addAttributeToDataSet("speed",
+  /*addAttributeToDataSet("speed",
                         "Speed",
                         DataType::TYPE_DOUBLE,
-                        DataType::Input);
+                        DataType::Input);*/
                       
   addAttributeToDataSet("LastHomingTime",
                         "timestamp with the last homing",
