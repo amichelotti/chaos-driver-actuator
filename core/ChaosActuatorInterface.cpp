@@ -47,13 +47,13 @@ return ret.result;
 #define WRITE_OP_INT_TIM_NORET(op,ival,timeout) \
 PREPARE_OP_RET_INT_TIMEOUT(op,timeout); \
 idata.ivalue=ival; \
- accessor->send(&message,100);	
+ accessor->send(&message);	
  
 #define WRITE_OP_AX_INT_TIM_NORET(op,ax,ival,timeout) \
 PREPARE_OP_RET_INT_TIMEOUT(op,timeout); \
 idata.axis=ax;\
 idata.ivalue=ival; \
- accessor->send(&message,100);	
+ accessor->send(&message);	
 
 
 /***************************/
@@ -62,14 +62,14 @@ PREPARE_OP_RET_INT_TIMEOUT(op,timeout); \
 idata.axis=ax;\
 idata.ivalue=ival; \
 ret.result=0;\
- accessor->send(&message,100);	\
+ accessor->send(&message);	\
 return ret.result;
 
 #define WRITE_OP_INT_TIM(op,ival,timeout) \
 PREPARE_OP_RET_INT_TIMEOUT(op,timeout); \
 idata.ivalue=ival; \
 ret.result=0;\
- accessor->send(&message,100);	\
+ accessor->send(&message);	\
 return ret.result;
 /***************************/
 #define WRITE_OP_64INT_TIM(op,ival,timeout) \
@@ -93,14 +93,14 @@ PREPARE_OP_RET_INT_TIMEOUT(op,timeout); \
 idata.axis=ax;\
 idata.fvalue0=fval;\
 ret.result=0;\
-accessor->send(&message,100);	\
+accessor->send(&message);	\
 return ret.result;
 
 #define WRITE_OP_FLOAT_TIM(op,fval,timeout) \
 PREPARE_OP_RET_INT_TIMEOUT(op,timeout); \
 idata.fvalue0=fval;\
 ret.result=0;\
-accessor->send(&message,100);	\
+accessor->send(&message);	\
 return ret.result;
 /***************************/
 #define WRITE_OP_AX_2FLOAT_TIM(op,ax,fval0,fval1,timeout) \
