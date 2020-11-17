@@ -212,7 +212,7 @@ int ChaosActuatorOpcodeLogic::hardreset(DrvMsgPtr cmd, int32_t axisID, bool mode
 int ChaosActuatorOpcodeLogic::listParameters(DrvMsgPtr cmd, std::string &dataset) {
 	CDWShrdPtr response;
     CDWUniquePtr data_pack(new CDataWrapper());
-	SEND_REQUEST_OPC("get_dataset",cmd, data_pack, response);
+	SEND_REQUEST_OPC("listParameters",cmd, data_pack, response);
     if(cmd->ret) {return cmd->ret;}
 	CHECK_KEY_IN_RESPONSE(response, "dataset", -2);
     dataset=response->getVariantValue("dataset").asString();
