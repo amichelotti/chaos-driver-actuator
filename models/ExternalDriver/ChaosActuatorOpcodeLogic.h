@@ -95,7 +95,7 @@ namespace chaos {
                  @return 0 if success or an error code
                  */
                 int getHWVersion(cu::driver_manager::driver::DrvMsgPtr cmd,int32_t axisID,std::string& version);
-                int sendDataset(cu::driver_manager::driver::DrvMsgPtr cmd,std::string& dataset);
+                int listParameters(cu::driver_manager::driver::DrvMsgPtr cmd,std::string& dataset);
 
 				 //int init(void*);
              

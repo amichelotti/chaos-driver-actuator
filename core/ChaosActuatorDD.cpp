@@ -73,66 +73,7 @@ cu_driver::MsgManagmentResultType::MsgManagmentResult ChaosActuatorDD::execOpcod
              ACDBG<< "Deinitializing";
              out->result = motor->deinit(in->axis);
             break;
-   /*     case OP_SET_TIMEOUT:
-            out->result= motor->setTimeout(in->axis,in->timeout);
-            ACDBG<<"Set timeout to:"<<in->timeout;
-            break;
-        
-        case OP_GET_TIMEOUT:
-            out->result= motor->getTimeout(in->axis,&out->alarm_mask);
-            ACDBG<<"Got timeout to: "<<out->alarm_mask;
-            break;
-            
-         case OP_SET_SPEED:
-            out->result= motor->setSpeed(in->fvalue0);
-            ACDBG<<"Set speed to:"<<in->fvalue0;
-            break;
-            
-         case OP_SET_MAX_SPEED:
-            //out->result= motor->setMaxSpeed(in->fvalue0);
-            ACDBG<<"Set max speed to:"<<in->fvalue0;
-            break;
-
-        case OP_SET_ACCELERATION:
-            out->result= motor->setAcceleration(in->fvalue0);
-            ACDBG<<"Set acceleration to:"<<in->fvalue0;
-            break;
-            
-        case OP_SET_ADDITIVE:
-            motor->setAdditive(in->ivalue);
-            ACDBG<<"Set additive to:"<<in->ivalue;
-            break;
-        
-        case OP_SET_REFERENCE:
-            out->result= motor->setReferenceBase(in->ivalue);
-            ACDBG<<"Set referenceBase to:"<<in->ivalue;
-            break;
-            
-        case OP_SET_MOVEMENT:
-            out->result= motor->setMovement(in->ivalue);
-            ACDBG<<"Set Movement to:"<<in->ivalue;
-            break;    
-            
-        case OP_SET_ACCELERATION_HOM:
-            out->result= motor->setAccelerationHoming(in->fvalue0);
-            ACDBG<<"Set acceleration for homing to:"<<in->fvalue0;
-            break;
-            
-        case OP_SET_ADDITIVE_HOM:
-            motor->setAdditiveHoming(in->ivalue);
-            ACDBG<<"Set additive for homing to:"<<in->ivalue;
-            break;
-        
-        case OP_SET_REFERENCE_HOM:
-            out->result= motor->setReferenceBaseHoming(in->ivalue);
-            ACDBG<<"Set referenceBase for homing to:"<<in->ivalue;
-            break;
-            
-        case OP_SET_MOVEMENT_HOM:
-            out->result= motor->setMovementHoming(in->ivalue);
-            ACDBG<<"Set Movement for homing to:"<<in->ivalue;
-            break;    
-     */       
+          
         case OP_GET_POSITION:
             out->result=motor->getPosition(in->axis,(::common::actuators::AbstractActuator::readingTypes)in->ivalue,&out->fvalue0);
           //  ACDBG<<"Got Position :"<< out->fvalue0;
@@ -205,9 +146,9 @@ cu_driver::MsgManagmentResultType::MsgManagmentResult ChaosActuatorDD::execOpcod
 
             break;
         }            
-        case OP_SENDDATASET:{
+        case OP_LISTPARAMETERS:{
         std::string dataset;
-	out->result=motor->sendDataset(dataset);
+	out->result=motor->listParameters(dataset);
 	//ACDBG << "ALEDEBUG: Received dataset " <<  dataset;
         strncpy(out->str,dataset.c_str(),JSON_MAX_SIZE);
 	break;

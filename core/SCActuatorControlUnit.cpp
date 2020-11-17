@@ -468,7 +468,7 @@ if(hasPoi){
 
 }
   std::string dataset;
-  actuator_drv->sendDataset(dataset);
+  actuator_drv->listParameters(dataset);
   SCCUDBG << "DATASETVARIABLE getting dataset from driver :'"<< dataset<<"'";
   
   if(dataset.size()){

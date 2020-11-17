@@ -37,7 +37,7 @@ namespace chaos {
 
                 OP_SETPARAMETER, //
 				OP_GETPARAMETER,
-                OP_SENDDATASET, //
+                OP_LISTPARAMETERS, //
                 OP_CONFIGAXIS, //
                 OP_GET_POSITION,
                 OP_RESET_ALARMS,
@@ -191,7 +191,7 @@ namespace chaos {
                  @return 0 if success or an error code
                  */
                 int getHWVersion(int32_t axisID,std::string& version);
-                int sendDataset(std::string& dataset);
+                int listParameters(std::string& dataset);
 
             
                 /**

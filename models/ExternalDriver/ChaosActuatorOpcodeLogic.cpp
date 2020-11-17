@@ -209,7 +209,7 @@ int ChaosActuatorOpcodeLogic::hardreset(DrvMsgPtr cmd, int32_t axisID, bool mode
 
 
 
-int ChaosActuatorOpcodeLogic::sendDataset(DrvMsgPtr cmd, std::string &dataset) {
+int ChaosActuatorOpcodeLogic::listParameters(DrvMsgPtr cmd, std::string &dataset) {
 	CDWShrdPtr response;
     CDWUniquePtr data_pack(new CDataWrapper());
 	SEND_REQUEST_OPC("get_dataset",cmd, data_pack, response);
@@ -483,9 +483,9 @@ MsgManagmentResultType::MsgManagmentResult ChaosActuatorOpcodeLogic::execOpcode(
             break;
 
 
-        case OP_SENDDATASET: {
+        case OP_LISTPARAMETERS: {
 	std::string dataset;
-	out->result = this->sendDataset(cmd,dataset);
+	out->result = this->listParameters(cmd,dataset);
         strncpy(out->str,dataset.c_str(),JSON_MAX_SIZE);
         }
         break;

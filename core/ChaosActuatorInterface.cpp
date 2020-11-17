@@ -373,9 +373,9 @@ int ChaosActuatorInterface::getState(int32_t axisID,int* state,std::string& desc
 }
 
 
-int ChaosActuatorInterface::sendDataset(std::string& dataset){
+int ChaosActuatorInterface::listParameters(std::string& dataset){
     int state=0;
-    READ_OP_INT_STRING_TIM(OP_SENDDATASET, &state, dataset, GeneralTimeout);
+    READ_OP_INT_STRING_TIM(OP_LISTPARAMETERS, &state, dataset, GeneralTimeout);
 }
 
 int ChaosActuatorInterface::getSWVersion(int32_t axisID,std::string& ver){
