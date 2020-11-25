@@ -31,7 +31,7 @@
 #define INFO INFO_LOG(ChaosActuatorOpcodeLogic)
 #define ERR ERR_LOG(ChaosActuatorOpcodeLogic)
 #define DBG DBG_LOG(ChaosActuatorOpcodeLogic)
-#define DBGO DBG_LOG(ChaosActuatorOpcodeLogic) <<"["<<in->cuname<<"]- "<<cmd->id<<" -"
+#define DBGO DBG_LOG(ChaosActuatorOpcodeLogic) <<"- "<<cmd->id<<" -"
 
 using namespace chaos::driver::actuator;
 using namespace chaos::common::data;
@@ -386,13 +386,15 @@ int ChaosActuatorOpcodeLogic::setAdditive(DrvMsgPtr cmd, bool isAdditive) {
 }
 //! Execute a command
 MsgManagmentResultType::MsgManagmentResult ChaosActuatorOpcodeLogic::execOpcode(DrvMsgPtr cmd) {
+     boost::mutex::scoped_lock lock(io_mux);
+
     MsgManagmentResultType::MsgManagmentResult result = MsgManagmentResultType::MMR_EXECUTED;
     actuator_iparams_t *in = (actuator_iparams_t *)cmd->inputData;
     actuator_oparams_t *out = (actuator_oparams_t *)cmd->resultData;
     cmd->ret = 0;
     memset(cmd->err_msg, 0, 255);
     memset(cmd->err_dom, 0, 255);
-   // DBGO<<" START OPCODE:"<<cmd->opcode<<" timeo:"<<in->timeout;
+ //   DBGO<<" START OPCODE:"<<cmd->opcode<<" timeo:"<<in->timeout;
 
     switch(cmd->opcode) {
         case OP_INIT:
@@ -404,7 +406,7 @@ MsgManagmentResultType::MsgManagmentResult ChaosActuatorOpcodeLogic::execOpcode(
             out->result = sendDeinit(cmd);
             break;
         case OP_CONFIGAXIS:
-          //  DBGO<< "Configuring with:"<<in->str<<" timeo:"<<in->timeout;
+            DBGO<< "Configuring with:"<<in->str<<" timeo:"<<in->timeout;
             out->result= configAxis(cmd,(void*) in->str);
             break;
 

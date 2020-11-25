@@ -30,6 +30,8 @@ namespace chaos {
 			class ChaosActuatorOpcodeLogic: 
 				public chaos::cu::driver_manager::driver::OpcodeExternalCommandMapper {
             protected:
+                             boost::mutex io_mux;
+
          //       int sendInit(cu::driver_manager::driver::DrvMsgPtr cmd);
                 
           //      int sendDeinit(cu::driver_manager::driver::DrvMsgPtr cmd);
