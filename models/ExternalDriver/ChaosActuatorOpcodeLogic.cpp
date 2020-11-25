@@ -291,7 +291,6 @@ int ChaosActuatorOpcodeLogic::getState(DrvMsgPtr cmd, int32_t axisID, int *state
 	CDWShrdPtr response;
     CDWUniquePtr para_pack(new CDataWrapper());
 	para_pack->addInt32Value("axisID", axisID);
-    DBG<<"getHWVersion "<<axisID;
 
 	SEND_REQUEST_OPC("get_state",cmd, para_pack, response);
     if(response.get()){DBG << response->getJSONString();}
