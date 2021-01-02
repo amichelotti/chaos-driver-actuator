@@ -22,6 +22,7 @@ namespace driver {
 #define MAX_STR_SIZE 256
 #define JSON_MAX_SIZE 8192
 namespace actuator {
+  class ChaosActuatorDD;
 typedef enum {
   OP_INIT = chaos_driver::OpcodeType::OP_USER, // init low level driver
   OP_DEINIT,                                   // deinit low level driver
@@ -87,21 +88,22 @@ protected:
 public:
   ChaosActuatorInterface(chaos_driver::DriverAccessor *_accessor,
                          const std::string &_owner = "")
-      : owner(_owner), accessor(_accessor){};
+      : owner(_owner), accessor(_accessor){impl=(ChaosActuatorDD*)_accessor->getImpl();};
   chaos_driver::DriverAccessor *accessor;
+  ChaosActuatorDD*impl;
 
   /**
 @brief initialize and poweron the power supply
 @return 0 if success
 */
-  int init(void *);
+  int initACT(void *);
   /**
    @brief de-initialize the power supply and close the communication
    @return 0 if success
    */
   uint64_t setGeneralInterfaceTimeout(uint64_t timeo_ms);
   int configAxis(void *);
-  int deinit(int32_t axisID);
+  int deinitACT(int32_t axisID);
   int setTimeout(int32_t axisID, uint64_t timeo_ms);
   int getTimeout(int32_t axisID, uint64_t *timeo_ms);
 

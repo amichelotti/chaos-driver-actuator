@@ -70,7 +70,7 @@ void chaos::driver::actuator::TechnosoftMotor::driverInit(const chaos::common::d
     motor->jsonConfiguration.setSerializedJsonData(json.getCompliantJSONString().c_str());
 
    
-      if (  (ret=motor->init((void*)NULL)) < 0) 
+      if (  (ret=motor->initACT((void*)NULL)) < 0) 
       {
 	PSLAPP<<"Init Failed! ret:"<<ret<<std::endl;
 	throw chaos::CException(1, "Bad parameters for TechnosoftMotor","TechnosoftMotor::driverInit");
@@ -104,7 +104,7 @@ void chaos::driver::actuator::TechnosoftMotor::driverInit(const char *initParame
       // DA CAMBIARE DOVREBBE ESSERE ALLOCATO DA ACTUATORTECHNOSOFT
      
       int ret;
-      if (  (ret=motor->init((void*)initParameter)) < 0) 
+      if (  (ret=motor->initACT((void*)initParameter)) < 0) 
       {
 	PSLAPP<<"Init Failed of:" <<initParameter<<" ret:"<<ret<<std::endl;
 	throw chaos::CException(1, "Bad parameters for TechnosoftMotor","TechnosoftMotor::driverInit");

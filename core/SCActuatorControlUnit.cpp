@@ -681,7 +681,7 @@ void ::driver::actuator::SCActuatorControlUnit::unitDeinit()
   //SCCUAPP << "Power off ";
   //actuator_drv->poweron(*axID, 0);
   SCCUDBG << "deinitializing "<<*axID;
-  actuator_drv->deinit(*axID);
+  actuator_drv->deinitACT(*axID);
 }
 
 //! restore the control unit to snapshot

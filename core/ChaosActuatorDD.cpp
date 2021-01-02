@@ -19,7 +19,7 @@
  */
 #include "ChaosActuatorDD.h"
 
-#include "driver/actuator/core/ChaosActuatorInterface.h"
+#include "driver/actuator/core/ChaosActuatorDD.h"
 #include <boost/regex.hpp>
 #include <chaos/cu_toolkit/driver_manager/driver/AbstractDriverPlugin.h>
 #include <string>
@@ -51,142 +51,98 @@ ChaosActuatorDD::execOpcode(cu_driver::DrvMsgPtr cmd) {
 
   cu_driver::MsgManagmentResultType::MsgManagmentResult result =
       cu_driver::MsgManagmentResultType::MMR_EXECUTED;
-  actuator_iparams_t *in = (actuator_iparams_t *)cmd->inputData;
-  actuator_oparams_t *out = (actuator_oparams_t *)cmd->resultData;
-  if (motor == NULL) {
-    ACERR << "motor low level driver NULL, executing opcode:" << cmd->opcode;
-    return result;
-  }
-  switch (cmd->opcode) {
-  case OP_INIT:
-    ACDBG << "Initializing";
-    out->result = motor->init(in->str);
-    break;
-
-  case OP_CONFIGAXIS:
-    ACDBG << "Configuring " << in->str;
-    out->result = motor->configAxis(in->str);
-    break;
-  case OP_DEINIT:
-    ACDBG << "Deinitializing";
-    out->result = motor->deinit(in->axis);
-    break;
-
-  case OP_GET_POSITION: {
-
-    out->result = motor->getPosition(
-        in->axis,
-        (::common::actuators::AbstractActuator::readingTypes)in->ivalue,
-        &out->fvalue0);
-    //  ACDBG<<"Got Position :"<< out->fvalue0;
-    break;
-  }
-
-  case OP_RESET_ALARMS:
-    ACDBG << "Reset alarms to:" << in->alarm_mask << std::endl;
-    out->result = motor->resetAlarms(in->axis, in->alarm_mask);
-    break;
-  case OP_HARD_RESET:
-    ACDBG << "HARD Reset in axis " << in->axis << std::endl;
-    out->result = motor->hardreset(in->axis, in->ivalue);
-    break;
-  case OP_GET_ALARMS: {
-    std::string desc;
-    out->result = motor->getAlarms(in->axis, &out->alarm_mask, desc);
-    strncpy(out->str, desc.c_str(), MAX_STR_SIZE);
-    //    ACDBG<<"Got alarms to: "<<out->alarm_mask << desc;
-    break;
-  }
-
-  case OP_MOVE_RELATIVE_MM:
-    out->result = motor->moveRelative(in->axis, in->fvalue0);
-    ACDBG << "Move relative result:" << out->result;
-    break;
-
-  case OP_MOVE_ABSOLUTE_MM:
-    out->result = motor->moveAbsolute(in->axis, in->fvalue0);
-    ACDBG << "Moved Absolute result:" << out->result;
-    break;
-
-  case OP_STOP_MOTION:
-    ACDBG << "Before Stop Motion :" << std::endl;
-    out->result = motor->stopMotion(in->axis);
-    ACDBG << "Stop Motion, result:" << out->result;
-    break;
-
-  case OP_HOMING:
-    out->result = motor->homing(
-        in->axis,
-        (::common::actuators::AbstractActuator::homingType)in->ivalue);
-    ACDBG << "Set homing, homing type: " << in->ivalue << "result is "
-          << out->result;
-    break;
-
-  case OP_POWERON:
-    out->result = motor->poweron(in->axis, in->ivalue);
-    ACDBG << "Set Power" << in->ivalue << " , result:" << out->result;
-    break;
-
-  case OP_GET_STATE: {
-    std::string desc;
-    out->result = motor->getState(in->axis, &out->ivalue, desc);
-    strncpy(out->str, desc.c_str(), MAX_STR_SIZE);
-    //    ACDBG<<"Got State: "<<out->ivalue<<" \""<<desc;
-    break;
-  }
-
-  case OP_GET_SWVERSION: {
-    std::string ver;
-    out->result = motor->getSWVersion(in->axis, ver);
-    ACDBG << "Got HW Version:\"" << ver;
-    strncpy(out->str, ver.c_str(), MAX_STR_SIZE);
-    ;
-
-    break;
-  }
-  case OP_GET_HWVERSION: {
-    std::string ver;
-    out->result = motor->getHWVersion(in->axis, ver);
-    ACDBG << "Got SW Version:\"" << ver;
-    strncpy(out->str, ver.c_str(), MAX_STR_SIZE);
-    ;
-
-    break;
-  }
-  case OP_LISTPARAMETERS: {
-    std::string dataset;
-    out->result = motor->listParameters(dataset);
-    // ACDBG << "ALEDEBUG: Received dataset " <<  dataset;
-    strncpy(out->str, dataset.c_str(), JSON_MAX_SIZE);
-    break;
-  }
-  case OP_SETPARAMETER: {
-    std::string SS0(in->str);
-    std::string SS1(in->str2);
-    out->result = motor->setParameter(in->axis, SS0, SS1);
-
-    /*ACDBG << "ALEDEBUG: Sending Set " << SS1 << "  on Parameter " << SS0
-          << "axis " << in->axis;
-    ACDBG << "result " << out->result;*/
-    break;
-  }
-  case OP_GETPARAMETER: {
-    std::string tempString;
-    out->result = motor->getParameter(in->axis, in->str, tempString);
-
-    strncpy(out->str, tempString.c_str(), JSON_MAX_SIZE);
-    ACDBG << "ALEDEBUG (DD) asked for " << in->str << " received " << out->str;
-    break;
-  }
-
-  case OP_GET_FEATURE: {
-    uint64_t feat = motor->getFeatures();
-    out->alarm_mask = feat;
-    //     ACDBG<<"Got Features:"<<feat;
-  } break;
-
-  default:
-    ACERR << "Opcode not supported:" << cmd->opcode;
-  }
+  
   return result;
+}
+int ChaosActuatorDD::setTimeout(int32_t axisID,uint64_t timeo_ms) {
+    return 0;
+    
+}
+
+int ChaosActuatorDD::getTimeout(int32_t axisID,uint64_t* timeo_ms) {
+return 0;
+}
+
+int ChaosActuatorDD::getPosition(int32_t axisID,::common::actuators::AbstractActuator::readingTypes readingType,double *deltaPosition_mm) {
+    return motor->getPosition(axisID,readingType,deltaPosition_mm);
+}
+
+int ChaosActuatorDD::resetAlarms(int32_t axisID,uint64_t alrm){
+    return motor->resetAlarms(axisID,alrm);
+    
+}
+
+int ChaosActuatorDD::getAlarms(int32_t axisID,uint64_t*alrm,std::string& desc){
+    return motor->getAlarms(axisID,alrm,desc);
+}
+
+int ChaosActuatorDD::moveRelative(int32_t axisID,double mm) {
+    return motor->moveRelative(axisID,mm);  
+}
+int ChaosActuatorDD::moveAbsolute(int32_t axisID,double mm) {
+    return motor->moveAbsolute(axisID,mm);
+ 
+    
+}
+int ChaosActuatorDD::configAxis(void *ini){
+  return motor->configAxis(ini);
+}
+
+int ChaosActuatorDD::stopMotion(int32_t axisID){
+    return motor->stopMotion(axisID);
+    //DPRINT("ALEDEBUG STOP MOTION IN INTERFACE\n");
+}
+int ChaosActuatorDD::hardreset(int32_t axisID,bool mode){
+    return motor->hardreset(axisID,mode);
+}
+int ChaosActuatorDD::homing(int32_t axisID,homingType mode){
+    return motor->homing(axisID,mode);
+}
+
+
+int ChaosActuatorDD::poweron(int32_t axisID,int on){
+    return motor->poweron(axisID,on);
+}
+
+int ChaosActuatorDD::getState(int32_t axisID,int* state,std::string& desc){
+    return motor->getState(axisID,state,desc);
+
+}
+
+
+int ChaosActuatorDD::listParameters(std::string& dataset){
+    return motor->listParameters(dataset);
+}
+
+int ChaosActuatorDD::getSWVersion(int32_t axisID,std::string& ver){
+    return motor->getSWVersion(axisID,ver);
+}
+
+int ChaosActuatorDD::getHWVersion(int32_t axisID,std::string&ver){
+    return motor->getHWVersion(axisID,ver);
+
+}
+
+
+uint64_t ChaosActuatorDD::getFeatures() {
+  return motor->getFeatures();
+    
+}
+int ChaosActuatorDD::setParameter(int32_t axisID,const std::string parName,const std::string value) {
+  return motor->setParameter(axisID,parName,value);
+}
+
+
+int ChaosActuatorDD::getParameter(int axisID,std::string parName,std::string& resultString) {
+  return motor->getParameter(axisID,parName,resultString);
+}
+int ChaosActuatorDD::initACT(void*ini){
+  return motor->initACT(ini);
+
+
+}
+    
+int ChaosActuatorDD::deinitACT(int axisID){
+  return motor->deinitACT(axisID);
+
 }

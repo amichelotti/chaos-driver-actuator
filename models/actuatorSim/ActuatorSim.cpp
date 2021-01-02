@@ -69,7 +69,7 @@ void chaos::driver::actuator::ActuatorSim::driverInit(const chaos::common::data:
     
     motor->jsonConfiguration.setSerializedJsonData(json.getCompliantJSONString().c_str());
    
-      if (  (ret=motor->init(NULL)) < 0) 
+      if (  (ret=motor->initACT(NULL)) < 0) 
       {
 	ACTERR<<"Init Failed! ret:"<<ret<<std::endl;
 	throw chaos::CException(1, "Bad parameters for ActuatorSim","ActuatorSim::driverInit");
@@ -105,7 +105,7 @@ void chaos::driver::actuator::ActuatorSim::driverInit(const char *initParameter)
         ACTDBG<<"Setting jsonConfiguration to new empty " ;
 #ifdef INITDRIVER_DEF
       int ret;
-      if (  (ret=motor->init((void*)initParameter)) < 0) {
+      if (  (ret=motor->initACT((void*)initParameter)) < 0) {
 	ACTERR<<"Init Failed of:" <<initParameter<<" ret:"<<ret<<std::endl;
 	throw chaos::CException(1, "Bad parameters for ActuatorSim","ActuatorSim::driverInit");
       } else {
