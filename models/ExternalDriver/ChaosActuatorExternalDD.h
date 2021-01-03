@@ -25,7 +25,7 @@
 #include <chaos/cu_toolkit/driver_manager/driver/AbstractDriverPlugin.h>
 #include <chaos/cu_toolkit/driver_manager/driver/AbstractServerRemoteIODriver.h>
 #include <chaos/cu_toolkit/driver_manager/driver/OpcodeDriverWrapper.h>
-
+#include <driver/actuator/core/ChaosActuatorDD.h> 
 #include <common/actuators/core/AbstractActuator.h>
 // this need to be out the nasmespace
 DEFINE_CU_DRIVER_DEFINITION_PROTOTYPE(ChaosActuatorExternalDD)
@@ -38,8 +38,7 @@ namespace actuator {
 /*
  driver definition
  */
-class ChaosActuatorExternalDD : ADD_CU_DRIVER_PLUGIN_SUPERCLASS,
-                                public ::common::actuators::AbstractActuator {
+class ChaosActuatorExternalDD : public ChaosActuatorDD {
 
 protected:
   // chaos::cu::driver_manager::driver::AbstractClientRemoteIODriver
