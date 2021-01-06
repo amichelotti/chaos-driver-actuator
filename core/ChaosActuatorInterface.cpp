@@ -296,13 +296,13 @@ SEND_AND_RETURN
 /***************************/
 #define ACT_STD_TIMEOUT 4999
 uint64_t GeneralTimeout = ACT_STD_TIMEOUT;
-int ChaosActuatorInterface::initACT(void*d){
-    return impl->initACT(d);
+int ChaosActuatorInterface::initACT(int axis,void*d){
+    return impl->initACT(axis,d);
    // WRITE_OP_STRING_TIM(OP_INIT,(char*)d, GeneralTimeout);
 }
-int ChaosActuatorInterface::configAxis(void*d){
+int ChaosActuatorInterface::configAxis(int axis,void*d){
     //WRITE_OP_STRING_TIM(OP_CONFIGAXIS,(char*)d,60000);
-    return impl->configAxis(d);
+    return impl->configAxis(axis,d);
 }
 
 int ChaosActuatorInterface::deinitACT(int32_t axisID){

@@ -620,9 +620,11 @@ void ::driver::actuator::SCActuatorControlUnit::unitInit()
   int32_t *inSteps = getAttributeCache()->getRWPtr<int32_t>(DOMAIN_OUTPUT, "useSteps");
  // char* auxData = getAttributeCache()->getRWPtr<char>(DOMAIN_CUSTOM, "auxiliaryDataset");
 
-
+ if ((err = actuator_drv->initACT(*axID,(void *)NULL)) != 0){
+    throw chaos::CFatalException(err, "Cannot init axis " + getDeviceID(), __FUNCTION__);
+  }
  // use the JSON configuration parameter on device driver param
- if ((err = actuator_drv->configAxis((void *)NULL)) != 0){
+ if ((err = actuator_drv->configAxis(*axID,(void *)NULL)) != 0){
     throw chaos::CFatalException(err, "Cannot configure axis " + getDeviceID(), __FUNCTION__);
   }
   *homingDone = 0;

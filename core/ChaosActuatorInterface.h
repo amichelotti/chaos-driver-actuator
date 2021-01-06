@@ -96,13 +96,13 @@ public:
 @brief initialize and poweron the power supply
 @return 0 if success
 */
-  int initACT(void *);
+  int initACT(int axis,void *);
   /**
    @brief de-initialize the power supply and close the communication
    @return 0 if success
    */
   uint64_t setGeneralInterfaceTimeout(uint64_t timeo_ms);
-  int configAxis(void *);
+  int configAxis(int axis,void *);
   int deinitACT(int32_t axisID);
   int setTimeout(int32_t axisID, uint64_t timeo_ms);
   int getTimeout(int32_t axisID, uint64_t *timeo_ms);

@@ -52,7 +52,7 @@ public:
 
   void driverDeinit();
 
-  int configAxis(void *);
+  int configAxis(int axis,void *);
   int deinit(int32_t axisID);
   int setTimeout(int32_t axisID, uint64_t timeo_ms);
   int getTimeout(int32_t axisID, uint64_t *timeo_ms);
@@ -69,7 +69,7 @@ public:
   int setAdditiveHoming(bool isAdditive);
   int setReferenceBaseHoming(int32_t referenceBase);
   int setMovementHoming(int32_t movement);
-  int initACT(void*);
+  int initACT(int axis,void*);
     
   int deinitACT(int axisID);
   /**

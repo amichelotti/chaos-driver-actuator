@@ -84,8 +84,8 @@ int ChaosActuatorDD::moveAbsolute(int32_t axisID,double mm) {
  
     
 }
-int ChaosActuatorDD::configAxis(void *ini){
-  return motor->configAxis(ini);
+int ChaosActuatorDD::configAxis(int axis,void *ini){
+  return motor->configAxis(axis,ini);
 }
 
 int ChaosActuatorDD::stopMotion(int32_t axisID){
@@ -136,8 +136,8 @@ int ChaosActuatorDD::setParameter(int32_t axisID,const std::string parName,const
 int ChaosActuatorDD::getParameter(int axisID,std::string parName,std::string& resultString) {
   return motor->getParameter(axisID,parName,resultString);
 }
-int ChaosActuatorDD::initACT(void*ini){
-  return motor->initACT(ini);
+int ChaosActuatorDD::initACT(int axis,void*ini){
+  return motor->initACT(axis,ini);
 
 
 }

@@ -328,14 +328,15 @@ int ChaosActuatorExternalDD::getSWVersion( int32_t axisID, std::string &version)
     return 0;
 }
 
-int ChaosActuatorExternalDD::initACT(void*ini){
+int ChaosActuatorExternalDD::initACT(int axisID,void*ini){
 	boost::mutex::scoped_lock lock(io_mux);
 
 	CDWShrdPtr response;
 	try {
 		if(ini){
-		CDWUniquePtr para_pack(new CDataWrapper((const char*)ini));
-		//para_pack->addInt32Value("axisID", axisID);
+		CDWUniquePtr para_pack(new CDataWrapper());
+		para_pack->addInt32Value("axisID", axisID);
+		
 		SEND_REQUEST_OPC("init", para_pack, response);
 			return err;
 		}
@@ -358,11 +359,12 @@ int ChaosActuatorExternalDD::getHWVersion( int32_t axisID, std::string &version)
     return err;
 }
 
-int ChaosActuatorExternalDD::configAxis( void *configuration) {
+int ChaosActuatorExternalDD::configAxis( int axisID,void *configuration) {
 	boost::mutex::scoped_lock lock(io_mux);
 
 	CDWShrdPtr response;
     CDWUniquePtr para_pack(new CDataWrapper());
+	para_pack->addInt32Value("axisID", axisID);
 
     if(configuration){
 	    para_pack->addStringValue("configString",(char*)configuration);
