@@ -58,8 +58,11 @@ void own::CmdACTMoveAbsolute::setHandler(c_data::CDataWrapper *data) {
 	float positionToReach = 0.f;
 	AbstractActuatorCommand::setHandler(data);
 	readTyp=(::common::actuators::AbstractActuator::readingTypes) *tmpInt;
+	//setStateVariableSeverity(StateVariableTypeAlarmCU,"command_error", chaos::common::alarm::MultiSeverityAlarmLevelClear);// ********** aggiunto **************
 
 	if(performCheck()!=0){
+	//setStateVariableSeverity(StateVariableTypeAlarmCU,"command_error", chaos::common::alarm::MultiSeverityAlarmLevelHigh);
+
 		BC_FAULT_RUNNING_PROPERTY;
 		return;
 	}
@@ -74,7 +77,6 @@ void own::CmdACTMoveAbsolute::setHandler(c_data::CDataWrapper *data) {
 	//    tmpInt = (int*) getAttributeCache()->getROPtr<int32_t>(DOMAIN_INPUT, "readingType") ;
 	//    readTyp=(::common::actuators::AbstractActuator::readingTypes) *tmpInt;
 
-	setStateVariableSeverity(StateVariableTypeAlarmCU, "user_command_failed", chaos::common::alarm::MultiSeverityAlarmLevelClear);
 	setStateVariableSeverity(StateVariableTypeAlarmCU,"position_value_not_reached", chaos::common::alarm::MultiSeverityAlarmLevelClear);
 
 
@@ -97,7 +99,7 @@ void own::CmdACTMoveAbsolute::setHandler(c_data::CDataWrapper *data) {
 			ss<<"POI '"<<data->getStringValue(CMD_ACT_MOVE_POI)<<"' does not map to a value";
 			metadataLogging(chaos::common::metadata_logging::StandardLoggingChannel::LogLevelError,ss.str());
 			BC_FAULT_RUNNING_PROPERTY;
-			setStateVariableSeverity(StateVariableTypeAlarmCU, "user_command_failed", chaos::common::alarm::MultiSeverityAlarmLevelHigh);
+		//	setStateVariableSeverity(StateVariableTypeAlarmCU, "user_command_failed", chaos::common::alarm::MultiSeverityAlarmLevelHigh);
 
 			return;
 		}
@@ -105,7 +107,7 @@ void own::CmdACTMoveAbsolute::setHandler(c_data::CDataWrapper *data) {
 
 	} else {
 		metadataLogging(chaos::common::metadata_logging::StandardLoggingChannel::LogLevelError,"Position not specified ");
-		setStateVariableSeverity(StateVariableTypeAlarmCU, "user_command_failed", chaos::common::alarm::MultiSeverityAlarmLevelHigh);
+	//	setStateVariableSeverity(StateVariableTypeAlarmCU, "user_command_failed", chaos::common::alarm::MultiSeverityAlarmLevelHigh);
 		BC_FAULT_RUNNING_PROPERTY;
 		return;
 	}
@@ -127,7 +129,7 @@ void own::CmdACTMoveAbsolute::setHandler(c_data::CDataWrapper *data) {
 	if (!getDeviceDatabase()->isValid("position", positionToReach))
 	{
 		metadataLogging(chaos::common::metadata_logging::StandardLoggingChannel::LogLevelError,CHAOS_FORMAT("Final set point %1% outside the maximum/minimum" , % positionToReach ));
-		setStateVariableSeverity(StateVariableTypeAlarmCU, "user_command_failed", chaos::common::alarm::MultiSeverityAlarmLevelHigh);
+	//	setStateVariableSeverity(StateVariableTypeAlarmCU, "user_command_failed", chaos::common::alarm::MultiSeverityAlarmLevelHigh);
 
 		BC_FAULT_RUNNING_PROPERTY;
 		return;
@@ -146,8 +148,8 @@ void own::CmdACTMoveAbsolute::setHandler(c_data::CDataWrapper *data) {
 	double realSpeed=0;
     if ((err = actuator_drv->getParameter(*axID,"speed",retStr)) != 0)
     {
-    	metadataLogging(chaos::common::metadata_logging::StandardLoggingChannel::LogLevelWarning,"Warning cannot know the real speed of motor. Using DB value instead");
-    	realSpeed=(*i_speed);
+    	metadataLogging(chaos::common::metadata_logging::StandardLoggingChannel::LogLevelWarning,"Warning cannot know the real speed of motor. Using setTimeout parameter for calculating timeout");
+    	realSpeed=0;
 
     }
     else
@@ -160,8 +162,14 @@ void own::CmdACTMoveAbsolute::setHandler(c_data::CDataWrapper *data) {
 	{
 		computed_timeout  = uint64_t((deltaPosition / realSpeed)*1000000) + DEFAULT_MOVE_TIMETOL_OFFSET_MS;
 		computed_timeout = std::max(computed_timeout,(uint64_t)*p_setTimeout);
+		SCLDBG_ << "Calculated timeout is = " << computed_timeout;
 
-	}   else computed_timeout=(uint64_t)*p_setTimeout;
+	}
+	else
+	{
+		computed_timeout = (uint64_t)*p_setTimeout;
+		SCLDBG_ << "Standard  timeout used = " << computed_timeout;
+	}
 
 	SCLDBG_ << "Calculated timeout is = " << computed_timeout;
 	setFeatures(chaos_batch::features::FeaturesFlagTypes::FF_SET_COMMAND_TIMEOUT, computed_timeout);
@@ -189,7 +197,7 @@ void own::CmdACTMoveAbsolute::setHandler(c_data::CDataWrapper *data) {
 	SCLDBG_ << "o_position_sp is = " << *i_position;
 	if((err = actuator_drv->moveAbsolute(*axID,positionToReach)) != 0) {
 		metadataLogging(chaos::common::metadata_logging::StandardLoggingChannel::LogLevelError,CHAOS_FORMAT("axis %1% cannot perform absolute move to '%2%'",%*axID %positionToReach));
-		setStateVariableSeverity(StateVariableTypeAlarmCU,"user_command_failed", chaos::common::alarm::MultiSeverityAlarmLevelHigh);
+	//	setStateVariableSeverity(StateVariableTypeAlarmCU,"user_command_failed", chaos::common::alarm::MultiSeverityAlarmLevelHigh);
 		BC_FAULT_RUNNING_PROPERTY;
 		return;
 	}

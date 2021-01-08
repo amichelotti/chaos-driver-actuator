@@ -69,7 +69,8 @@ void CmdACTDefault::setHandler(c_data::CDataWrapper *data) {
 	CMDCUDBG_ << "Set Handler";
 	AbstractActuatorCommand::setHandler(data);
 	BackupAxID=*axID;
-	setStateVariableSeverity(StateVariableTypeAlarmCU,"command_error", chaos::common::alarm::MultiSeverityAlarmLevelClear);
+    /// SE LO RESETTI NON SI VEDE MAI
+	//////setStateVariableSeverity(StateVariableTypeAlarmCU,"command_error", chaos::common::alarm::MultiSeverityAlarmLevelClear);
 	CMDCUDBG_ << "After parental Set Handler";
 	//set the default scheduling to one seconds
 	//setFeatures(features::FeaturesFlagTypes::FF_SET_SCHEDULER_DELAY, (uint64_t)1000000);
@@ -101,7 +102,7 @@ void CmdACTDefault::acquireHandler() {
         
       
         
-	CMDCUDBG_ << "Acquiring data";
+//	CMDCUDBG_ << "Acquiring data";
         
         
         //acquire the current readout

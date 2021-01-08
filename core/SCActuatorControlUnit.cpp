@@ -362,7 +362,7 @@ void ::driver::actuator::SCActuatorControlUnit::unitDefineActionAndDataset()
     throw chaos::CException(-1, "Cannot retrieve the requested driver", __FUNCTION__);
   }
 
-  actuator_drv = new chaos::driver::actuator::ChaosActuatorInterface(actuator_accessor);
+  actuator_drv = new chaos::driver::actuator::ChaosActuatorInterface(actuator_accessor,getDeviceID());
   if (actuator_drv == NULL)
   {
     throw chaos::CException(-2, "Cannot allocate driver resources", __FUNCTION__);
@@ -385,8 +385,8 @@ void ::driver::actuator::SCActuatorControlUnit::unitDefineActionAndDataset()
   /*addAttributeToDataSet("speed",
                         "Speed",
                         DataType::TYPE_DOUBLE,
-                        DataType::Input);
-    */                    
+                        DataType::Input);*/
+                      
   addAttributeToDataSet("LastHomingTime",
                         "timestamp with the last homing",
                         DataType::TYPE_INT64,
@@ -468,7 +468,7 @@ if(hasPoi){
 
 }
   std::string dataset;
-  actuator_drv->sendDataset(dataset);
+  actuator_drv->listParameters(dataset);
   SCCUDBG << "DATASETVARIABLE getting dataset from driver :'"<< dataset<<"'";
   
   if(dataset.size()){
@@ -563,8 +563,10 @@ if(hasPoi){
   addStateVariable(StateVariableTypeAlarmCU, "command_error",
                    "Notify when a command action fails");
 
-  addStateVariable(StateVariableTypeAlarmCU, "user_command_failed",
-	  "Notify when a batch command action fails");
+/* supported in framework*/
+  /*addStateVariable(StateVariableTypeAlarmCU, "user_command_failed",
+	  "Notify when a batch command action fails");*/
+
   /***************************ALARMS******************************************/
   addStateVariable(StateVariableTypeAlarmDEV, "EMERGENCY_LOCK_ENABLED",
                    "Notify when the emergency lock is active");
@@ -600,7 +602,7 @@ if(hasPoi){
 // Abstract method for the initialization of the control unit
 void ::driver::actuator::SCActuatorControlUnit::unitInit()
 {
-  SCCUDBG << "Starting unitInit";
+  SCCUDBG << "unitInit";
   std::string state_str;
   int err = -1;
   int state_id;
@@ -617,20 +619,12 @@ void ::driver::actuator::SCActuatorControlUnit::unitInit()
   }
   int32_t *inSteps = getAttributeCache()->getRWPtr<int32_t>(DOMAIN_OUTPUT, "useSteps");
  // char* auxData = getAttributeCache()->getRWPtr<char>(DOMAIN_CUSTOM, "auxiliaryDataset");
-  chaos::cu::driver_manager::driver::DriverAccessor *actuator_accessor = getAccessoInstanceByIndex(0);
-  if (actuator_accessor == NULL)
-  {
-    throw chaos::CFatalException(-1, "Cannot retrieve the requested driver", __FUNCTION__);
-  }
-  actuator_drv = new chaos::driver::actuator::ChaosActuatorInterface(actuator_accessor);
-  if (actuator_drv == NULL)
-  {
-    throw chaos::CFatalException(-2, "Cannot allocate driver resources", __FUNCTION__);
-  }
 
-
+ if ((err = actuator_drv->initACT(*axID,(void *)NULL)) != 0){
+    throw chaos::CFatalException(err, "Cannot init axis " + getDeviceID(), __FUNCTION__);
+  }
  // use the JSON configuration parameter on device driver param
- if ((err = actuator_drv->configAxis((void *)NULL)) != 0){
+ if ((err = actuator_drv->configAxis(*axID,(void *)NULL)) != 0){
     throw chaos::CFatalException(err, "Cannot configure axis " + getDeviceID(), __FUNCTION__);
   }
   *homingDone = 0;
@@ -663,12 +657,14 @@ void ::driver::actuator::SCActuatorControlUnit::unitInit()
   getAttributeCache()->setOutputDomainAsChanged();
   getAttributeCache()->setInputDomainAsChanged();
   getAttributeCache()->setCustomDomainAsChanged();
-  metadataLogging(chaos::common::metadata_logging::StandardLoggingChannel::LogLevelInfo, boost::str(boost::format("Initialization of axis '%1% done  ") % *axID ));
+  metadataLogging(chaos::common::metadata_logging::StandardLoggingChannel::LogLevelInfo, boost::str(boost::format("Initialization of axis '%1%' done  ") % *axID ));
 }
 
 // Abstract method for the start of the control unit
 void ::driver::actuator::SCActuatorControlUnit::unitStart()
 {
+    SCCUDBG << "Starting";
+
 }
 
 // Abstract method for the stop of the control unit
@@ -687,7 +683,7 @@ void ::driver::actuator::SCActuatorControlUnit::unitDeinit()
   //SCCUAPP << "Power off ";
   //actuator_drv->poweron(*axID, 0);
   SCCUDBG << "deinitializing "<<*axID;
-  actuator_drv->deinit(*axID);
+  actuator_drv->deinitACT(*axID);
 }
 
 //! restore the control unit to snapshot
