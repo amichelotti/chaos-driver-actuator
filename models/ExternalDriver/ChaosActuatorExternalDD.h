@@ -1,9 +1,9 @@
 /*
- *      Actuator Device Driver
+ *      Actuator Device Driver External
  *	!CHAOS
- *	Created by Alessandro D'Uffizi
+ *	Created by Andrea Michelotti
  *
- *    	Copyright 2013 INFN, National Institute of Nuclear Physics
+ *    	Copyright 2020 INFN, National Institute of Nuclear Physics
  *
  *    	Licensed under the Apache License, Version 2.0 (the "License");
  *    	you may not use this file except in compliance with the License.
@@ -17,16 +17,18 @@
  *    	See the License for the specific language governing permissions and
  *    	limitations under the License.
  */
-#ifndef __driver_ChaosActuatorDD_h__
-#define __driver_ChaosActuatorDD_h__
+#ifndef __driver_ChaosActuatorExternalDD_h__
+#define __driver_ChaosActuatorExternalDD_h__
 
 // include your class/functions headers here
 
 #include <chaos/cu_toolkit/driver_manager/driver/AbstractDriverPlugin.h>
+#include <chaos/cu_toolkit/driver_manager/driver/AbstractServerRemoteIODriver.h>
+#include <chaos/cu_toolkit/driver_manager/driver/OpcodeDriverWrapper.h>
+#include <driver/actuator/core/ChaosActuatorDD.h> 
 #include <common/actuators/core/AbstractActuator.h>
 // this need to be out the nasmespace
-
-DEFINE_CU_DRIVER_DEFINITION_PROTOTYPE(ChaosActuatorDD)
+DEFINE_CU_DRIVER_DEFINITION_PROTOTYPE(ChaosActuatorExternalDD)
 namespace cu_driver = chaos::cu::driver_manager::driver;
 
 namespace chaos {
@@ -36,24 +38,34 @@ namespace actuator {
 /*
  driver definition
  */
-class ChaosActuatorDD : ADD_CU_DRIVER_PLUGIN_SUPERCLASS,
-                        public ::common::actuators::AbstractActuator {
+class ChaosActuatorExternalDD : public ChaosActuatorDD {
 
 protected:
+  // chaos::cu::driver_manager::driver::AbstractClientRemoteIODriver
   boost::mutex io_mux;
-  ::common::actuators::AbstractActuator *motor;
-
+  chaos::cu::driver_manager::driver::AbstractClientRemoteIODriver client;
+  // chaos::cu::driver_manager::driver::OpcodeDriverWrapper<ChaosActuatorExternalDD,
+  // chaos::cu::driver_manager::driver::AbstractServerRemoteIODriver> client;
 public:
-  ChaosActuatorDD();
-  ~ChaosActuatorDD();
+  ChaosActuatorExternalDD();
+  ~ChaosActuatorExternalDD();
   //! Execute a command
   cu_driver::MsgManagmentResultType::MsgManagmentResult
   execOpcode(cu_driver::DrvMsgPtr cmd);
+  int asyncMessageReceived(chaos::common::data::CDWUniquePtr message);
+  void driverDeinit() throw(chaos::CException);
+  void driverInit(const char *) throw(chaos::CException);
 
-  void driverDeinit();
-
+  void driverInit(const chaos::common::data::CDataWrapper
+                      &init_parameter) throw(chaos::CException);
+  int initACT(int axis,void *);
+  /**
+   @brief de-initialize the power supply and close the communication
+   @return 0 if success
+   */
+  uint64_t setGeneralInterfaceTimeout(uint64_t timeo_ms);
   int configAxis(int axis,void *);
-  int deinit(int32_t axisID);
+  int deinitACT(int32_t axisID);
   int setTimeout(int32_t axisID, uint64_t timeo_ms);
   int getTimeout(int32_t axisID, uint64_t *timeo_ms);
 
@@ -69,9 +81,6 @@ public:
   int setAdditiveHoming(bool isAdditive);
   int setReferenceBaseHoming(int32_t referenceBase);
   int setMovementHoming(int32_t movement);
-  int initACT(int axis,void*);
-    
-  int deinitACT(int axisID);
   /**
       @brief return the value of the parameter specified in parName, currently
      inside the driver
