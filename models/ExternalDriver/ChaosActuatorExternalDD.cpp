@@ -296,7 +296,7 @@ int ChaosActuatorExternalDD::homing( int32_t axisID, ::common::actuators::Abstra
     return err;
 }
 int ChaosActuatorExternalDD::poweron( int32_t axisID, int on) {
-	boost::mutex::scoped_lock lock(io_mux);
+//	boost::mutex::scoped_lock lock(io_mux);
 
 	CDWShrdPtr response;
     CDWUniquePtr para_pack(new CDataWrapper());
@@ -309,7 +309,7 @@ int ChaosActuatorExternalDD::poweron( int32_t axisID, int on) {
 }
 
 int ChaosActuatorExternalDD::getState( int32_t axisID, int *state, std::string &desc) {
-	boost::mutex::scoped_lock lock(io_mux);
+	//boost::mutex::scoped_lock lock(io_mux);
 
 	CDWShrdPtr response;
     CDWUniquePtr para_pack(new CDataWrapper());
