@@ -123,6 +123,7 @@ WRITE_ERR_ON_CMD(c, -2, "'err' key not found on external driver return package",
 
 #define SEND_REQUEST_OPC(opc, r,a) \
 int err;{\
+DBG<<"sending:"<<r->getJSONString();\
 if((err=client.sendOpcodeRequest(opc,ChaosMoveOperator(r),a))) {\
 WRITE_ERR_ON_CMD(err, -1, "Error from from remote driver", __PRETTY_FUNCTION__);\
 }else {\
@@ -136,7 +137,7 @@ WRITE_ERR_ON_CMD(err, -1, "Error from from remote driver", __PRETTY_FUNCTION__);
     } else {\
     WRITE_ERR_ON_CMD(c, -2, "'err' key not found on external driver return package", __PRETTY_FUNCTION__);\
     }}\
-if(response.get()==NULL){ERR<<"EMPTY RESPONSE";return -1;}\
+if(response.get()==NULL){ERR<<"EMPTY RESPONSE";return -1;}else {DBG<<" response:"<<response->getJSONString();}\
 }
 
 #define CHECK_KEY_AND_TYPE_IN_RESPONSE(r, k, t, e1, e2)\
@@ -182,7 +183,7 @@ int ChaosActuatorExternalDD::setParameter(int axisID,std::string parName,std::st
 }
 
 int ChaosActuatorExternalDD::getPosition( int32_t axisID, ::common::actuators::AbstractActuator::readingTypes readingType, double *deltaPosition) {
-	     boost::mutex::scoped_lock lock(io_mux);
+//	     boost::mutex::scoped_lock lock(io_mux);
 
 	CDWShrdPtr response;
     CDWUniquePtr para_pack(new CDataWrapper());
@@ -236,7 +237,7 @@ int ChaosActuatorExternalDD::listParameters( std::string &dataset) {
 }
 
 int ChaosActuatorExternalDD::getAlarms( int32_t axisID, uint64_t *alrm, std::string &desc) {
-	boost::mutex::scoped_lock lock(io_mux);
+	//boost::mutex::scoped_lock lock(io_mux);
 
 	CDWShrdPtr response;
     CDWUniquePtr para_pack(new CDataWrapper());
@@ -253,7 +254,7 @@ int ChaosActuatorExternalDD::getAlarms( int32_t axisID, uint64_t *alrm, std::str
 }
 
 int ChaosActuatorExternalDD::moveRelative( int32_t axisID, double delta) {
-	boost::mutex::scoped_lock lock(io_mux);
+	//boost::mutex::scoped_lock lock(io_mux);
 
 	CDWShrdPtr response;
     CDWUniquePtr para_pack(new CDataWrapper());
@@ -264,7 +265,7 @@ int ChaosActuatorExternalDD::moveRelative( int32_t axisID, double delta) {
 }
 
 int ChaosActuatorExternalDD::moveAbsolute( int32_t axisID, double setPos) {
-	boost::mutex::scoped_lock lock(io_mux);
+//	boost::mutex::scoped_lock lock(io_mux);
 
 	CDWShrdPtr response;
     CDWUniquePtr para_pack(new CDataWrapper());
@@ -276,7 +277,7 @@ int ChaosActuatorExternalDD::moveAbsolute( int32_t axisID, double setPos) {
 
 
 int ChaosActuatorExternalDD::stopMotion( int32_t axisID) {
-	boost::mutex::scoped_lock lock(io_mux);
+//	boost::mutex::scoped_lock lock(io_mux);
 
 	CDWShrdPtr response;
     CDWUniquePtr para_pack(new CDataWrapper());
@@ -286,7 +287,7 @@ int ChaosActuatorExternalDD::stopMotion( int32_t axisID) {
 }
 
 int ChaosActuatorExternalDD::homing( int32_t axisID, ::common::actuators::AbstractActuator::homingType mode) {
-	boost::mutex::scoped_lock lock(io_mux);
+	//boost::mutex::scoped_lock lock(io_mux);
 
 	CDWShrdPtr response;
     CDWUniquePtr para_pack(new CDataWrapper());
@@ -302,9 +303,10 @@ int ChaosActuatorExternalDD::poweron( int32_t axisID, int on) {
     CDWUniquePtr para_pack(new CDataWrapper());
 	para_pack->addInt32Value("axisID", axisID);
 	para_pack->addInt32Value("on", on);
-    DBG<<"poweron "<<axisID;
+    //DBG<<"poweron "<<axisID;
 
 	SEND_REQUEST_OPC("poweron", para_pack, response);
+
     return err;
 }
 
