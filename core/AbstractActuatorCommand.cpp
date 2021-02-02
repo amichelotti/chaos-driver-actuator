@@ -80,13 +80,14 @@ void AbstractActuatorCommand::checkEndMove(){
 			setStateVariableSeverity(StateVariableTypeAlarmCU,"position_value_not_reached", chaos::common::alarm::MultiSeverityAlarmLevelWarning);
 			metadataLogging(chaos::common::metadata_logging::StandardLoggingChannel::LogLevelError,CHAOS_FORMAT("checkendmove stopping motion because motors seems not moving anymore,or without power motor axis %1% has stopped before reach setpoint, delta %2% %3%",%*axID %delta_position_reached %(((*o_status_id) & ::common::actuators::ACTUATOR_INMOTION)==0)));
 			
-			if ((err=actuator_drv->stopMotion(*axID))!= 0){
+			/*if ((err=actuator_drv->stopMotion(*axID))!= 0)
+			{
 						metadataLogging(chaos::common::metadata_logging::StandardLoggingChannel::LogLevelError,CHAOS_FORMAT("cannot stop motion on axis '%1%'",%*axID));
 						//supported in framework whenever FAULT_RUNNING 
 		//				setStateVariableSeverity(StateVariableTypeAlarmCU,"command_error", chaos::common::alarm::MultiSeverityAlarmLevelHigh);
 						BC_FAULT_RUNNING_PROPERTY;
 						return;
-			}
+			}*/
 			BC_FAULT_RUNNING_PROPERTY;
 		}
 }
