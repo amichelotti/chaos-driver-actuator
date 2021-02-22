@@ -248,5 +248,6 @@ metadataLogging(chaos::common::metadata_logging::StandardLoggingChannel::LogLeve
 		setStateVariableSeverity(StateVariableTypeAlarmCU,"position_value_not_reached", chaos::common::alarm::MultiSeverityAlarmLevelWarning);
 	}*/
 	BC_END_RUNNING_PROPERTY;
+
 	return false;
 }

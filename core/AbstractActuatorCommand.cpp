@@ -91,6 +91,7 @@ void AbstractActuatorCommand::checkEndMove(){
 			BC_FAULT_RUNNING_PROPERTY;
 		}
 }*/
+	getAttributeCache()->setOutputDomainAsChanged();
 
 }
 
