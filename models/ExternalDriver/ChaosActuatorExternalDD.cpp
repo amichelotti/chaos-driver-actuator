@@ -428,5 +428,6 @@ int ChaosActuatorExternalDD::setAdditive( bool isAdditive) {
 //! Execute a command
 MsgManagmentResultType::MsgManagmentResult ChaosActuatorExternalDD::execOpcode(DrvMsgPtr cmd) {
          ERR<<"Opcode not supported:"<<cmd->opcode;
+		 return MsgManagmentResultType::MMR_ERROR;
     
 }
