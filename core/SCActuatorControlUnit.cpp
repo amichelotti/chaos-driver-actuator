@@ -542,11 +542,7 @@ if(hasPoi){
   /***************************ALARMS******************************************/
  
 
-  addStateVariable(StateVariableTypeAlarmCU, "position_out_of_set",
-                   "Notify when a position has drifted away from set");
-
-  addStateVariable(StateVariableTypeAlarmCU, "position_value_not_reached",
-                   "Notify when a moving operation has failed to reach the final set point ");
+ 
 
   addStateVariable(StateVariableTypeAlarmCU, "powerOn_out_of_set",
                    "Notify when a poweOn state in out of set");

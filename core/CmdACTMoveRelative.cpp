@@ -141,8 +141,7 @@ void own::CmdACTMoveRelative::setHandler(c_data::CDataWrapper *data) {
 
 
 
-	setStateVariableSeverity(StateVariableTypeAlarmCU,"position_value_not_reached", chaos::common::alarm::MultiSeverityAlarmLevelClear);
-
+	
 	if(*o_stby==0){
 			// we are in standby only the SP is set
 			metadataLogging(chaos::common::metadata_logging::StandardLoggingChannel::LogLevelWarning,CHAOS_FORMAT("we are in standby we cannot start move to '%1%'",%*i_position));
@@ -200,7 +199,6 @@ bool own::CmdACTMoveRelative::timeoutHandler() {
 	}else {
 		//uint64_t elapsed_msec = chaos::common::utility::TimingUtil::getTimeStamp() - getSetTime();
 		SCLERR_ << "[metric] Setpoint not reached on timeout with readout position " << *o_position << " in " << elapsed_msec << " milliseconds";
-		setStateVariableSeverity(StateVariableTypeAlarmCU,"position_value_not_reached", chaos::common::alarm::MultiSeverityAlarmLevelWarning);
 		//FIRE OUT OF SET
 			//BC_END_RUNNING_PROPERTY; // ************* commentato *******************
 		BC_FAULT_RUNNING_PROPERTY;

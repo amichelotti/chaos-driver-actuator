@@ -77,10 +77,7 @@ void own::CmdACTMoveAbsolute::setHandler(c_data::CDataWrapper *data) {
 	//    tmpInt = (int*) getAttributeCache()->getROPtr<int32_t>(DOMAIN_INPUT, "readingType") ;
 	//    readTyp=(::common::actuators::AbstractActuator::readingTypes) *tmpInt;
 
-	setStateVariableSeverity(StateVariableTypeAlarmCU,"position_value_not_reached", chaos::common::alarm::MultiSeverityAlarmLevelClear);
-
-
-
+	
 	// ********************* a cosa servono **********************
 	//SCLDBG_<<"minimum working value:"<<*p_minimumWorkingValue;
 	//SCLDBG_<<"maximum, working value:"<<*p_maximumWorkingValue;
@@ -227,26 +224,9 @@ bool own::CmdACTMoveAbsolute::timeoutHandler() {
 
 		metadataLogging(chaos::common::metadata_logging::StandardLoggingChannel::LogLevelInfo,ss.str() );
 
-	} else {
-		setStateVariableSeverity(StateVariableTypeAlarmCU,"position_value_not_reached", chaos::common::alarm::MultiSeverityAlarmLevelWarning);
+	} 
 
-	}
 
-/*	
-	double delta_position_reached = std::abs(*i_position - *o_position);
-
-metadataLogging(chaos::common::metadata_logging::StandardLoggingChannel::LogLevelWarning,CHAOS_FORMAT("timeout, delta position remaining %1%",%delta_position_reached));
-
-	SCLDBG_ << "  TIM MoveABsolute Readout: "<< *o_position <<" SetPoint: "<< *i_position<<" Delta to reach: " << delta_position_reached;
-	SCLDBG_ << "  TIM MoveABsolute  resolution: " << *p_resolution;
-	if(delta_position_reached <= *p_resolution) {
-		SCLDBG_ << "[metric] Setpoint reached on timeout with set point " << *i_position<< " readout position" << *o_position << " resolution" << *p_resolution << " in " << elapsed_msec << " milliseconds";
-
-	}else {
-
-		SCLERR_ << "[metric] Setpoint NOT reached on timeout with readout position " << *o_position << " in " << elapsed_msec << " milliseconds";
-		setStateVariableSeverity(StateVariableTypeAlarmCU,"position_value_not_reached", chaos::common::alarm::MultiSeverityAlarmLevelWarning);
-	}*/
 	BC_END_RUNNING_PROPERTY;
 
 	return false;

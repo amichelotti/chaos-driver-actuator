@@ -61,7 +61,6 @@ void AbstractActuatorCommand::checkEndMove(){
 		return;
 	} else {
 		CMDCUDBG_ << " checkEndMove getDeviceDatabase()->compareTo returned " << delta_position_reached;
-		//setStateVariableSeverity(StateVariableTypeAlarmCU,"position_value_not_reached", chaos::common::alarm::MultiSeverityAlarmLevelWarning);
 
 	}
 	/*	if(delta_position_reached <= *p_resolution){
