@@ -58,8 +58,15 @@ void own::CmdACTMoveAbsolute::setHandler(c_data::CDataWrapper *data) {
 	float positionToReach = 0.f;
 	AbstractActuatorCommand::setHandler(data);
 	readTyp=(::common::actuators::AbstractActuator::readingTypes) *tmpInt;
+	setStateVariableSeverity(StateVariableTypeAlarmCU,"action_prevented_by_lock_in_configuration", chaos::common::alarm::MultiSeverityAlarmLevelClear);
 	//setStateVariableSeverity(StateVariableTypeAlarmCU,"command_error", chaos::common::alarm::MultiSeverityAlarmLevelClear);// ********** aggiunto **************
-
+	int32_t *lock=getAttributeCache()->getRWPtr<int32_t>(DOMAIN_INPUT, "Lock");
+    if  ((lock != NULL) && (*lock == 2) )
+	{
+		setStateVariableSeverity(StateVariableTypeAlarmCU,"action_prevented_by_lock_in_configuration", chaos::common::alarm::MultiSeverityAlarmLevelWarning);
+		BC_FAULT_RUNNING_PROPERTY;
+		return;
+	}
 	if(performCheck()!=0){
 	//setStateVariableSeverity(StateVariableTypeAlarmCU,"command_error", chaos::common::alarm::MultiSeverityAlarmLevelHigh);
 

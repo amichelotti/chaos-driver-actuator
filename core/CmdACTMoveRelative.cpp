@@ -52,28 +52,25 @@ void own::CmdACTMoveRelative::setHandler(c_data::CDataWrapper *data) {
 	//chaos::common::data::RangeValueInfo position_sp_attr_info;   // ************* Commentato *************
 	//chaos::common::data::RangeValueInfo attributeInfo;           // ************* Commentato *************
 	AbstractActuatorCommand::setHandler(data);
-
-	// ********** aggiunto ************** Ha aggiornato anche position....
-
-	int err = 0;
-	//int state;
-	//int *tmpInt;            // ************* Commentato *************
-	double currentPosition;
-	//std::string state_str;
-	float offset_mm = 0.f;
-	//setStateVariableSeverity(StateVariableTypeAlarmCU, "user_command_failed", chaos::common::alarm::MultiSeverityAlarmLevelClear);
-	if(performCheck()!=0){
-	//	setStateVariableSeverity(StateVariableTypeAlarmCU,"command_error", chaos::common::alarm::MultiSeverityAlarmLevelHigh);
-
+	setStateVariableSeverity(StateVariableTypeAlarmCU,"action_prevented_by_lock_in_configuration", chaos::common::alarm::MultiSeverityAlarmLevelClear);
+	int32_t *lock=getAttributeCache()->getRWPtr<int32_t>(DOMAIN_INPUT, "Lock");
+    if  ((lock != NULL) && (*lock == 2) )
+	{
+		setStateVariableSeverity(StateVariableTypeAlarmCU,"action_prevented_by_lock_in_configuration", chaos::common::alarm::MultiSeverityAlarmLevelWarning);
 		BC_FAULT_RUNNING_PROPERTY;
 		return;
 	}
-	// ********************* a cosa servono **********************
-	//SCLDBG_<<"minimum working value:"<<*p_minimumWorkingValue;
-	//SCLDBG_<<"maximum, working value:"<<*p_maximumWorkingValue;
-
-	//set comamnd timeout for this instance
-	//SCLDBG_ << "Checking for timeout";
+	int err = 0;
+	
+	double currentPosition;
+	
+	float offset_mm = 0.f;
+	
+	if(performCheck()!=0){
+		BC_FAULT_RUNNING_PROPERTY;
+		return;
+	}
+	
 
 	if(!data ||
 			!data->hasKey(CMD_ACT_MM_OFFSET)) {
