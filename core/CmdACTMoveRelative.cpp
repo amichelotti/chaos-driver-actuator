@@ -57,7 +57,7 @@ void own::CmdACTMoveRelative::setHandler(c_data::CDataWrapper *data) {
     if  ((lock != NULL) && (*lock == 2) )
 	{
 		setStateVariableSeverity(StateVariableTypeAlarmCU,"action_prevented_by_lock_in_configuration", chaos::common::alarm::MultiSeverityAlarmLevelWarning);
-		BC_FAULT_RUNNING_PROPERTY;
+		BC_NORMAL_RUNNING_PROPERTY;
 		return;
 	}
 	int err = 0;
