@@ -457,6 +457,11 @@ void ::driver::actuator::SCActuatorControlUnit::unitDefineActionAndDataset()
                         DataType::TYPE_BOOLEAN,
                         DataType::Output);
 
+    addAttributeToDataSet("Lock",
+                        "1: lock home, 2 lock all movements",
+                        DataType::TYPE_INT32,
+                        DataType::Input);
+
 if(hasPoi){
   addAttributeToDataSet("POI",
                         "Point of Interest",
@@ -552,6 +557,9 @@ if(hasPoi){
 
   addStateVariable(StateVariableTypeAlarmCU, "homing_operation_failed",
                    "Notify when a homing operation has failed");
+  
+   addStateVariable(StateVariableTypeAlarmCU, "action_prevented_by_lock_in_configuration",
+                   "Notify when a user issues a movement operation when it is prevented via Lock Input parameter");
 
   addStateVariable(StateVariableTypeAlarmCU, "home_lost",
 	  "Notify when the current home position is no more valid");
