@@ -457,12 +457,17 @@ void ::driver::actuator::SCActuatorControlUnit::unitDefineActionAndDataset()
                         DataType::TYPE_BOOLEAN,
                         DataType::Output);
 
+    addAttributeToDataSet("Lock",
+                        "1: lock home, 2 lock all movements",
+                        DataType::TYPE_INT32,
+                        DataType::Input);
+
 if(hasPoi){
   addAttributeToDataSet("POI",
                         "Point of Interest",
                         DataType::TYPE_STRING,
                         DataType::Bidirectional,256);
-  addHandlerOnInputAttributeName<::driver::actuator::SCActuatorControlUnit, std::string>(this,
+  addHandlerOnInputAttributeName< ::driver::actuator::SCActuatorControlUnit, std::string>(this,
                                                                                     &::driver::actuator::SCActuatorControlUnit::moveAt,
                                                                                     "POI");                      
 
@@ -526,18 +531,18 @@ if(hasPoi){
   
 
 
-  addHandlerOnInputAttributeName<::driver::actuator::SCActuatorControlUnit, double>(this,
+  addHandlerOnInputAttributeName< ::driver::actuator::SCActuatorControlUnit, double>(this,
                                                                                     &::driver::actuator::SCActuatorControlUnit::moveAt,
                                                                                     "position");
 
-  addHandlerOnInputAttributeName<::driver::actuator::SCActuatorControlUnit, bool>(this,
+  addHandlerOnInputAttributeName< ::driver::actuator::SCActuatorControlUnit, bool>(this,
                                                                                   &::driver::actuator::SCActuatorControlUnit::setPower,
                                                                                   "powerOn");
 
-   addInputAndHandlerOnEachKeyOf<::driver::actuator::SCActuatorControlUnit>(this,                                                                             
+   addInputAndHandlerOnEachKeyOf< ::driver::actuator::SCActuatorControlUnit>(this,                                                                             
                                                                                  &::driver::actuator::SCActuatorControlUnit::setProp,
                                                                                  auxiliarydataset);
-  addHandlerOnCustomDriverAttributes<::driver::actuator::SCActuatorControlUnit>(this,                                                                             
+  addHandlerOnCustomDriverAttributes< ::driver::actuator::SCActuatorControlUnit>(this,                                                                             
                                                                                  &::driver::actuator::SCActuatorControlUnit::setProp);                                                                               
   /***************************ALARMS******************************************/
  
@@ -552,6 +557,9 @@ if(hasPoi){
 
   addStateVariable(StateVariableTypeAlarmCU, "homing_operation_failed",
                    "Notify when a homing operation has failed");
+  
+   addStateVariable(StateVariableTypeAlarmCU, "action_prevented_by_lock_in_configuration",
+                   "Notify when a user issues a movement operation when it is prevented via Lock Input parameter");
 
   addStateVariable(StateVariableTypeAlarmCU, "home_lost",
 	  "Notify when the current home position is no more valid");

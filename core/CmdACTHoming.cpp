@@ -47,10 +47,17 @@ void own::CmdACTHoming::setHandler(c_data::CDataWrapper *data)
 	double currentPosition;
 	uint64_t computed_timeout;
 	*p_stopCommandInExecution=false;
-
+    
 	setStateVariableSeverity(StateVariableTypeAlarmCU,"homing_operation_failed", chaos::common::alarm::MultiSeverityAlarmLevelClear);
+	setStateVariableSeverity(StateVariableTypeAlarmCU,"action_prevented_by_lock_in_configuration", chaos::common::alarm::MultiSeverityAlarmLevelClear);
 
-
+	int32_t *lock=getAttributeCache()->getRWPtr<int32_t>(DOMAIN_INPUT, "Lock");
+    if  ((lock != NULL) && (*lock > 0) )
+	{
+		setStateVariableSeverity(StateVariableTypeAlarmCU,"action_prevented_by_lock_in_configuration", chaos::common::alarm::MultiSeverityAlarmLevelWarning);
+		BC_FAULT_RUNNING_PROPERTY;
+		return;
+	}
 
 
 	if(!data ||
