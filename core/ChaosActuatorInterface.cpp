@@ -369,6 +369,13 @@ int ChaosActuatorInterface::hardreset(int32_t axisID,bool mode){
    // WRITE_OP_AX_INT_TIM(OP_HARD_RESET,axisID,mode, GeneralTimeout);
    return impl->hardreset(axisID,mode);
 }
+
+int ChaosActuatorInterface::soft_homing(int32_t axisID,double positionToSet){
+   // WRITE_OP_AX_INT_TIM(OP_HOMING,axisID,mode, GeneralTimeout);
+   return impl->soft_homing(axisID,positionToSet);
+}
+
+
 int ChaosActuatorInterface::homing(int32_t axisID,homingType mode){
    // WRITE_OP_AX_INT_TIM(OP_HOMING,axisID,mode, GeneralTimeout);
    return impl->homing(axisID,mode);

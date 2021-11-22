@@ -37,6 +37,7 @@
 #include "CmdACTresetAlarms.h"
 #include "CmdACTSetParameter.h"
 #include "CmdACTHardReset.h"
+#include "CmdACTSoftHoming.h"
 
 using namespace chaos;
 
@@ -353,6 +354,7 @@ void ::driver::actuator::SCActuatorControlUnit::unitDefineActionAndDataset()
   installCommand(BATCH_COMMAND_GET_DESCRIPTION(CmdACTPoweron));
   installCommand(BATCH_COMMAND_GET_DESCRIPTION(CmdACTresetAlarms));
   installCommand(BATCH_COMMAND_GET_DESCRIPTION(CmdACTHardReset));
+  installCommand(BATCH_COMMAND_GET_DESCRIPTION(CmdACTSoftHoming));
   //installCommand(BATCH_COMMAND_GET_DESCRIPTION(CmdACTSetParameter));
   //setup the dataset
 
@@ -390,6 +392,10 @@ void ::driver::actuator::SCActuatorControlUnit::unitDefineActionAndDataset()
   addAttributeToDataSet("LastHomingTime",
                         "timestamp with the last homing",
                         DataType::TYPE_INT64,
+                        DataType::Output);
+  addAttributeToDataSet("KindOfHomingDone",
+                        "0 no home, 1 real homing, 2 soft homing",
+                        DataType::TYPE_INT32,
                         DataType::Output);
   addAttributeToDataSet("alarms",
                         "Device alarms BitMask",

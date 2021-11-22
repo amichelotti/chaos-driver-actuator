@@ -72,6 +72,7 @@ namespace chaos {
                  @brief put back the step motor to the home position)
                  */
                 int homing(cu::driver_manager::driver::DrvMsgPtr cmd,int32_t axisID,::common::actuators::AbstractActuator::homingType mode);
+                int soft_homing(cu::driver_manager::driver::DrvMsgPtr cmd,int32_t axisID,double positionToSet);
        
                 int poweron(cu::driver_manager::driver::DrvMsgPtr cmd,int32_t axisID,int on);
                 /**

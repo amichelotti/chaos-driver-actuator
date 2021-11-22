@@ -285,6 +285,15 @@ int ChaosActuatorExternalDD::stopMotion( int32_t axisID) {
 	SEND_REQUEST_OPC("stopMotion", para_pack, response);
     return err;
 }
+int ChaosActuatorExternalDD::soft_homing(int32_t axisID, double positionToSet)
+{
+	CDWShrdPtr response;
+    CDWUniquePtr para_pack(new CDataWrapper());
+	para_pack->addInt32Value("axisID", axisID);
+	para_pack->addDoubleValue("value", positionToSet);
+	SEND_REQUEST_OPC("soft_homing", para_pack, response);
+	return err;
+}
 
 int ChaosActuatorExternalDD::homing( int32_t axisID, ::common::actuators::AbstractActuator::homingType mode) {
 	//boost::mutex::scoped_lock lock(io_mux);

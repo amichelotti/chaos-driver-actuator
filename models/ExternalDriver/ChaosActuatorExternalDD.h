@@ -128,6 +128,12 @@ public:
    @brief put back the step motor to the home position)
    */
   int homing(int32_t axisID, homingType mode);
+
+
+  /**
+   @brief set the step motor to the position "positionToSet")
+   */
+  int soft_homing(int32_t axisID, double positionToSet);
   // int setTrapezoidalProfile(double, double, int, short int, short int);
 
   int poweron(int32_t axisID, int on);

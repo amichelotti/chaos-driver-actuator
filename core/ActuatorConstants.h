@@ -51,9 +51,12 @@ namespace driver {
 		const char * const CMD_ACT_STOPMOTION_ALIAS = "stopMotion";
 		//! The alias of the homing command 
 		const char * const CMD_ACT_HOMING_ALIAS = "homing";
+		//! The alias of the soft homing command 
+		const char * const CMD_ACT_SOFT_HOMING_ALIAS = "soft_homing";
 		//! The alias of the homing type parameter
 		const char * const CMD_ACT_HOMINGTYPE = "homing_type";
-		
+		//! The alias of the current posizion parameter for soft homing
+		const char * const CMD_ACT_SOFT_HOMING_POS= "current_position";
 		const char * const CMD_ACT_HARDRESET_MODE = "hard_reset_mode";
 		//! The alias of the "move rel" command of the type
 		const char * const CMD_ACT_MOVE_RELATIVE_ALIAS = "mov_rel";
