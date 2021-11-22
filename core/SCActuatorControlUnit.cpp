@@ -473,7 +473,7 @@ if(hasPoi){
                         "Point of Interest",
                         DataType::TYPE_STRING,
                         DataType::Bidirectional,256);
-  addHandlerOnInputAttributeName<::driver::actuator::SCActuatorControlUnit, std::string>(this,
+  addHandlerOnInputAttributeName< ::driver::actuator::SCActuatorControlUnit, std::string>(this,
                                                                                     &::driver::actuator::SCActuatorControlUnit::moveAt,
                                                                                     "POI");                      
 
@@ -537,18 +537,18 @@ if(hasPoi){
   
 
 
-  addHandlerOnInputAttributeName<::driver::actuator::SCActuatorControlUnit, double>(this,
+  addHandlerOnInputAttributeName< ::driver::actuator::SCActuatorControlUnit, double>(this,
                                                                                     &::driver::actuator::SCActuatorControlUnit::moveAt,
                                                                                     "position");
 
-  addHandlerOnInputAttributeName<::driver::actuator::SCActuatorControlUnit, bool>(this,
+  addHandlerOnInputAttributeName< ::driver::actuator::SCActuatorControlUnit, bool>(this,
                                                                                   &::driver::actuator::SCActuatorControlUnit::setPower,
                                                                                   "powerOn");
 
-   addInputAndHandlerOnEachKeyOf<::driver::actuator::SCActuatorControlUnit>(this,                                                                             
+   addInputAndHandlerOnEachKeyOf< ::driver::actuator::SCActuatorControlUnit>(this,                                                                             
                                                                                  &::driver::actuator::SCActuatorControlUnit::setProp,
                                                                                  auxiliarydataset);
-  addHandlerOnCustomDriverAttributes<::driver::actuator::SCActuatorControlUnit>(this,                                                                             
+  addHandlerOnCustomDriverAttributes< ::driver::actuator::SCActuatorControlUnit>(this,                                                                             
                                                                                  &::driver::actuator::SCActuatorControlUnit::setProp);                                                                               
   /***************************ALARMS******************************************/
  
