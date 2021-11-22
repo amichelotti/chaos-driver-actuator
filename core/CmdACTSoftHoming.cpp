@@ -69,7 +69,7 @@ void own::CmdACTSoftHoming::setHandler(c_data::CDataWrapper *data)
 		return;
 	}
     currentPosition = data->getDoubleValue(CMD_ACT_SOFT_HOMING_POS);
-    //because the command to the driver is the home position, not the actual position, we need to translate it.
+    
     HomePositionToSet= currentPosition;
 
     	SCLDBG_ << "Launching soft homing command with position as home " << HomePositionToSet;
