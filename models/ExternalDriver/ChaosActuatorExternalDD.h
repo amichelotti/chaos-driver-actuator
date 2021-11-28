@@ -42,7 +42,7 @@ class ChaosActuatorExternalDD : public ChaosActuatorDD {
 
 protected:
   // chaos::cu::driver_manager::driver::AbstractClientRemoteIODriver
-  boost::mutex io_mux;
+  ChaosMutex io_mux;
   chaos::cu::driver_manager::driver::AbstractClientRemoteIODriver client;
   // chaos::cu::driver_manager::driver::OpcodeDriverWrapper<ChaosActuatorExternalDD,
   // chaos::cu::driver_manager::driver::AbstractServerRemoteIODriver> client;

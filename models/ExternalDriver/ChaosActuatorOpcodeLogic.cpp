@@ -386,7 +386,7 @@ int ChaosActuatorOpcodeLogic::setAdditive(DrvMsgPtr cmd, bool isAdditive) {
 }
 //! Execute a command
 MsgManagmentResultType::MsgManagmentResult ChaosActuatorOpcodeLogic::execOpcode(DrvMsgPtr cmd) {
-     boost::mutex::scoped_lock lock(io_mux);
+     ChaosLockGuard lock(io_mux);
 
     MsgManagmentResultType::MsgManagmentResult result = MsgManagmentResultType::MMR_EXECUTED;
     actuator_iparams_t *in = (actuator_iparams_t *)cmd->inputData;
