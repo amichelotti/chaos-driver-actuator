@@ -98,7 +98,9 @@ int ChaosActuatorDD::hardreset(int32_t axisID,bool mode){
 int ChaosActuatorDD::homing(int32_t axisID,homingType mode){
     return motor->homing(axisID,mode);
 }
-
+int ChaosActuatorDD::soft_homing(int32_t axisID,double positionToSet){
+    return motor->soft_homing(axisID,positionToSet);
+}
 
 int ChaosActuatorDD::poweron(int32_t axisID,int on){
     return motor->poweron(axisID,on);

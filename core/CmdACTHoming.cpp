@@ -131,6 +131,7 @@ void own::CmdACTHoming::setHandler(c_data::CDataWrapper *data)
 		return;
 	}
 	*o_lasthoming = 0;
+	*o_kindofhome = 0;
 	if((err = actuator_drv->homing(*axID,(::common::actuators::AbstractActuator::homingType) homType)) < 0)
 	{
 		setStateVariableSeverity(StateVariableTypeAlarmCU,"homing_operation_failed", chaos::common::alarm::MultiSeverityAlarmLevelHigh);
@@ -181,6 +182,7 @@ void own::CmdACTHoming::ccHandler() {
 		SCLDBG_ << "Homing operation completed in "<< elapsed_msec <<" milliseconds";
 		*o_lasthoming = chaos::common::utility::TimingUtil::getTimeStamp();
 		*o_home=true;
+		*o_kindofhome = 1;
 		metadataLogging(chaos::common::metadata_logging::StandardLoggingChannel::LogLevelInfo,"Homing completed");
                 *i_position=0;
  		getAttributeCache()->setInputDomainAsChanged();

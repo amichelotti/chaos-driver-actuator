@@ -265,6 +265,16 @@ int ChaosActuatorOpcodeLogic::stopMotion(DrvMsgPtr cmd, int32_t axisID) {
 	if(response.get()){DBG << response->getJSONString();}
     return cmd->ret;
 }
+int ChaosActuatorOpcodeLogic::soft_homing(cu::driver_manager::driver::DrvMsgPtr cmd,int32_t axisID,double positionToSet)
+{
+    CDWShrdPtr response;
+    CDWUniquePtr para_pack(new CDataWrapper());
+	para_pack->addInt32Value("axisID", axisID);
+	para_pack->addDoubleValue("value", positionToSet);
+	SEND_REQUEST_OPC("soft_homing",cmd, para_pack, response);
+	if(response.get()){DBG << response->getJSONString();}
+    return cmd->ret;
+}
 
 int ChaosActuatorOpcodeLogic::homing(DrvMsgPtr cmd, int32_t axisID, ::common::actuators::AbstractActuator::homingType mode) {
 	CDWShrdPtr response;

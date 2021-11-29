@@ -119,8 +119,8 @@ public:
    @brief put back the step motor to the home position)
    */
   int homing(int32_t axisID, homingType mode);
-  // int setTrapezoidalProfile(double, double, int, short int, short int);
-
+  
+  int soft_homing(int32_t axisID, double positionToSet);
   int poweron(int32_t axisID, int on);
   /**
    @brief gets the power supply state
