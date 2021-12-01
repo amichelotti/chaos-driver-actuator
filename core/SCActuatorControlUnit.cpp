@@ -162,7 +162,6 @@ bool ::driver::actuator::SCActuatorControlUnit::setProp(const std::string &name,
   this->updateAuxiliaryParameters();
   return (ret == 0);
 }
-
 bool ::driver::actuator::SCActuatorControlUnit::setProp(const std::string &name, double value, uint32_t size)
 {
   int ret;
@@ -172,7 +171,6 @@ bool ::driver::actuator::SCActuatorControlUnit::setProp(const std::string &name,
   this->updateAuxiliaryParameters();
   return (ret == 0);
 }
-
 bool ::driver::actuator::SCActuatorControlUnit::setProp(const std::string &name, int64_t value, uint32_t size)
 {
   int ret;
@@ -182,7 +180,6 @@ bool ::driver::actuator::SCActuatorControlUnit::setProp(const std::string &name,
   this->updateAuxiliaryParameters();
   return (ret == 0);
 }
-
 bool ::driver::actuator::SCActuatorControlUnit::setProp(const std::string &name, bool value, uint32_t size)
 {
   int ret;
@@ -192,7 +189,6 @@ bool ::driver::actuator::SCActuatorControlUnit::setProp(const std::string &name,
   this->updateAuxiliaryParameters();
   return (ret == 0);
 }
-
 bool ::driver::actuator::SCActuatorControlUnit::setProp(const std::string &name, std::string value, uint32_t size)
 {
   int ret;
@@ -202,7 +198,6 @@ bool ::driver::actuator::SCActuatorControlUnit::setProp(const std::string &name,
   this->updateAuxiliaryParameters();
   return (ret == 0);
 }
-
 bool ::driver::actuator::SCActuatorControlUnit::setPower(const std::string &name, bool value, uint32_t size)
 {
   int err = -1;
@@ -467,6 +462,10 @@ void ::driver::actuator::SCActuatorControlUnit::unitDefineActionAndDataset()
                         "1: lock home, 2 lock all movements",
                         DataType::TYPE_INT32,
                         DataType::Input);
+  addAttributeToDataSet("AvoidPositionRecoverOnInit",
+                        "if true, do not place motor in soft_homing on Init",
+                        DataType::TYPE_BOOLEAN,
+                        DataType::Input);
 
 if(hasPoi){
   addAttributeToDataSet("POI",
@@ -664,6 +663,55 @@ void ::driver::actuator::SCActuatorControlUnit::unitInit()
   {
     throw chaos::CFatalException(err, "Error getting initial position of the actuator", __FUNCTION__);
   }
+const bool *doSoftHoming= getAttributeCache()->getROPtr<bool>(DOMAIN_INPUT, "AvoidPositionRecoverOnInit");
+
+if (*doSoftHoming == 0)
+{
+  chaos::common::data::CDWUniquePtr loadedData(new CDataWrapper);
+  loadedData=this->loadData("lastPosition");
+  if (loadedData.get() != NULL)
+  {
+    double ps=loadedData->getDoubleValue("position");
+   
+    try
+    {
+      /* code */
+       int32_t rT=loadedData->getInt32Value("readType");
+
+    
+       int32_t *tmpRead =  (int*) getAttributeCache()->getROPtr<int32_t>(DOMAIN_INPUT, "readingType") ;
+	  //readTyp=(::common::actuators::AbstractActuator::readingTypes) *tmpInt;    
+      *tmpRead=rT;
+      int32_t UI=loadedData->getInt32Value("useUI");
+      std::string UIstr=std::to_string(UI);
+      if ((err= actuator_drv->setParameter(*axID,"useIU",UIstr))!=0)
+      {
+      }
+    }
+    catch(const std::exception& e)
+    {
+      std::cerr << e.what() << '\n';
+    }
+    
+    
+
+    SCCUDBG << "ALEDEBUG loaded lastPosition: " <<  ps ;
+    if ((err = actuator_drv->soft_homing(*axID,ps)) == 0) 
+    {
+      int32_t *o_kindof = getAttributeCache()->getRWPtr<int32_t>(DOMAIN_OUTPUT, "KindOfHomingDone");
+      uint64_t *o_homingTime = getAttributeCache()->getRWPtr<uint64_t>(DOMAIN_OUTPUT, "LastHomingTime");
+      *o_kindof=2;
+      *o_homingTime =  chaos::common::utility::TimingUtil::getTimeStamp();
+
+
+      }
+     
+    //Update lasthoming and update kindofHoming
+
+  }
+  else
+    SCCUDBG << "ALEDEBUG no lastPosition to load" ;
+}
   getAttributeCache()->setOutputDomainAsChanged();
   getAttributeCache()->setInputDomainAsChanged();
   getAttributeCache()->setCustomDomainAsChanged();
