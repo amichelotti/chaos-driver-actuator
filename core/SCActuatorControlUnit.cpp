@@ -145,7 +145,7 @@ bool ::driver::actuator::SCActuatorControlUnit::setProp(const std::string &name,
 {
   int ret;
   SCCUDBG << "SET IPROP:" << name << " VALUE:" << value;
-  string valStr = boost::lexical_cast<std::string>(value);
+  string valStr = ChaosToString(value);
   ret = actuator_drv->setParameter(*axID, (std::string)name, valStr);
 
 
@@ -167,7 +167,7 @@ bool ::driver::actuator::SCActuatorControlUnit::setProp(const std::string &name,
 {
   int ret;
   SCCUDBG << "SET IPROP:" << name << " VALUE:" << value;
-  string valStr = boost::lexical_cast<std::string>(value);
+  string valStr = ChaosToString(value);
   ret = actuator_drv->setParameter(*axID, (std::string)name, valStr);
   this->updateAuxiliaryParameters();
   return (ret == 0);
@@ -177,7 +177,7 @@ bool ::driver::actuator::SCActuatorControlUnit::setProp(const std::string &name,
 {
   int ret;
   SCCUDBG << "SET IPROP:" << name << " VALUE:" << value;
-  string valStr = boost::lexical_cast<std::string>(value);
+  string valStr = ChaosToString(value);
   ret = actuator_drv->setParameter(*axID, (std::string)name, valStr);
   this->updateAuxiliaryParameters();
   return (ret == 0);
@@ -187,7 +187,7 @@ bool ::driver::actuator::SCActuatorControlUnit::setProp(const std::string &name,
 {
   int ret;
   SCCUDBG << "SET IPROP:" << name << " VALUE:" << value;
-  string valStr = boost::lexical_cast<std::string>(value);
+  string valStr = ChaosToString(value);
   ret = actuator_drv->setParameter(*axID, (std::string)name, valStr);
   this->updateAuxiliaryParameters();
   return (ret == 0);
@@ -197,7 +197,7 @@ bool ::driver::actuator::SCActuatorControlUnit::setProp(const std::string &name,
 {
   int ret;
   SCCUDBG << "SET IPROP:" << name << " VALUE:" << value;
-  //string valStr=boost::lexical_cast<std::string>(value);
+  //string valStr=ChaosToString(value);
   ret = actuator_drv->setParameter(*axID, (std::string)name, value);
   this->updateAuxiliaryParameters();
   return (ret == 0);
