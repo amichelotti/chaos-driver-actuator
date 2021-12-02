@@ -683,7 +683,7 @@ if (*doSoftHoming == 0)
 	  //readTyp=(::common::actuators::AbstractActuator::readingTypes) *tmpInt;    
       *tmpRead=rT;
       int32_t UI=loadedData->getInt32Value("useUI");
-      std::string UIstr=std::to_string(UI);
+      std::string UIstr=ChaosToString(UI);
       if ((err= actuator_drv->setParameter(*axID,"useIU",UIstr))!=0)
       {
       }
