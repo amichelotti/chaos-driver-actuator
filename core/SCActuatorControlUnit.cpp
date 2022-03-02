@@ -669,7 +669,7 @@ if (*doSoftHoming == 0)
 {
   chaos::common::data::CDWUniquePtr loadedData(new CDataWrapper);
   loadedData=this->loadData("lastPosition");
-  if (loadedData.get() != NULL)
+  if ((loadedData.get() != NULL)&&(loadedData->hasKey("position"))&&(loadedData->hasKey("readType")))
   {
     double ps=loadedData->getDoubleValue("position");
    
