@@ -255,7 +255,7 @@ void AbstractActuatorCommand::DecodeAndRaiseAlarms(uint64_t mask)
 	if ((mask & ::common::actuators::ACTUATOR_COMMANDERROR)!= 0)
 		setStateVariableSeverity(StateVariableTypeAlarmDEV,"DRIVER_COMMAND_ERROR", chaos::common::alarm::MultiSeverityAlarmLevelHigh);
 	else
-		setStateVariableSeverity(StateVariableTypeAlarmDEV,"", chaos::common::alarm::MultiSeverityAlarmLevelClear);
+		setStateVariableSeverity(StateVariableTypeAlarmDEV,"DRIVER_COMMAND_ERROR", chaos::common::alarm::MultiSeverityAlarmLevelClear);
 
 	if ((mask & ::common::actuators::ACTUATOR_ALARMS_READING_ERROR)!= 0)
 		setStateVariableSeverity(StateVariableTypeAlarmDEV,"READING_ALARM_PROBLEM", chaos::common::alarm::MultiSeverityAlarmLevelHigh);
