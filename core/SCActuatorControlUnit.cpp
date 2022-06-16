@@ -467,16 +467,23 @@ void ::driver::actuator::SCActuatorControlUnit::unitDefineActionAndDataset()
                         DataType::TYPE_BOOLEAN,
                         DataType::Input);
 
-if(hasPoi){
+ addAttributeToDataSet("poiConfig",
+                        "json configuration of poi",
+                        DataType::TYPE_CLUSTER,
+                        DataType::Input);
+
   addAttributeToDataSet("POI",
                         "Point of Interest",
                         DataType::TYPE_STRING,
                         DataType::Bidirectional,256);
   addHandlerOnInputAttributeName< ::driver::actuator::SCActuatorControlUnit, std::string>(this,
                                                                                     &::driver::actuator::SCActuatorControlUnit::moveAt,
-                                                                                    "POI");                      
+                                                                                    "POI");
+  addHandlerOnInputAttributeName< ::driver::actuator::SCActuatorControlUnit, std::string>(this,
+                                                                                    &::driver::actuator::SCActuatorControlUnit::setProp,
+                                                                                    "poiConfig");                         
 
-}
+
   std::string dataset;
   actuator_drv->listParameters(dataset);
   SCCUDBG << "DATASETVARIABLE getting dataset from driver :'"<< dataset<<"'";
