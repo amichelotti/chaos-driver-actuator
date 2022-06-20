@@ -68,12 +68,15 @@ PUBLISHABLE_CONTROL_UNIT_IMPLEMENTATION(::driver::actuator::SCActuatorControlUni
 
   actuator_drv = NULL;
  	chaos::common::data::CDataWrapper p;
-	if(getCUParam(p)==0){
+	/*
+  if(getCUParam(p)==0){
     hasPoi=p.hasKey(CMD_ACT_MOVE_POI)&&(p.getAllKey().size()>0); 
+  //  saveData(CMD_ACT_MOVE_POI,*p.getCSDataValue(CMD_ACT_MOVE_POI).get());
+
     if(hasPoi){
       SCCUDBG<<"POI:"<<p.getCompliantJSONString();
     }
-  }	
+  }	*/
 }
 
 /*
@@ -192,7 +195,36 @@ bool ::driver::actuator::SCActuatorControlUnit::setProp(const std::string &name,
 bool ::driver::actuator::SCActuatorControlUnit::setProp(const std::string &name, std::string value, uint32_t size)
 {
   int ret;
-  SCCUDBG << "SET IPROP:" << name << " VALUE:" << value;
+  SCCUDBG << "SET SPROP:" << name << " VALUE:" << value;
+  if(name=="poiConfig"){
+    chaos::common::data::CDataWrapper p,poi;
+    try{
+      if(value==""){
+          //remove poi
+          clearData(CMD_ACT_MOVE_POI);
+          return true;
+
+      }
+      p.setSerializedJsonData(value.c_str());
+      if(p.hasKey(CMD_ACT_MOVE_POI)){
+        auto pp=p.getCSDataValue(CMD_ACT_MOVE_POI);
+        if(pp.get()){
+          saveData(CMD_ACT_MOVE_POI,*pp.get());
+        }
+        return true;
+      } else {
+        clearData(CMD_ACT_MOVE_POI);
+
+        SCCUDBG << "doesnot contain "<<CMD_ACT_MOVE_POI<<" key";
+
+      }		
+
+    } catch(...){
+        clearData(CMD_ACT_MOVE_POI);
+
+    }
+    return false;
+  }
   //string valStr=ChaosToString(value);
   ret = actuator_drv->setParameter(*axID, (std::string)name, value);
   this->updateAuxiliaryParameters();
@@ -554,8 +586,9 @@ void ::driver::actuator::SCActuatorControlUnit::unitDefineActionAndDataset()
    addInputAndHandlerOnEachKeyOf< ::driver::actuator::SCActuatorControlUnit>(this,                                                                             
                                                                                  &::driver::actuator::SCActuatorControlUnit::setProp,
                                                                                  auxiliarydataset);
-  addHandlerOnCustomDriverAttributes< ::driver::actuator::SCActuatorControlUnit>(this,                                                                             
-                                                                                 &::driver::actuator::SCActuatorControlUnit::setProp);                                                                               
+  /*addHandlerOnCustomDriverAttributes< ::driver::actuator::SCActuatorControlUnit>(this,                                                                             
+                                                                                 &::driver::actuator::SCActuatorControlUnit::setProp); */
+                                                                                                                                                               
   /***************************ALARMS******************************************/
  
 
@@ -729,6 +762,12 @@ if (*doSoftHoming == 0)
 void ::driver::actuator::SCActuatorControlUnit::unitStart()
 {
     SCCUDBG << "Starting";
+    chaos::common::data::CDWUniquePtr res= loadData(CMD_ACT_MOVE_POI);
+    if(res.get()){
+          SCCUDBG << "POI:"<<res->getJSONString();
+
+    }
+
 
 }
 

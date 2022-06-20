@@ -1,7 +1,7 @@
 /*
  *	AbstractActuatorCommand.cpp
- *	!CHOAS
- *	Created by Claudio Bisegni.
+ *	!CHAOS
+ *	Created by Andrea Michelotti.
  *
  *    	Copyright 2013 INFN, National Institute of Nuclear Physics
  *
@@ -47,8 +47,12 @@ void AbstractActuatorCommand::checkEndMove(){
 	int err;
 	//check if we are in the delta of the setpoint to end the command
 		double delta_position_reached = std::abs(*i_position - *o_position);
+		chaos::common::data::RangeValueInfo ri;
+
+		getDeviceDatabase()->getAttributeRangeValueInfo("position",ri);
+    	double increment=atof(ri.increment.c_str());
 		//SCLDBG_ << "ccH MoveABsolute Readout: "<< *o_position <<" SetPoint: "<< *o_position_sp <<" Delta to reach: " << delta_position_reached << " computed Timeout " << computed_timeout ;
-		CMDCUDBG_ << "Readout: "<< *o_position <<" SetPoint: "<< *i_position <<" Delta to reach: " << delta_position_reached;
+		CMDCUDBG_ << "Readout: "<< *o_position <<" SetPoint: "<< *i_position <<" Delta to reach: " << delta_position_reached<<" increment/error:"<<increment;
 
 	if((delta_position_reached=getDeviceDatabase()->compareTo("position",*i_position,*o_position))==0){
 		uint64_t elapsed_msec = chaos::common::utility::TimingUtil::getTimeStamp() - getSetTime();
@@ -60,7 +64,7 @@ void AbstractActuatorCommand::checkEndMove(){
 		BC_END_RUNNING_PROPERTY;
 		return;
 	} else {
-		CMDCUDBG_ << " checkEndMove getDeviceDatabase()->compareTo returned " << delta_position_reached;
+		CMDCUDBG_ << " checkEndMove returned " << delta_position_reached << " increment:"<<increment;
 
 	}
 	/*	if(delta_position_reached <= *p_resolution){
@@ -125,14 +129,23 @@ int AbstractActuatorCommand::performCheck(){
 }
 void AbstractActuatorCommand::setHandler(c_data::CDataWrapper *data) {
 
-	chaos::common::data::CDataWrapper p;
-	poi.reset();
 	hasPOI=false;
-	if(getDeviceLoadParams(p)==0){
-		p.getCSDataValue(CMD_ACT_MOVE_POI,poi);
-		hasPOI=(poi.getAllKey().size()>0);
-		
-    }
+	if(getAttributeCache()->exist(DOMAIN_CUSTOM,CMD_ACT_MOVE_POI)){
+		 CMDCUDBG_<< "Loading pois ";
+		 char* ptr=getAttributeCache()->getRWPtr<char>(DOMAIN_CUSTOM,CMD_ACT_MOVE_POI);
+		 try {
+
+			poi.setSerializedJsonData(ptr);
+		  hasPOI=true;
+
+		 }catch(...){
+
+		 }
+		  //chaos::common::data::CDWUniquePtr res= loadData(CMD_ACT_MOVE_POI);
+		  //res->copyAllTo(poi);
+
+	}
+
 
 	o_nswitch=getAttributeCache()->getRWPtr<bool>(DOMAIN_OUTPUT, "NegativeLimitSwitchActive");
 	o_pswitch=getAttributeCache()->getRWPtr<bool>(DOMAIN_OUTPUT, "PositiveLimitSwitchActive");

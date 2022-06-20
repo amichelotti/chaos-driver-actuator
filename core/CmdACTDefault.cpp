@@ -157,12 +157,14 @@ void CmdACTDefault::acquireHandler() {
 	
     CMDCUDBG_ << "Axis ID:" << (int) *axID<< ",Reading Type:" << (int) readTyp<< ",position_sp:" << *pos_sp<< ",position:" << *o_position<< ",alarms:" << *o_alarms<< ",alarm desc:" << o_alarm_str<< ",status_id:" << *o_status_id<< ",status desc" << o_status_str;
 	 //CDWUniquePtr savedPos(new CDataWrapper()); 
-     chaos::common::data::CDataWrapper savedPos;
-     savedPos.addDoubleValue("position", *o_position);
-     savedPos.addInt32Value("useUI", *o_useUI);
-     const int32_t * tmpTmp=getAttributeCache()->getROPtr<int32_t>(DOMAIN_INPUT, "readingType") ;
-     savedPos.addInt32Value("readType", *tmpTmp);
-     saveData("lastPosition",savedPos);
+     if(lastPosition!=*o_position){
+        chaos::common::data::CDataWrapper savedPos;
+        savedPos.addDoubleValue("position", *o_position);
+        savedPos.addInt32Value("useUI", *o_useUI);
+        const int32_t * tmpTmp=getAttributeCache()->getROPtr<int32_t>(DOMAIN_INPUT, "readingType") ;
+        savedPos.addInt32Value("readType", *tmpTmp);
+        saveData("lastPosition",savedPos);
+        }
 	//force output dataset as changed
     if (  (lastState!=*o_status_id) || 
            ((abs(lastPosition - *o_position)> *p_resolution)) ||
