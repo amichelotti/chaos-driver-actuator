@@ -43,10 +43,7 @@ BATCH_COMMAND_OPEN_DESCRIPTION_ALIAS(driver::actuator::,CmdACTMoveRelative,CMD_A
 BATCH_COMMAND_ADD_DOUBLE_PARAM(CMD_ACT_MM_OFFSET, "offset in mm",chaos::common::batch_command::BatchCommandAndParameterDescriptionkey::BC_PARAMETER_FLAG_MANDATORY)
 BATCH_COMMAND_CLOSE_DESCRIPTION()
 
-// return the implemented handler    //************************** commentato *****************************
-//uint8_t own::CmdACTMoveRelative::implementedHandler(){
-//    return	AbstractActuatorCommand::implementedHandler()|chaos_batch::HandlerType::HT_Acquisition;
-//}
+
 
 void own::CmdACTMoveRelative::setHandler(c_data::CDataWrapper *data) {
 	//chaos::common::data::RangeValueInfo position_sp_attr_info;   // ************* Commentato *************
@@ -123,7 +120,7 @@ void own::CmdACTMoveRelative::setHandler(c_data::CDataWrapper *data) {
 	uint64_t computed_timeout; // timeout will be expressed in [ms]
 	if (realSpeed != 0)
 	{
-		computed_timeout  = uint64_t((offset_mm / realSpeed)*1000000) + DEFAULT_MOVE_TIMETOL_OFFSET_MS;
+		computed_timeout  = uint64_t((fabs(offset_mm) / realSpeed)*1000000) + DEFAULT_MOVE_TIMETOL_OFFSET_MS;
 		computed_timeout=std::max(computed_timeout,(uint64_t)*p_setTimeout);
 		SCLDBG_ << "Calculated timeout is = " << computed_timeout;
 	}
@@ -152,7 +149,7 @@ void own::CmdACTMoveRelative::setHandler(c_data::CDataWrapper *data) {
 	SCLDBG_ << "o_position_sp is = " << *i_position;
 	if((err = actuator_drv->moveRelative(*axID,offset_mm)) != 0) {
 		metadataLogging(chaos::common::metadata_logging::StandardLoggingChannel::LogLevelError,CHAOS_FORMAT("axis %1% cannot perform relative move to '%2%' mm",%*axID %offset_mm));
-		setStateVariableSeverity(StateVariableTypeAlarmCU,"user_command_failed", chaos::common::alarm::MultiSeverityAlarmLevelHigh);
+		//setStateVariableSeverity(StateVariableTypeAlarmCU,"user_command_failed", chaos::common::alarm::MultiSeverityAlarmLevelHigh);
 		BC_FAULT_RUNNING_PROPERTY;
 		return;
 	}

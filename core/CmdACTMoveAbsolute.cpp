@@ -74,16 +74,7 @@ void own::CmdACTMoveAbsolute::setHandler(c_data::CDataWrapper *data) {
 		return;
 	}
 
-	//    axID = getAttributeCache()->getROPtr<uint32_t>(DOMAIN_INPUT, "axisID");
-	//    o_position = getAttributeCache()->getRWPtr<double>(DOMAIN_OUTPUT, "position");
-	//    o_position_sp = getAttributeCache()->getRWPtr<double>(DOMAIN_OUTPUT, "position_sp");
-	//    i_speed = (double*) getAttributeCache()->getROPtr<double>(DOMAIN_INPUT, "speed");
-	//    i_command_timeout = getAttributeCache()->getROPtr<uint32_t>(DOMAIN_INPUT, "command_timeout");
-	//    __i_delta_setpoint = getAttributeCache()->getROPtr<double>(DOMAIN_INPUT, "__delta_setpoint");
-	//    __i_setpoint_affinity = getAttributeCache()->getROPtr<double>(DOMAIN_INPUT, "__setpoint_affinity");
-	//    tmpInt = (int*) getAttributeCache()->getROPtr<int32_t>(DOMAIN_INPUT, "readingType") ;
-	//    readTyp=(::common::actuators::AbstractActuator::readingTypes) *tmpInt;
-
+	
 	
 	// ********************* a cosa servono **********************
 	//SCLDBG_<<"minimum working value:"<<*p_minimumWorkingValue;
@@ -103,7 +94,7 @@ void own::CmdACTMoveAbsolute::setHandler(c_data::CDataWrapper *data) {
 			ss<<"POI '"<<data->getStringValue(CMD_ACT_MOVE_POI)<<"' does not map to a value";
 			metadataLogging(chaos::common::metadata_logging::StandardLoggingChannel::LogLevelError,ss.str());
 			BC_FAULT_RUNNING_PROPERTY;
-		//	setStateVariableSeverity(StateVariableTypeAlarmCU, "user_command_failed", chaos::common::alarm::MultiSeverityAlarmLevelHigh);
+		//	setStateVariableSeverity(StateVariableTypeAlarmCU, "command_error", chaos::common::alarm::MultiSeverityAlarmLevelHigh);
 
 			return;
 		}
@@ -111,7 +102,7 @@ void own::CmdACTMoveAbsolute::setHandler(c_data::CDataWrapper *data) {
 
 	} else {
 		metadataLogging(chaos::common::metadata_logging::StandardLoggingChannel::LogLevelError,"Position not specified ");
-	//	setStateVariableSeverity(StateVariableTypeAlarmCU, "user_command_failed", chaos::common::alarm::MultiSeverityAlarmLevelHigh);
+	//	setStateVariableSeverity(StateVariableTypeAlarmCU, "command_error", chaos::common::alarm::MultiSeverityAlarmLevelHigh);
 		BC_FAULT_RUNNING_PROPERTY;
 		return;
 	}
@@ -133,7 +124,7 @@ void own::CmdACTMoveAbsolute::setHandler(c_data::CDataWrapper *data) {
 	if (!getDeviceDatabase()->isValid("position", positionToReach))
 	{
 		metadataLogging(chaos::common::metadata_logging::StandardLoggingChannel::LogLevelError,CHAOS_FORMAT("Final set point %1% outside the maximum/minimum" , % positionToReach ));
-	//	setStateVariableSeverity(StateVariableTypeAlarmCU, "user_command_failed", chaos::common::alarm::MultiSeverityAlarmLevelHigh);
+	//	setStateVariableSeverity(StateVariableTypeAlarmCU, "command_error", chaos::common::alarm::MultiSeverityAlarmLevelHigh);
 
 		BC_FAULT_RUNNING_PROPERTY;
 		return;
@@ -201,7 +192,7 @@ void own::CmdACTMoveAbsolute::setHandler(c_data::CDataWrapper *data) {
 	SCLDBG_ << "o_position_sp is = " << *i_position;
 	if((err = actuator_drv->moveAbsolute(*axID,positionToReach)) != 0) {
 		metadataLogging(chaos::common::metadata_logging::StandardLoggingChannel::LogLevelError,CHAOS_FORMAT("axis %1% cannot perform absolute move to '%2%'",%*axID %positionToReach));
-	//	setStateVariableSeverity(StateVariableTypeAlarmCU,"user_command_failed", chaos::common::alarm::MultiSeverityAlarmLevelHigh);
+	//	setStateVariableSeverity(StateVariableTypeAlarmCU,"command_error", chaos::common::alarm::MultiSeverityAlarmLevelHigh);
 		BC_FAULT_RUNNING_PROPERTY;
 		return;
 	}
