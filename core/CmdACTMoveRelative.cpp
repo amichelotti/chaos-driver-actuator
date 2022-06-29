@@ -76,13 +76,7 @@ void own::CmdACTMoveRelative::setHandler(c_data::CDataWrapper *data) {
 		BC_FAULT_RUNNING_PROPERTY;
 		return;
 	}
-	/*
-	if(!data->isDoubleValue(CMD_ACT_MM_OFFSET)) {
-		SCLERR_ << "Offset millimeters parameter is not a Double data type";
-		BC_FAULT_RUNNING_PROPERTY;
-		return;
-	}
-	 */
+	
 	offset_mm = 0;
 	offset_mm = static_cast<float>(data->getDoubleValue(CMD_ACT_MM_OFFSET));
 	//SCLAPP_<<"offset_mm:"<<offset_mm;
@@ -104,17 +98,25 @@ void own::CmdACTMoveRelative::setHandler(c_data::CDataWrapper *data) {
 	}
 	std::string retStr="NULLA";
 	double realSpeed=0;
-	if ((err = actuator_drv->getParameter(*axID,"speed",retStr)) != 0)
+	const double* cacheSpeed = getAttributeCache()->getROPtr<double>(DOMAIN_INPUT, "speed");
+	if (cacheSpeed != NULL)
 	{
-	   	//SCLDBG_ << "ALEDEBUG failed to read speed from driver";
-	   	metadataLogging(chaos::common::metadata_logging::StandardLoggingChannel::LogLevelWarning,"Warning cannot know the real speed of motor. Using setTimeout parameter for calculating timeout");
-	   	realSpeed=0;
-    }
-    else
-    {
-    	SCLDBG_ << "ALEDEBUG driver said speed is " << retStr;
-    	realSpeed=atof(retStr.c_str());
-    }
+		realSpeed = *cacheSpeed;
+	}
+	else
+	{
+		if ((err = actuator_drv->getParameter(*axID, "speed", retStr)) != 0)
+		{
+			//SCLDBG_ << "ALEDEBUG failed to read speed from driver";
+			metadataLogging(chaos::common::metadata_logging::StandardLoggingChannel::LogLevelWarning, "Warning cannot know the real speed of motor. Using setTimeout parameter for calculating timeout");
+			realSpeed = 0;
+		}
+		else
+		{
+			SCLDBG_ << "ALEDEBUG driver said speed is " << retStr;
+			realSpeed = atof(retStr.c_str());
+		}
+	}
 	SCLDBG_ << "Compute timeout for moving relative = " << offset_mm;
 
 	uint64_t computed_timeout; // timeout will be expressed in [ms]

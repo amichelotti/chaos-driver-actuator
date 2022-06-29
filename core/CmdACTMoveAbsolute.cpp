@@ -141,16 +141,25 @@ SCLDBG_<<" MOVABS:"<<data->getJSONString();
 	SCLDBG_ << "compute timeout for moving Absolute = " << positionToReach;
 	std::string retStr="NULLA";
 	double realSpeed=0;
-    if ((err = actuator_drv->getParameter(*axID,"speed",retStr)) != 0)
-    {
-    	metadataLogging(chaos::common::metadata_logging::StandardLoggingChannel::LogLevelWarning,"Warning cannot know the real speed of motor. Using setTimeout parameter for calculating timeout");
-    	realSpeed=0;
+	const double* cacheSpeed = getAttributeCache()->getROPtr<double>(DOMAIN_INPUT, "speed");
+	if (cacheSpeed != NULL)
+	{
+		realSpeed = *cacheSpeed;
+	}
+	else
+	{
+		if ((err = actuator_drv->getParameter(*axID, "speed", retStr)) != 0)
+		{
+			metadataLogging(chaos::common::metadata_logging::StandardLoggingChannel::LogLevelWarning, "Warning cannot know the real speed of motor. Using setTimeout parameter for calculating timeout");
+			realSpeed = 0;
 
-    }
-    else
-    {
-    	realSpeed=atof(retStr.c_str());
-    }
+		}
+		else
+		{
+			realSpeed = atof(retStr.c_str());
+		}
+	}
+	SCLDBG_ << "Compute timeout for moving absolute at  " << positionToReach;
 	//numero di secondi, dopo lo moltiplichiamo per 1 milione (volendo da micro)
 	uint64_t computed_timeout; // timeout will be expressed in [ms]
 	if (realSpeed != 0)
