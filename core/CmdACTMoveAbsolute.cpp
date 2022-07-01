@@ -140,7 +140,11 @@ void own::CmdACTMoveAbsolute::setHandler(c_data::CDataWrapper *data) {
 	SCLDBG_ << "compute timeout for moving Absolute = " << positionToReach;
 	std::string retStr="NULLA";
 	double realSpeed=0;
-	const double* cacheSpeed = getAttributeCache()->getROPtr<double>(DOMAIN_INPUT, "speed");
+	const double* cacheSpeed = NULL;
+	if(getAttributeCache()->exist(DOMAIN_INPUT, "speed")){
+		cacheSpeed=getAttributeCache()->getROPtr<double>(DOMAIN_INPUT, "speed");
+
+	}
 	if (cacheSpeed != NULL)
 	{
 		realSpeed = *cacheSpeed;

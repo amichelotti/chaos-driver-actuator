@@ -98,8 +98,11 @@ void own::CmdACTMoveRelative::setHandler(c_data::CDataWrapper *data) {
 	}
 	std::string retStr="NULLA";
 	double realSpeed=0;
-	const double* cacheSpeed = getAttributeCache()->getROPtr<double>(DOMAIN_INPUT, "speed");
-	if (cacheSpeed != NULL)
+	const double* cacheSpeed = NULL;
+	if(getAttributeCache()->exist(DOMAIN_INPUT, "speed")){
+		cacheSpeed=getAttributeCache()->getROPtr<double>(DOMAIN_INPUT, "speed");
+
+	}	if (cacheSpeed != NULL)
 	{
 		realSpeed = *cacheSpeed;
 	}
