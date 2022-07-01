@@ -51,7 +51,6 @@ BATCH_COMMAND_CLOSE_DESCRIPTION()
 void own::CmdACTMoveAbsolute::setHandler(c_data::CDataWrapper *data) {
 	//    chaos::common::data::RangeValueInfo position_sp_attr_info;
 	//    chaos::common::data::RangeValueInfo attributeInfo;
-SCLDBG_<<" MOVABS:"<<data->getJSONString();
 	float currentPosition;
 	int err = 0;
 
