@@ -53,7 +53,7 @@ void own::CmdACTPoweron::setHandler(c_data::CDataWrapper *data) {
 	onState = data->getInt32Value(CMD_ACT_POWERON_VALUE);
 	SCLDBG_ << "ALEDEBUG received poweron value " <<onState ;
 
-	setStateVariableSeverity(StateVariableTypeAlarmCU,"user_command_failed", chaos::common::alarm::MultiSeverityAlarmLevelClear);
+	setStateVariableSeverity(StateVariableTypeAlarmCU,"command_error", chaos::common::alarm::MultiSeverityAlarmLevelClear);
 	setStateVariableSeverity(StateVariableTypeAlarmCU,"powerOn_out_of_set", chaos::common::alarm::MultiSeverityAlarmLevelClear);
 	setStateVariableSeverity(StateVariableTypeAlarmCU,"powerOn_value_not_reached", chaos::common::alarm::MultiSeverityAlarmLevelClear);
 
@@ -65,7 +65,7 @@ void own::CmdACTPoweron::setHandler(c_data::CDataWrapper *data) {
 	SCLDBG_   << "Launching poweron in set handler power on in axid "<< *axID << " value " << onState;
 	if((err = actuator_drv->poweron(*axID,onState)) != 0) {
         metadataLogging(chaos::common::metadata_logging::StandardLoggingChannel::LogLevelError,CHAOS_FORMAT("axis %1% cannot perform set state (poweron) to %2%",%*axID %onState));
-		setStateVariableSeverity(StateVariableTypeAlarmCU,"user_command_failed", chaos::common::alarm::MultiSeverityAlarmLevelHigh);
+		//setStateVariableSeverity(StateVariableTypeAlarmCU,"command_error", chaos::common::alarm::MultiSeverityAlarmLevelHigh);
 		BC_FAULT_RUNNING_PROPERTY;
 		return;
 
