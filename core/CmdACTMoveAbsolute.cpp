@@ -47,7 +47,11 @@ BATCH_COMMAND_CLOSE_DESCRIPTION()
 //    return	AbstractActuatorCommand::implementedHandler()|chaos_batch::HandlerType::HT_Acquisition;
 //}
 //uint64_t computed_timeout;
+own::CmdACTMoveAbsolute::~CmdACTMoveAbsolute() {
+	if(actuator_drv)
+		actuator_drv->unlock();
 
+}
 void own::CmdACTMoveAbsolute::setHandler(c_data::CDataWrapper *data) {
 	//    chaos::common::data::RangeValueInfo position_sp_attr_info;
 	//    chaos::common::data::RangeValueInfo attributeInfo;
@@ -74,7 +78,8 @@ void own::CmdACTMoveAbsolute::setHandler(c_data::CDataWrapper *data) {
 	}
 
 	
-	
+	if(actuator_drv)
+		actuator_drv->lock();
 	// ********************* a cosa servono **********************
 	//SCLDBG_<<"minimum working value:"<<*p_minimumWorkingValue;
 	//SCLDBG_<<"maximum, working value:"<<*p_maximumWorkingValue;

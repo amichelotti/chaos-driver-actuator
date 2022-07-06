@@ -44,7 +44,11 @@ BATCH_COMMAND_ADD_DOUBLE_PARAM(CMD_ACT_MM_OFFSET, "offset in mm",chaos::common::
 BATCH_COMMAND_CLOSE_DESCRIPTION()
 
 
+own::CmdACTMoveRelative::~CmdACTMoveRelative() {
+	if(actuator_drv)
+		actuator_drv->unlock();
 
+}
 void own::CmdACTMoveRelative::setHandler(c_data::CDataWrapper *data) {
 	//chaos::common::data::RangeValueInfo position_sp_attr_info;   // ************* Commentato *************
 	//chaos::common::data::RangeValueInfo attributeInfo;           // ************* Commentato *************
@@ -99,6 +103,9 @@ void own::CmdACTMoveRelative::setHandler(c_data::CDataWrapper *data) {
 	std::string retStr="NULLA";
 	double realSpeed=0;
 	const double* cacheSpeed = NULL;
+	if(actuator_drv)
+		actuator_drv->lock();
+		
 	if(getAttributeCache()->exist(DOMAIN_INPUT, "speed")){
 		cacheSpeed=getAttributeCache()->getROPtr<double>(DOMAIN_INPUT, "speed");
 
