@@ -47,11 +47,14 @@ BATCH_COMMAND_CLOSE_DESCRIPTION()
 //    return	AbstractActuatorCommand::implementedHandler()|chaos_batch::HandlerType::HT_Acquisition;
 //}
 //uint64_t computed_timeout;
+own::CmdACTMoveAbsolute::~CmdACTMoveAbsolute() {
+	if(actuator_drv)
+		actuator_drv->unlock();
 
+}
 void own::CmdACTMoveAbsolute::setHandler(c_data::CDataWrapper *data) {
 	//    chaos::common::data::RangeValueInfo position_sp_attr_info;
 	//    chaos::common::data::RangeValueInfo attributeInfo;
-SCLDBG_<<" MOVABS:"<<data->getJSONString();
 	float currentPosition;
 	int err = 0;
 
@@ -74,17 +77,9 @@ SCLDBG_<<" MOVABS:"<<data->getJSONString();
 		return;
 	}
 
-	//    axID = getAttributeCache()->getROPtr<uint32_t>(DOMAIN_INPUT, "axisID");
-	//    o_position = getAttributeCache()->getRWPtr<double>(DOMAIN_OUTPUT, "position");
-	//    o_position_sp = getAttributeCache()->getRWPtr<double>(DOMAIN_OUTPUT, "position_sp");
-	//    i_speed = (double*) getAttributeCache()->getROPtr<double>(DOMAIN_INPUT, "speed");
-	//    i_command_timeout = getAttributeCache()->getROPtr<uint32_t>(DOMAIN_INPUT, "command_timeout");
-	//    __i_delta_setpoint = getAttributeCache()->getROPtr<double>(DOMAIN_INPUT, "__delta_setpoint");
-	//    __i_setpoint_affinity = getAttributeCache()->getROPtr<double>(DOMAIN_INPUT, "__setpoint_affinity");
-	//    tmpInt = (int*) getAttributeCache()->getROPtr<int32_t>(DOMAIN_INPUT, "readingType") ;
-	//    readTyp=(::common::actuators::AbstractActuator::readingTypes) *tmpInt;
-
 	
+	if(actuator_drv)
+		actuator_drv->lock();
 	// ********************* a cosa servono **********************
 	//SCLDBG_<<"minimum working value:"<<*p_minimumWorkingValue;
 	//SCLDBG_<<"maximum, working value:"<<*p_maximumWorkingValue;
@@ -103,7 +98,7 @@ SCLDBG_<<" MOVABS:"<<data->getJSONString();
 			ss<<"POI '"<<data->getStringValue(CMD_ACT_MOVE_POI)<<"' does not map to a value";
 			metadataLogging(chaos::common::metadata_logging::StandardLoggingChannel::LogLevelError,ss.str());
 			BC_FAULT_RUNNING_PROPERTY;
-		//	setStateVariableSeverity(StateVariableTypeAlarmCU, "user_command_failed", chaos::common::alarm::MultiSeverityAlarmLevelHigh);
+		//	setStateVariableSeverity(StateVariableTypeAlarmCU, "command_error", chaos::common::alarm::MultiSeverityAlarmLevelHigh);
 
 			return;
 		}
@@ -111,7 +106,7 @@ SCLDBG_<<" MOVABS:"<<data->getJSONString();
 
 	} else {
 		metadataLogging(chaos::common::metadata_logging::StandardLoggingChannel::LogLevelError,"Position not specified ");
-	//	setStateVariableSeverity(StateVariableTypeAlarmCU, "user_command_failed", chaos::common::alarm::MultiSeverityAlarmLevelHigh);
+	//	setStateVariableSeverity(StateVariableTypeAlarmCU, "command_error", chaos::common::alarm::MultiSeverityAlarmLevelHigh);
 		BC_FAULT_RUNNING_PROPERTY;
 		return;
 	}
@@ -133,7 +128,7 @@ SCLDBG_<<" MOVABS:"<<data->getJSONString();
 	if (!getDeviceDatabase()->isValid("position", positionToReach))
 	{
 		metadataLogging(chaos::common::metadata_logging::StandardLoggingChannel::LogLevelError,CHAOS_FORMAT("Final set point %1% outside the maximum/minimum" , % positionToReach ));
-	//	setStateVariableSeverity(StateVariableTypeAlarmCU, "user_command_failed", chaos::common::alarm::MultiSeverityAlarmLevelHigh);
+	//	setStateVariableSeverity(StateVariableTypeAlarmCU, "command_error", chaos::common::alarm::MultiSeverityAlarmLevelHigh);
 
 		BC_FAULT_RUNNING_PROPERTY;
 		return;
@@ -150,16 +145,29 @@ SCLDBG_<<" MOVABS:"<<data->getJSONString();
 	SCLDBG_ << "compute timeout for moving Absolute = " << positionToReach;
 	std::string retStr="NULLA";
 	double realSpeed=0;
-    if ((err = actuator_drv->getParameter(*axID,"speed",retStr)) != 0)
-    {
-    	metadataLogging(chaos::common::metadata_logging::StandardLoggingChannel::LogLevelWarning,"Warning cannot know the real speed of motor. Using setTimeout parameter for calculating timeout");
-    	realSpeed=0;
+	const double* cacheSpeed = NULL;
+	if(getAttributeCache()->exist(DOMAIN_INPUT, "speed")){
+		cacheSpeed=getAttributeCache()->getROPtr<double>(DOMAIN_INPUT, "speed");
 
-    }
-    else
-    {
-    	realSpeed=atof(retStr.c_str());
-    }
+	}
+	if (cacheSpeed != NULL)
+	{
+		realSpeed = *cacheSpeed;
+	}
+	else
+	{
+		if ((err = actuator_drv->getParameter(*axID, "speed", retStr)) != 0)
+		{
+			metadataLogging(chaos::common::metadata_logging::StandardLoggingChannel::LogLevelWarning, "Warning cannot know the real speed of motor. Using setTimeout parameter for calculating timeout");
+			realSpeed = 0;
+
+		}
+		else
+		{
+			realSpeed = atof(retStr.c_str());
+		}
+	}
+	SCLDBG_ << "Compute timeout for moving absolute at  " << positionToReach;
 	//numero di secondi, dopo lo moltiplichiamo per 1 milione (volendo da micro)
 	uint64_t computed_timeout; // timeout will be expressed in [ms]
 	if (realSpeed != 0)
@@ -201,7 +209,7 @@ SCLDBG_<<" MOVABS:"<<data->getJSONString();
 	SCLDBG_ << "o_position_sp is = " << *i_position;
 	if((err = actuator_drv->moveAbsolute(*axID,positionToReach)) != 0) {
 		metadataLogging(chaos::common::metadata_logging::StandardLoggingChannel::LogLevelError,CHAOS_FORMAT("axis %1% cannot perform absolute move to '%2%'",%*axID %positionToReach));
-	//	setStateVariableSeverity(StateVariableTypeAlarmCU,"user_command_failed", chaos::common::alarm::MultiSeverityAlarmLevelHigh);
+	//	setStateVariableSeverity(StateVariableTypeAlarmCU,"command_error", chaos::common::alarm::MultiSeverityAlarmLevelHigh);
 		BC_FAULT_RUNNING_PROPERTY;
 		return;
 	}

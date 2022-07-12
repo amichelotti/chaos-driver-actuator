@@ -183,7 +183,7 @@ int ChaosActuatorExternalDD::setParameter(int axisID,std::string parName,std::st
 }
 
 int ChaosActuatorExternalDD::getPosition( int32_t axisID, ::common::actuators::AbstractActuator::readingTypes readingType, double *deltaPosition) {
-//	     ChaosLockGuard lock(io_mux);
+	boost::mutex::scoped_lock lock(io_mux);
 
 	CDWShrdPtr response;
     CDWUniquePtr para_pack(new CDataWrapper());
@@ -237,7 +237,11 @@ int ChaosActuatorExternalDD::listParameters( std::string &dataset) {
 }
 
 int ChaosActuatorExternalDD::getAlarms( int32_t axisID, uint64_t *alrm, std::string &desc) {
+<<<<<<< HEAD
 	//ChaosLockGuard lock(io_mux);
+=======
+	boost::mutex::scoped_lock lock(io_mux);
+>>>>>>> experimental
 
 	CDWShrdPtr response;
     CDWUniquePtr para_pack(new CDataWrapper());
@@ -254,7 +258,7 @@ int ChaosActuatorExternalDD::getAlarms( int32_t axisID, uint64_t *alrm, std::str
 }
 
 int ChaosActuatorExternalDD::moveRelative( int32_t axisID, double delta) {
-	//ChaosLockGuard lock(io_mux);
+	boost::mutex::scoped_lock lock(io_mux);
 
 	CDWShrdPtr response;
     CDWUniquePtr para_pack(new CDataWrapper());
@@ -265,7 +269,7 @@ int ChaosActuatorExternalDD::moveRelative( int32_t axisID, double delta) {
 }
 
 int ChaosActuatorExternalDD::moveAbsolute( int32_t axisID, double setPos) {
-//	ChaosLockGuard lock(io_mux);
+	boost::mutex::scoped_lock lock(io_mux);
 
 	CDWShrdPtr response;
     CDWUniquePtr para_pack(new CDataWrapper());
@@ -277,7 +281,8 @@ int ChaosActuatorExternalDD::moveAbsolute( int32_t axisID, double setPos) {
 
 
 int ChaosActuatorExternalDD::stopMotion( int32_t axisID) {
-//	ChaosLockGuard lock(io_mux);
+
+	boost::mutex::scoped_lock lock(io_mux);
 
 	CDWShrdPtr response;
     CDWUniquePtr para_pack(new CDataWrapper());
@@ -296,8 +301,7 @@ int ChaosActuatorExternalDD::soft_homing(int32_t axisID, double positionToSet)
 }
 
 int ChaosActuatorExternalDD::homing( int32_t axisID, ::common::actuators::AbstractActuator::homingType mode) {
-	//ChaosLockGuard lock(io_mux);
-
+	boost::mutex::scoped_lock lock(io_mux);
 	CDWShrdPtr response;
     CDWUniquePtr para_pack(new CDataWrapper());
 	para_pack->addInt32Value("axisID", axisID);
@@ -306,8 +310,7 @@ int ChaosActuatorExternalDD::homing( int32_t axisID, ::common::actuators::Abstra
     return err;
 }
 int ChaosActuatorExternalDD::poweron( int32_t axisID, int on) {
-//	ChaosLockGuard lock(io_mux);
-
+	boost::mutex::scoped_lock lock(io_mux);
 	CDWShrdPtr response;
     CDWUniquePtr para_pack(new CDataWrapper());
 	para_pack->addInt32Value("axisID", axisID);
@@ -320,8 +323,8 @@ int ChaosActuatorExternalDD::poweron( int32_t axisID, int on) {
 }
 
 int ChaosActuatorExternalDD::getState( int32_t axisID, int *state, std::string &desc) {
-	//ChaosLockGuard lock(io_mux);
 
+	boost::mutex::scoped_lock lock(io_mux);
 	CDWShrdPtr response;
     CDWUniquePtr para_pack(new CDataWrapper());
 	para_pack->addInt32Value("axisID", axisID);

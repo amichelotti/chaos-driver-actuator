@@ -9,7 +9,7 @@
 #ifndef __ChaosActuatorInterface__
 #define __ChaosActuatorInterface__
 
-#include <chaos/cu_toolkit/driver_manager/driver/DriverAccessor.h>
+#include <chaos/cu_toolkit/driver_manager/driver/AbstractDriverInterface.h>
 #include <chaos/cu_toolkit/driver_manager/driver/DriverTypes.h>
 #include <common/actuators/core/AbstractActuator.h>
 #include <common/debug/core/debug.h>
@@ -80,7 +80,7 @@ typedef struct {
 } actuator_oparams_t;
 
 // wrapper interface
-class ChaosActuatorInterface : public ::common::actuators::AbstractActuator {
+class ChaosActuatorInterface : public ::common::actuators::AbstractActuator, public chaos::cu::driver_manager::driver::AbstractDriverInterface {
 protected:
   chaos_driver::DrvMsg message;
   std::string owner;
@@ -88,8 +88,7 @@ protected:
 public:
   ChaosActuatorInterface(chaos_driver::DriverAccessor *_accessor,
                          const std::string &_owner = "")
-      : owner(_owner), accessor(_accessor){impl=(ChaosActuatorDD*)_accessor->getImpl();};
-  chaos_driver::DriverAccessor *accessor;
+      : chaos::cu::driver_manager::driver::AbstractDriverInterface(_accessor),owner(_owner){impl=(ChaosActuatorDD*)_accessor->getImpl();};
   ChaosActuatorDD*impl;
 
   /**

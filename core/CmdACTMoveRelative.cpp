@@ -43,11 +43,12 @@ BATCH_COMMAND_OPEN_DESCRIPTION_ALIAS(driver::actuator::,CmdACTMoveRelative,CMD_A
 BATCH_COMMAND_ADD_DOUBLE_PARAM(CMD_ACT_MM_OFFSET, "offset in mm",chaos::common::batch_command::BatchCommandAndParameterDescriptionkey::BC_PARAMETER_FLAG_MANDATORY)
 BATCH_COMMAND_CLOSE_DESCRIPTION()
 
-// return the implemented handler    //************************** commentato *****************************
-//uint8_t own::CmdACTMoveRelative::implementedHandler(){
-//    return	AbstractActuatorCommand::implementedHandler()|chaos_batch::HandlerType::HT_Acquisition;
-//}
 
+own::CmdACTMoveRelative::~CmdACTMoveRelative() {
+	if(actuator_drv)
+		actuator_drv->unlock();
+
+}
 void own::CmdACTMoveRelative::setHandler(c_data::CDataWrapper *data) {
 	//chaos::common::data::RangeValueInfo position_sp_attr_info;   // ************* Commentato *************
 	//chaos::common::data::RangeValueInfo attributeInfo;           // ************* Commentato *************
@@ -79,13 +80,7 @@ void own::CmdACTMoveRelative::setHandler(c_data::CDataWrapper *data) {
 		BC_FAULT_RUNNING_PROPERTY;
 		return;
 	}
-	/*
-	if(!data->isDoubleValue(CMD_ACT_MM_OFFSET)) {
-		SCLERR_ << "Offset millimeters parameter is not a Double data type";
-		BC_FAULT_RUNNING_PROPERTY;
-		return;
-	}
-	 */
+	
 	offset_mm = 0;
 	offset_mm = static_cast<float>(data->getDoubleValue(CMD_ACT_MM_OFFSET));
 	//SCLAPP_<<"offset_mm:"<<offset_mm;
@@ -107,23 +102,37 @@ void own::CmdACTMoveRelative::setHandler(c_data::CDataWrapper *data) {
 	}
 	std::string retStr="NULLA";
 	double realSpeed=0;
-	if ((err = actuator_drv->getParameter(*axID,"speed",retStr)) != 0)
+	const double* cacheSpeed = NULL;
+	if(actuator_drv)
+		actuator_drv->lock();
+		
+	if(getAttributeCache()->exist(DOMAIN_INPUT, "speed")){
+		cacheSpeed=getAttributeCache()->getROPtr<double>(DOMAIN_INPUT, "speed");
+
+	}	if (cacheSpeed != NULL)
 	{
-	   	//SCLDBG_ << "ALEDEBUG failed to read speed from driver";
-	   	metadataLogging(chaos::common::metadata_logging::StandardLoggingChannel::LogLevelWarning,"Warning cannot know the real speed of motor. Using setTimeout parameter for calculating timeout");
-	   	realSpeed=0;
-    }
-    else
-    {
-    	SCLDBG_ << "ALEDEBUG driver said speed is " << retStr;
-    	realSpeed=atof(retStr.c_str());
-    }
+		realSpeed = *cacheSpeed;
+	}
+	else
+	{
+		if ((err = actuator_drv->getParameter(*axID, "speed", retStr)) != 0)
+		{
+			//SCLDBG_ << "ALEDEBUG failed to read speed from driver";
+			metadataLogging(chaos::common::metadata_logging::StandardLoggingChannel::LogLevelWarning, "Warning cannot know the real speed of motor. Using setTimeout parameter for calculating timeout");
+			realSpeed = 0;
+		}
+		else
+		{
+			SCLDBG_ << "ALEDEBUG driver said speed is " << retStr;
+			realSpeed = atof(retStr.c_str());
+		}
+	}
 	SCLDBG_ << "Compute timeout for moving relative = " << offset_mm;
 
 	uint64_t computed_timeout; // timeout will be expressed in [ms]
 	if (realSpeed != 0)
 	{
-		computed_timeout  = uint64_t((offset_mm / realSpeed)*1000000) + DEFAULT_MOVE_TIMETOL_OFFSET_MS;
+		computed_timeout  = uint64_t((fabs(offset_mm) / realSpeed)*1000000) + DEFAULT_MOVE_TIMETOL_OFFSET_MS;
 		computed_timeout=std::max(computed_timeout,(uint64_t)*p_setTimeout);
 		SCLDBG_ << "Calculated timeout is = " << computed_timeout;
 	}
@@ -152,7 +161,7 @@ void own::CmdACTMoveRelative::setHandler(c_data::CDataWrapper *data) {
 	SCLDBG_ << "o_position_sp is = " << *i_position;
 	if((err = actuator_drv->moveRelative(*axID,offset_mm)) != 0) {
 		metadataLogging(chaos::common::metadata_logging::StandardLoggingChannel::LogLevelError,CHAOS_FORMAT("axis %1% cannot perform relative move to '%2%' mm",%*axID %offset_mm));
-		setStateVariableSeverity(StateVariableTypeAlarmCU,"user_command_failed", chaos::common::alarm::MultiSeverityAlarmLevelHigh);
+		//setStateVariableSeverity(StateVariableTypeAlarmCU,"user_command_failed", chaos::common::alarm::MultiSeverityAlarmLevelHigh);
 		BC_FAULT_RUNNING_PROPERTY;
 		return;
 	}
