@@ -237,16 +237,7 @@ int ChaosActuatorExternalDD::listParameters( std::string &dataset) {
 }
 
 int ChaosActuatorExternalDD::getAlarms( int32_t axisID, uint64_t *alrm, std::string &desc) {
-<<<<<<< HEAD
-<<<<<<< HEAD
-	//ChaosLockGuard lock(io_mux);
-=======
-	boost::mutex::scoped_lock lock(io_mux);
->>>>>>> experimental
-=======
 	ChaosLockGuard lock(io_mux);
->>>>>>> experimental
-
 	CDWShrdPtr response;
     CDWUniquePtr para_pack(new CDataWrapper());
 	para_pack->addInt32Value("axisID", axisID);
@@ -329,7 +320,6 @@ int ChaosActuatorExternalDD::poweron( int32_t axisID, int on) {
 int ChaosActuatorExternalDD::getState( int32_t axisID, int *state, std::string &desc) {
 	ChaosLockGuard lock(io_mux);
 
-	boost::mutex::scoped_lock lock(io_mux);
 	CDWShrdPtr response;
     CDWUniquePtr para_pack(new CDataWrapper());
 	para_pack->addInt32Value("axisID", axisID);
