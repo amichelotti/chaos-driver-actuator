@@ -40,7 +40,7 @@ class ChaosActuatorDD : ADD_CU_DRIVER_PLUGIN_SUPERCLASS,
                         public ::common::actuators::AbstractActuator {
 
 protected:
-  boost::mutex io_mux;
+  ChaosMutex io_mux;
   ::common::actuators::AbstractActuator *motor;
 
 public:
