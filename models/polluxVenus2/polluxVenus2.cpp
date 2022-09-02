@@ -58,7 +58,7 @@ std::string polluxVenus2::getAnswer(int timeo_ms){
   int ret;
   while((ret=serial->read(&buf,1,timeo_ms))==1){
     ss<<buf;
-    if(ss.str().find_last_of(POLLUX_TERMINATOR)!=std::string::npos){
+    if(ss.str().find(POLLUX_TERMINATOR)!=std::string::npos){
       return ss.str();
     } else {
       //  ACTDBG << "receive buffer \"" << ss.str()<<"\" ret:"<<ret;
