@@ -32,7 +32,7 @@ namespace cu_driver = chaos::cu::driver_manager::driver;
 namespace chaos {
 namespace driver {
 namespace actuator {
-
+#define POLLUX_TERMINATOR "\r\n"
 /*
  driver definition
  */
@@ -41,6 +41,12 @@ class polluxVenus2 : public ChaosActuatorDD {
   void                                        driverInit(const chaos::common::data::CDataWrapper& json) throw(chaos::CException);
   ::common::serial::AbstractSerialChannel_psh serial;
 
+ protected:
+  std::string getAnswer(int timeo_ms = 5000);
+  int         sendCommand(int axis, const std::string& cmd, std::string& reply);
+  int         sendCommand(int axis, const std::string& cmd);
+
+  int abortAll();
  public:
   polluxVenus2();
   ~polluxVenus2();
