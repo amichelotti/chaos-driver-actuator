@@ -40,6 +40,8 @@ class polluxVenus2 : public ChaosActuatorDD {
   void                                        driverInit(const char* initParameter) throw(chaos::CException);
   void                                        driverInit(const chaos::common::data::CDataWrapper& json) throw(chaos::CException);
   ::common::serial::AbstractSerialChannel_psh serial;
+  uint64_t counter;
+  ChaosMutex io_mux;
 
  protected:
   std::string getAnswer(int timeo_ms = 5000);

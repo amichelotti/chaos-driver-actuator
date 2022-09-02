@@ -46,26 +46,19 @@ namespace chaos {
 namespace driver {
 namespace actuator {
 // default constructor definition
-polluxVenus2::polluxVenus2() {
+polluxVenus2::polluxVenus2():counter(0) {
 }
 
 // default descrutcor
 polluxVenus2::~polluxVenus2() {
 }
 std::string polluxVenus2::getAnswer(int timeo_ms){
-  std::stringstream ss;
-  char buf;
-  int ret;
-  while((ret=serial->read(&buf,1,timeo_ms))==1){
-    ss<<buf;
-    if(ss.str().find(POLLUX_TERMINATOR)!=std::string::npos){
-      return ss.str();
-    } else {
-      //  ACTDBG << "receive buffer \"" << ss.str()<<"\" ret:"<<ret;
-
-    }
+  std::string ss;
+  int ret=serial->readLine(ss,POLLUX_TERMINATOR,timeo_ms);
+  if(ret<0){
+    ACTERR<<"Timeout answer";
   }
-  return ss.str();
+  return ss;
 }
 int polluxVenus2::abortAll(){
   char ctrlc=2;
@@ -75,14 +68,16 @@ int polluxVenus2::abortAll(){
 }
 int polluxVenus2::sendCommand(int axis,const std::string&cmd){
     std::stringstream ss;
-    ss<<axis<<" "<<cmd<<POLLUX_TERMINATOR;
-    ACTDBG << "Sending \"" << ss.str()<<"\"";
+    ss<<axis<<" "<<cmd;
+    ACTDBG << (++counter)<<"] Sending \"" << ss.str()<<"\"";
 
+    ss<<POLLUX_TERMINATOR;
    int ret=serial->write((void*)ss.str().c_str(),ss.str().size());
    return ret;
 }
 
 int polluxVenus2::sendCommand(int axis,const std::string&cmd,std::string&reply){
+  ChaosLockGuard a(io_mux);
   reply="";
   int ret=sendCommand(axis,cmd);
   if(ret<0){
@@ -90,6 +85,8 @@ int polluxVenus2::sendCommand(int axis,const std::string&cmd,std::string&reply){
     return ret;
   }
   reply=getAnswer();
+  ACTDBG << counter<<"] Reply \"" << reply<<"\"";
+
   return reply.size();
 }
 
