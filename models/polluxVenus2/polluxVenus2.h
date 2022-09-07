@@ -24,6 +24,7 @@
 #include <common/serial/core/SerialChannelFactory.h>
 
 #include <driver/actuator/core/ChaosActuatorDD.h>
+
 // this need to be out the namespace
 
 DEFINE_CU_DRIVER_DEFINITION_PROTOTYPE(polluxVenus2)
@@ -42,11 +43,13 @@ class polluxVenus2 : public ChaosActuatorDD {
   ::common::serial::AbstractSerialChannel_psh serial;
   uint64_t counter;
   ChaosMutex io_mux;
-
+  std::map<int32_t,uint64_t> statusMap;
+  
  protected:
   std::string getAnswer(int timeo_ms = 5000);
   int         sendCommand(int axis, const std::string& cmd, std::string& reply);
   int         sendCommand(int axis, const std::string& cmd);
+  int         sendCommand(const std::string param, int axis, const std::string& cmd);
 
   int abortAll();
  public:
