@@ -131,15 +131,65 @@ void polluxVenus2::driverInit(const char* initParameter) throw(chaos::CException
   // rett= motor->getPosition((::common::actuators::AbstractActuator::readingTypes)1,&mmpos);
 }
 
+std::string formatDouble(double val)
+{
+    char buf[32];
+    sprintf(buf, "%.6f", val);
+    return std::string(buf);
+}
+
+std::string formatDouble(std::string sval)
+{
+    double val = atof(sval.c_str());
+    return formatDouble(val);
+
+}
+
+
+
 int polluxVenus2::setParameter(int axisID, std::string parName, std::string value) {
+    int ret;
+    std::string rets = "";
+
+
+    if (parName == "speed")
+    {
+        std::string vv = formatDouble(value);
+        if ((ret = sendCommand(vv, axisID, "snv")) <= 0) {
+            return -1;
+        }
+    }
+    else if ((parName == "hwminpos") || (parName == "hwmaxpos"))
+    {
+    }
+    else if (parName == "highspeedhoming")
+    {
+        std::string vv = formatDouble(value);
+        if ((ret = sendCommand(vv+ " 1 ", axisID, "sncalvel")) <= 0) {
+            return -1;
+        }
+    }
+    else if (parName == "acceleration")
+    {
+        std::string vv = formatDouble(value);
+        if ((ret = sendCommand(vv, axisID, "sna")) <= 0) {
+            return -1;
+        }
+    }
+    else if (parName == "pitch") {
+        std::string vv = formatDouble(value);
+        if ((ret = sendCommand(vv, axisID, "setpitch")) <= 0) {
+            return -1;
+        }
+    }
+
+
   return 0;
 }
 int polluxVenus2::moveRelative(int axisID, double mm) {
     int ret;
-    char buf[32];
-    sprintf(buf, "%.6f", mm);
-
-    std::string A(buf);
+   
+    std::string A = formatDouble(mm);
     if ((ret = sendCommand(A, axisID, "nr")) <= 0) {
         return -1;
     }
@@ -208,7 +258,7 @@ int polluxVenus2::getPosition(int axisID, readingTypes mode, double* deltaPositi
     return -1;
   } 
   *deltaPosition_mm=atof(rets.c_str());
-  ACTDBG << "Axis " << axisID<<" position:"<<*deltaPosition_mm;
+  //ACTDBG << "Axis " << axisID<<" position:"<<*deltaPosition_mm;
 
   return 0;
 }
@@ -240,6 +290,7 @@ int polluxVenus2::configAxis(int axisID, void* initialization_string) {
   return 0;
 }
 int polluxVenus2::deinitACT(int axisID) {
+    this->statusMap.erase(axisID);
   return 0;
 }
 int polluxVenus2::hardreset(int axisID, bool mode) {
@@ -278,7 +329,15 @@ int polluxVenus2::stopMotion(int axisID) {
   if(axisID==-1){
     return abortAll();
   } 
-  return sendCommand(axisID,"nabort");
+  int ret;
+  if ((ret = sendCommand(axisID, "nabort")) <= 0) {
+      return -1;
+  }
+  uint64_t state = this->statusMap[axisID];
+  //end homing
+  state &= (~::common::actuators::actuatorStatus::HOMING_IN_PROGRESS);
+  this->statusMap[axisID] = state;
+  
 }
 int polluxVenus2::homing(int axisID, homingType mode) {
     uint64_t state = this->statusMap[axisID];
@@ -294,7 +353,7 @@ int polluxVenus2::homing(int axisID, homingType mode) {
     int nl = 0, pl = 0;
     if (sscanf(rets.c_str(), "%d%d", &nl, &pl) != 2)
     {
-        ACTERR << "BAD ANSWER" << std::endl;
+        ACTERR << "BAD ANSWER IN HOMING READING SWITCHES: "<< rets << std::endl;
         return -1;
     }
     calibrationSwitchPressed = (nl == 1);
@@ -302,11 +361,12 @@ int polluxVenus2::homing(int axisID, homingType mode) {
     if (!homing_in_progress)
     {
         int ret;
-        if ((ret = sendCommand(axisID, "ncal", rets)) <= 0) {
+        if ((ret = sendCommand(axisID, "ncal")) <= 0) {
             return -1;
         }
         state |= ::common::actuators::actuatorStatus::HOMING_IN_PROGRESS;
         this->statusMap[axisID] = state;
+        return 0;
     }
     else
     {
@@ -315,13 +375,21 @@ int polluxVenus2::homing(int axisID, homingType mode) {
             //end homing
             state &= (~::common::actuators::actuatorStatus::HOMING_IN_PROGRESS);
             this->statusMap[axisID] = state;
-
+            return 0;
         }
+        else
+            return 1;
     }
 
   return 0;
 }
 int polluxVenus2::soft_homing(int axisID, double positionToSet) {
+    int ret;
+    std::string sval = formatDouble(-positionToSet);
+    if ((ret = sendCommand(sval, axisID, "setnpos")) <= 0) {
+        return -1;
+    }
+
   return 0;
 }
 int polluxVenus2::getState(int axisID, int* state, std::string& desc) {
@@ -335,7 +403,10 @@ int polluxVenus2::getState(int axisID, int* state, std::string& desc) {
     if ((atoi(rets.c_str()) & 1) != 0) {
         lastVal |= ::common::actuators::actuatorStatus::ACTUATOR_INMOTION;
     }
-       
+    
+    else {
+        lastVal &= (~::common::actuators::actuatorStatus::ACTUATOR_INMOTION);
+    }
     //getswst
     if ((ret = sendCommand(axisID, "getswst", rets)) <= 0) {
         return -1;
@@ -344,13 +415,18 @@ int polluxVenus2::getState(int axisID, int* state, std::string& desc) {
     int nl=0, pl=0;
     if (sscanf(rets.c_str(), "%d%d", &nl, &pl) != 2)
     {
-        ACTERR << "BAD ANSWER" << std::endl;
+        ACTERR << "BAD ANSWER IN GET_STATE while asking for limit switches status" << std::endl;
         return -1;
     }
     if (nl != 0)
         lastVal |= ::common::actuators::actuatorStatus::ACTUATOR_LSN_LIMIT_ACTIVE;
+    else
+        lastVal &= (~::common::actuators::actuatorStatus::ACTUATOR_LSN_LIMIT_ACTIVE);
+    
     if (pl != 0)
         lastVal |= ::common::actuators::actuatorStatus::ACTUATOR_LSP_LIMIT_ACTIVE;
+    else
+        lastVal &= (~::common::actuators::actuatorStatus::ACTUATOR_LSN_LIMIT_ACTIVE);
     
     
     this->statusMap[axisID] = lastVal;
@@ -382,10 +458,7 @@ uint64_t polluxVenus2::getFeatures() {
 }
 int polluxVenus2::moveAbsolute(int axisID, double mm) {
     int ret;
-    char buf[32];
-    sprintf(buf, "%.6f", mm);
-
-    std::string A(buf);
+    std::string A = formatDouble(mm);
     if ((ret = sendCommand(A, axisID, "nm")) <= 0) {
         return -1;
     }
