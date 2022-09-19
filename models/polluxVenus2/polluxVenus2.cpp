@@ -337,6 +337,7 @@ int polluxVenus2::stopMotion(int axisID) {
   //end homing
   state &= (~::common::actuators::actuatorStatus::HOMING_IN_PROGRESS);
   this->statusMap[axisID] = state;
+  return 0;
   
 }
 int polluxVenus2::homing(int axisID, homingType mode) {
