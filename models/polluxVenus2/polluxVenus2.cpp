@@ -80,7 +80,7 @@ int polluxVenus2::sendCommand(const std::string param, int axis, const std::stri
 int polluxVenus2::sendCommand(int axis,const std::string&cmd){
     std::stringstream ss;
     ss<<axis<<" "<<cmd;
-    //ACTDBG << (++counter)<<"] Sending \"" << ss.str()<<"\"";
+    ACTDBG << (++counter)<<"] Sending \"" << ss.str()<<"\"";
 
     ss<<POLLUX_TERMINATOR;
    int ret=serial->write((void*)ss.str().c_str(),ss.str().size());
@@ -96,7 +96,7 @@ int polluxVenus2::sendCommand(int axis,const std::string&cmd,std::string&reply){
     return ret;
   }
   reply=getAnswer();
-  //ACTDBG << counter<<"] Reply \"" << reply<<"\"";
+  ACTDBG << counter<<"] Reply \"" << reply<<"\"";
 
   return reply.size();
 }
@@ -326,7 +326,10 @@ int polluxVenus2::listParameters(std::string& dataset) {
   return 0;
 }
 int polluxVenus2::stopMotion(int axisID) {
+
   if(axisID==-1){
+    ACTDBG << "ABORT ALL AXIS";
+
     return abortAll();
   } 
   int ret;
@@ -354,7 +357,7 @@ int polluxVenus2::homing(int axisID, homingType mode) {
     int nl = 0, pl = 0;
     if (sscanf(rets.c_str(), "%d%d", &nl, &pl) != 2)
     {
-        ACTERR << "BAD ANSWER IN HOMING READING SWITCHES: "<< rets << std::endl;
+        ACTERR << "BAD ANSWER IN HOMING READING SWITCHES: "<< rets;
         return -1;
     }
     calibrationSwitchPressed = (nl == 1);
@@ -416,7 +419,7 @@ int polluxVenus2::getState(int axisID, int* state, std::string& desc) {
     int nl=0, pl=0;
     if (sscanf(rets.c_str(), "%d%d", &nl, &pl) != 2)
     {
-        ACTERR << "BAD ANSWER IN GET_STATE while asking for limit switches status" << std::endl;
+        ACTERR << "BAD ANSWER IN GET_STATE while asking for limit switches status";
         return -1;
     }
     if (nl != 0)
