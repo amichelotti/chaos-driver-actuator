@@ -57,7 +57,7 @@ std::string polluxVenus2::getAnswer(int timeo_ms){
   
   //int ret=serial->readLine(ss,POLLUX_TERMINATOR,timeo_ms);
   char buff[256];
-  int ret = serial->read(buff,256);
+  int ret = serial->read(buff,256,timeo_ms);
   if(ret<0){
     ACTERR<<"Timeout answer";
   }
