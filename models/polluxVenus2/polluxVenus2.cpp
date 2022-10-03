@@ -54,11 +54,14 @@ polluxVenus2::polluxVenus2():counter(0) {
 polluxVenus2::~polluxVenus2() {
 }
 std::string polluxVenus2::getAnswer(int timeo_ms){
-  std::string ss;
-  int ret=serial->readLine(ss,POLLUX_TERMINATOR,timeo_ms);
+  
+  //int ret=serial->readLine(ss,POLLUX_TERMINATOR,timeo_ms);
+  char buff[256];
+  int ret = serial->read(buff,256);
   if(ret<0){
     ACTERR<<"Timeout answer";
   }
+  std::string ss(buff);
   return ss;
 }
 int polluxVenus2::abortAll(){
