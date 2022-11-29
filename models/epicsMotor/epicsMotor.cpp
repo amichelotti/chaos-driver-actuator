@@ -331,10 +331,10 @@ void epicsMotor::driverInit(const chaos::common::data::CDataWrapper& json) throw
   // R/W* Read and write are allowed; write triggers record processing if the record's SCAN field is set to "Passive."
   ::driver::epics::common::EpicsGenericDriver::addPVListConfig(*(newconf.get()), pvprprop);
 
-  devicedriver = new ::driver::epics::common::EpicsPVAccessDriver(*(newconf.get()));
-  ACTDBG << "Init driver initialization with json " << json.getJSONString().c_str();
+    devicedriver = new ::driver::epics::common::EpicsPVAccessDriver(*(newconf.get()));
+    ACTDBG << "Init driver initialization with json " << json.getJSONString().c_str();
  
-  stopMotion(-1); // abort all movements (if any)
+ //   stopMotion(-1); // abort all movements (if any)
   
   
 
@@ -344,19 +344,6 @@ void epicsMotor::driverInit(const char* initParameter) throw(chaos::CException) 
   // rett= motor->getPosition((::common::actuators::AbstractActuator::readingTypes)1,&mmpos);
 }
 
-std::string formatDouble(double val)
-{
-    char buf[32];
-    sprintf(buf, "%.6f", val);
-    return std::string(buf);
-}
-
-std::string formatDouble(std::string sval)
-{
-    double val = atof(sval.c_str());
-    return formatDouble(val);
-
-}
 
 
 
@@ -485,7 +472,10 @@ int epicsMotor::getState(int axisID, int* _state, std::string& desc) {
     int32_t state;
     int ret;
     uint64_t lastVal= statusMap[axisID];
+    int stat;
     ret=devicedriver->read("MSTA",state);
+
+    
     /*
   1  DIRECTION: last raw direction; (0:Negative, 1:Positive)
   2 DONE: motion is complete.
@@ -503,7 +493,15 @@ int epicsMotor::getState(int axisID, int* _state, std::string& desc) {
  14 MINUS_LS: minus limit switch has been hit.
 15 HOMED: the motor has been homed.
     */
-    
+    if(devicedriver->read("SPMG",stat)){
+      if(stat==3){
+        lastVal |= ::common::actuators::actuatorStatus::ACTUATOR_POWER_SUPPLIED;
+      } else {
+        lastVal &= ::common::actuators::actuatorStatus::ACTUATOR_POWER_SUPPLIED;
+
+      }
+    }
+
     if(state&(1<<2)){
 
         lastVal |= ::common::actuators::actuatorStatus::ACTUATOR_MOTION_COMPLETE;
@@ -609,15 +607,18 @@ int epicsMotor::resetAlarms(int axisID, uint64_t alrm) {
 }
 int epicsMotor::poweron(int axisID, int on) {
     uint64_t lastVal = statusMap[axisID];
-
+    int ret;
     if (on == 1){
-        lastVal |= ::common::actuators::actuatorStatus::ACTUATOR_POWER_SUPPLIED;
+      ret=devicedriver->write("SPMG",3);
+      lastVal |= ::common::actuators::actuatorStatus::ACTUATOR_POWER_SUPPLIED;
     }else{
-        lastVal &= (~(::common::actuators::actuatorStatus::ACTUATOR_POWER_SUPPLIED));
+      ret=devicedriver->write("SPMG",0);
+
+      lastVal &= (~(::common::actuators::actuatorStatus::ACTUATOR_POWER_SUPPLIED));
     }
     
     statusMap[axisID] = lastVal;
-  return 0;
+  return  (ret>0)?0:ret;
 }
 uint64_t epicsMotor::getFeatures() {
   return 0;
