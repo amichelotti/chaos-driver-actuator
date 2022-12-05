@@ -332,6 +332,10 @@ void epicsMotor::driverInit(const chaos::common::data::CDataWrapper& json) throw
   ::driver::epics::common::EpicsGenericDriver::addPVListConfig(*(newconf.get()), pvprprop);
 
     devicedriver = new ::driver::epics::common::EpicsPVAccessDriver(*(newconf.get()));
+    if(devicedriver==NULL){
+          throw chaos::CException(-1, "Cannot initialize Driver with params:"+ json.getJSONString(), __PRETTY_FUNCTION__);
+
+    }
     ACTDBG << "Init driver initialization with json " << json.getJSONString().c_str();
  
  //   stopMotion(-1); // abort all movements (if any)
@@ -341,7 +345,9 @@ void epicsMotor::driverInit(const chaos::common::data::CDataWrapper& json) throw
 }
 
 void epicsMotor::driverInit(const char* initParameter) throw(chaos::CException) {
-  // rett= motor->getPosition((::common::actuators::AbstractActuator::readingTypes)1,&mmpos);
+  chaos::common::data::CDataWrapper cd;
+  cd.setSerializedJsonData(initParameter);
+  driverInit(cd);
 }
 
 
@@ -439,7 +445,7 @@ int epicsMotor::getSWVersion(int axisID, std::string& version) {
 }
 int epicsMotor::getHWVersion(int axisID, std::string& version) {
   double ver=-1;
-  int ret=devicedriver->read("VERS",ver);
+    int ret=devicedriver->read("VERS",ver);
   std::stringstream ss;
   ss<<ver;
   version=ss.str();
