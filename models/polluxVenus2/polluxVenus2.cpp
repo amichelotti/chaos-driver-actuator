@@ -363,7 +363,8 @@ int polluxVenus2::homing(int axisID, homingType mode) {
         ACTERR << "BAD ANSWER IN HOMING READING SWITCHES: "<< rets;
         return -1;
     }
-    calibrationSwitchPressed = (nl == 1);
+    int calSwitch = (mode >= 0) ? nl : pl;
+    calibrationSwitchPressed = (calSwitch == 1);
 
     if (!homing_in_progress)
     {
