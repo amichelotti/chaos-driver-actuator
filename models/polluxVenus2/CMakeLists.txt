@@ -9,7 +9,7 @@ FILE(GLOB src *.cpp)
 ADD_LIBRARY(${PROJECT_NAME} ${src}  )
 
 #ADD_EXECUTABLE(test_actuator_sim_cu test/main.cpp)
- TARGET_LINK_LIBRARIES(${PROJECT_NAME} common_actuators common_actuators_technosoftSimulator)
+ TARGET_LINK_LIBRARIES(${PROJECT_NAME} common_actuators )
 SET(DRIVERS_LIB ${DRIVERS_LIB} ${PROJECT_NAME} PARENT_SCOPE)
 FILE(GLOB src *.h)
 

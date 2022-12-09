@@ -350,6 +350,7 @@ int polluxVenus2::homing(int axisID, homingType mode) {
     uint64_t state = this->statusMap[axisID];
     bool homing_in_progress = (state & ::common::actuators::actuatorStatus::HOMING_IN_PROGRESS) != 0;
     bool calibrationSwitchPressed;
+    std::string command;
     int ret;
     std::string rets;
     //getswst
@@ -364,12 +365,13 @@ int polluxVenus2::homing(int axisID, homingType mode) {
         return -1;
     }
     int calSwitch = (mode >= 0) ? nl : pl;
+    command = (mode >= 0) ? "ncal" : "nrm";
     calibrationSwitchPressed = (calSwitch == 1);
 
     if (!homing_in_progress)
     {
         int ret;
-        if ((ret = sendCommand(axisID, "ncal")) <= 0) {
+        if ((ret = sendCommand(axisID, command.c_str())) <= 0) {
             return -1;
         }
         state |= ::common::actuators::actuatorStatus::HOMING_IN_PROGRESS;
