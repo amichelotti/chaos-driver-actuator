@@ -104,7 +104,7 @@ int polluxVenus2::sendCommand(int axis,const std::string&cmd,std::string&reply){
   return reply.size();
 }
 
-void polluxVenus2::driverInit(const chaos::common::data::CDataWrapper& json) throw(chaos::CException) {
+void polluxVenus2::driverInit(const chaos::common::data::CDataWrapper& json)  {
   int ret = -1;
   ACTDBG << "Init driver initialization with json " << json.getJSONString().c_str();
   if(!json.hasKey("driver_param")){
@@ -130,7 +130,7 @@ void polluxVenus2::driverInit(const chaos::common::data::CDataWrapper& json) thr
 
 }
 
-void polluxVenus2::driverInit(const char* initParameter) throw(chaos::CException) {
+void polluxVenus2::driverInit(const char* initParameter)  {
   // rett= motor->getPosition((::common::actuators::AbstractActuator::readingTypes)1,&mmpos);
 }
 

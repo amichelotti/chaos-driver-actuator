@@ -53,7 +53,7 @@ chaos::driver::actuator::ActuatorSim::ActuatorSim() {
 chaos::driver::actuator::ActuatorSim::~ActuatorSim() {
 }
 #ifdef CHAOS
-void chaos::driver::actuator::ActuatorSim::driverInit(const chaos::common::data::CDataWrapper& json) throw(chaos::CException) {
+void chaos::driver::actuator::ActuatorSim::driverInit(const chaos::common::data::CDataWrapper& json)  {
      int ret;
     ACTDBG << "Init driver initialization with json " <<json.getJSONString().c_str();
     if(motor)
@@ -89,7 +89,7 @@ void chaos::driver::actuator::ActuatorSim::driverInit(const chaos::common::data:
 
 
 
-void chaos::driver::actuator::ActuatorSim::driverInit(const char *initParameter) throw(chaos::CException) {
+void chaos::driver::actuator::ActuatorSim::driverInit(const char *initParameter)  {
     //check the input parameter
 	boost::smatch match;
 	std::string inputStr = initParameter;

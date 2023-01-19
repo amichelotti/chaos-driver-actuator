@@ -79,16 +79,16 @@ ChaosActuatorExternalDD::ChaosActuatorExternalDD() {
 
 ChaosActuatorExternalDD::~ChaosActuatorExternalDD() {}
 
-void ChaosActuatorExternalDD::driverInit(const chaos::common::data::CDataWrapper& init_parameter) throw(chaos::CException) {
+void ChaosActuatorExternalDD::driverInit(const chaos::common::data::CDataWrapper& init_parameter)  {
     INFO << init_parameter.getJSONString();
     client.driverInit(init_parameter);
 
 }
-void ChaosActuatorExternalDD::driverInit(const char*c)throw(chaos::CException) {
+void ChaosActuatorExternalDD::driverInit(const char*c) {
 
 }
 
-void ChaosActuatorExternalDD::driverDeinit() throw(chaos::CException) {
+void ChaosActuatorExternalDD::driverDeinit()  {
         client.driverDeinit();
 
 }

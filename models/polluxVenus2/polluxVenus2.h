@@ -38,8 +38,8 @@ namespace actuator {
  driver definition
  */
 class polluxVenus2 : public ChaosActuatorDD {
-  void                                        driverInit(const char* initParameter) throw(chaos::CException);
-  void                                        driverInit(const chaos::common::data::CDataWrapper& json) throw(chaos::CException);
+  void                                        driverInit(const char* initParameter) ;
+  void                                        driverInit(const chaos::common::data::CDataWrapper& json) ;
   ::common::serial::AbstractSerialChannel_psh serial;
   uint64_t counter;
   ChaosMutex io_mux;

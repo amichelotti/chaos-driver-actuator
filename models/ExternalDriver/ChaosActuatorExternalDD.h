@@ -53,11 +53,11 @@ public:
   cu_driver::MsgManagmentResultType::MsgManagmentResult
   execOpcode(cu_driver::DrvMsgPtr cmd);
   int asyncMessageReceived(chaos::common::data::CDWUniquePtr message);
-  void driverDeinit() throw(chaos::CException);
-  void driverInit(const char *) throw(chaos::CException);
+  void driverDeinit() ;
+  void driverInit(const char *) ;
 
   void driverInit(const chaos::common::data::CDataWrapper
-                      &init_parameter) throw(chaos::CException);
+                      &init_parameter) ;
   int initACT(int axis,void *);
   /**
    @brief de-initialize the power supply and close the communication

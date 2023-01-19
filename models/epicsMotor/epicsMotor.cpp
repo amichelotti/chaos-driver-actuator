@@ -193,7 +193,7 @@ epicsMotor::epicsMotor():counter(0) {
 epicsMotor::~epicsMotor() {
 }
 
-void epicsMotor::driverInit(const chaos::common::data::CDataWrapper& json) throw(chaos::CException) {
+void epicsMotor::driverInit(const chaos::common::data::CDataWrapper& json)  {
   int ret = -1;
 
   ACTDBG << "Configuration:" << json.getJSONString();
@@ -344,7 +344,7 @@ void epicsMotor::driverInit(const chaos::common::data::CDataWrapper& json) throw
 
 }
 
-void epicsMotor::driverInit(const char* initParameter) throw(chaos::CException) {
+void epicsMotor::driverInit(const char* initParameter)  {
   chaos::common::data::CDataWrapper cd;
   cd.setSerializedJsonData(initParameter);
   driverInit(cd);
