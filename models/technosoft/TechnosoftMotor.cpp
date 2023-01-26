@@ -23,7 +23,7 @@
 #include "TechnosoftMotor.h"
 #include <common/actuators/models/technosoft/ActuatorTechnoSoft.h>
 #include <string>
-#include <boost/regex.hpp>
+#include <regex>
 
 #include <chaos/cu_toolkit/driver_manager/driver/AbstractDriverPlugin.h>
 
@@ -87,7 +87,6 @@ void chaos::driver::actuator::TechnosoftMotor::driverInit(const chaos::common::d
 
 void chaos::driver::actuator::TechnosoftMotor::driverInit(const char *initParameter) {
     //check the input parameter
-	boost::smatch match;
 	std::string inputStr = initParameter;
 	PSLAPP << "Init driver initialization string:\""<<initParameter<<"\""<<std::endl;
     if(motor){

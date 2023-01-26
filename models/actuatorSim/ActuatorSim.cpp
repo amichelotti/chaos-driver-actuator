@@ -23,7 +23,7 @@
 #include "ActuatorSim.h"
 #include <common/actuators/models/technosoftSimulator/ActuatorTechnoSoft.h>
 #include <string>
-#include <boost/regex.hpp>
+#include <regex>
 #include <chaos/cu_toolkit/driver_manager/driver/AbstractDriverPlugin.h>
 
 #define  INITDRIVER_DEF
@@ -91,7 +91,6 @@ void chaos::driver::actuator::ActuatorSim::driverInit(const chaos::common::data:
 
 void chaos::driver::actuator::ActuatorSim::driverInit(const char *initParameter)  {
     //check the input parameter
-	boost::smatch match;
 	std::string inputStr = initParameter;
 	ACTDBG << "Init driver initialization string:\""<<initParameter<<"\""<<std::endl;
     if(motor){
