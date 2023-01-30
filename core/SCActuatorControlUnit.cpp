@@ -501,7 +501,7 @@ void ::driver::actuator::SCActuatorControlUnit::unitDefineActionAndDataset()
 
  addAttributeToDataSet("poiConfig",
                         "json configuration of poi",
-                        DataType::TYPE_CLUSTER,
+                        DataType::TYPE_JSON,
                         DataType::Input);
 
   addAttributeToDataSet("POI",
