@@ -20,7 +20,7 @@
 #include "ChaosActuatorDD.h"
 
 #include "driver/actuator/core/ChaosActuatorDD.h"
-#include <boost/regex.hpp>
+#include <regex>
 #include <chaos/cu_toolkit/driver_manager/driver/AbstractDriverPlugin.h>
 #include <string>
 

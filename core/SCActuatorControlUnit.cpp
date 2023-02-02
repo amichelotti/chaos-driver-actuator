@@ -501,7 +501,7 @@ void ::driver::actuator::SCActuatorControlUnit::unitDefineActionAndDataset()
 
  addAttributeToDataSet("poiConfig",
                         "json configuration of poi",
-                        DataType::TYPE_CLUSTER,
+                        DataType::TYPE_JSON,
                         DataType::Input);
 
   addAttributeToDataSet("POI",
@@ -623,6 +623,9 @@ void ::driver::actuator::SCActuatorControlUnit::unitDefineActionAndDataset()
                    "Notify when a driver returns a generic command error");
   addStateVariable(StateVariableTypeAlarmDEV, "DRIVER_COMMUNICATION_ERROR",
                    "Notify when a comunication error has raised from the driver");
+  addStateVariable(StateVariableTypeAlarmDEV, "DRIVER_STALL_ERROR",
+                   "Notify stall has raised from the driver");
+
   addStateVariable(StateVariableTypeAlarmDEV, "DRIVER_SHORT_CIRCUIT_PROTECTION",
                    "Notify when the driver is in protection for short-circuit");
   addStateVariable(StateVariableTypeAlarmDEV, "DRIVER_INVALID_SETUP_DATA",

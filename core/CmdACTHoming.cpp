@@ -34,7 +34,7 @@ using namespace chaos::cu::control_manager;
 BATCH_COMMAND_OPEN_DESCRIPTION_ALIAS(driver::actuator::,CmdACTHoming,CMD_ACT_HOMING_ALIAS,
 		"Calibrate the actuator reaching the home position",
 		"f096d258-1690-11e6-8845-1f6ad6d4e676")
-BATCH_COMMAND_ADD_INT32_PARAM(CMD_ACT_HOMINGTYPE,"homing Type",chaos::common::batch_command::BatchCommandAndParameterDescriptionkey::BC_PARAMETER_FLAG_MANDATORY)
+BATCH_COMMAND_ADD_INT32_PARAM(CMD_ACT_HOMINGTYPE,"homing Type: positive value: homing point to the 0, negative homing point to the positive limit switch",chaos::common::batch_command::BatchCommandAndParameterDescriptionkey::BC_PARAMETER_FLAG_MANDATORY)
 BATCH_COMMAND_CLOSE_DESCRIPTION()
 
 
@@ -79,10 +79,10 @@ void own::CmdACTHoming::setHandler(c_data::CDataWrapper *data)
 	SCLDBG_ << "Compute timeout for homing operation of type = " << homType;
 	//.......................
 	AbstractActuatorCommand::acquireHandler(); // Per aggiornare al momento piu opportuno *o_position, *readTyp
-	currentPosition=* o_position;
+	currentPosition=*o_position;
 	std::string retStr="NULLA";
 	double realSpeed=0;
-	double lengthSlit=100;
+	double lengthSlit=1000;
 	if ((err = actuator_drv->getParameter(*axID,"highspeed_homing",retStr)) != 0)
 	{
 	    	//SCLDBG_ << "ALEDEBUG failed to read speed from driver";
@@ -104,7 +104,7 @@ void own::CmdACTHoming::setHandler(c_data::CDataWrapper *data)
 	if ((err = actuator_drv->getParameter(*axID,"range_slit[mm]",retStr)) != 0)
 	{
 			//SCLDBG_ << "ALEDEBUG failed to read speed from driver";
-		metadataLogging(chaos::common::metadata_logging::StandardLoggingChannel::LogLevelWarning,"Warning cannot know the real range of the slit. Using default value of 100");
+		metadataLogging(chaos::common::metadata_logging::StandardLoggingChannel::LogLevelWarning,"Warning cannot know the real range of the slit. Using default value of 1000");
 	}
 	else
 	{
@@ -130,8 +130,13 @@ void own::CmdACTHoming::setHandler(c_data::CDataWrapper *data)
 		BC_FAULT_RUNNING_PROPERTY;
 		return;
 	}
-	*o_lasthoming = 0;
-	*o_kindofhome = 0;
+	//if in negative mode, those value should not been changed
+	if (homType >= 0)
+	{
+		*o_lasthoming = 0;
+		*o_kindofhome = 0;
+	}
+
 	if((err = actuator_drv->homing(*axID,(::common::actuators::AbstractActuator::homingType) homType)) < 0)
 	{
 		setStateVariableSeverity(StateVariableTypeAlarmCU,"homing_operation_failed", chaos::common::alarm::MultiSeverityAlarmLevelHigh);
@@ -180,11 +185,17 @@ void own::CmdACTHoming::ccHandler() {
 	if (homResult == 0){
 		uint64_t elapsed_msec = chaos::common::utility::TimingUtil::getTimeStamp() - getSetTime();
 		SCLDBG_ << "Homing operation completed in "<< elapsed_msec <<" milliseconds";
-		*o_lasthoming = chaos::common::utility::TimingUtil::getTimeStamp();
-		*o_home=true;
-		*o_kindofhome = 1;
-		metadataLogging(chaos::common::metadata_logging::StandardLoggingChannel::LogLevelInfo,"Homing completed");
-                *i_position=0;
+		metadataLogging(chaos::common::metadata_logging::StandardLoggingChannel::LogLevelInfo, "Homing completed");
+		//if is a normal homing
+		if (homingTypeVar >= 0)
+		{
+			*o_lasthoming = chaos::common::utility::TimingUtil::getTimeStamp();
+			*o_home = true;
+			*o_kindofhome = 1;
+			*i_position = 0;
+		}
+		
+                
  		getAttributeCache()->setInputDomainAsChanged();
 		getAttributeCache()->setOutputDomainAsChanged();
 
@@ -234,7 +245,10 @@ bool own::CmdACTHoming::timeoutHandler() {
 	SCLDBG_ <<  "ALEDEBUG stopped because of timeout";
 	setStateVariableSeverity(StateVariableTypeAlarmCU,"homing_operation_failed", chaos::common::alarm::MultiSeverityAlarmLevelHigh);
 	metadataLogging(chaos::common::metadata_logging::StandardLoggingChannel::LogLevelError,"Stopping motion, because timeout during homing");
-	*o_home=false;
+	if (homingTypeVar >= 0)
+	{
+		*o_home = false;
+	}
 
 	BC_FAULT_RUNNING_PROPERTY;
 	return false;

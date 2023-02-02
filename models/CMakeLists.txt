@@ -13,6 +13,11 @@ ELSE()
   MESSAGE(STATUS "Disabling compilation of technosoft, wrong cross compiler")
 ENDIF()
 add_subdirectory(actuatorSim)
+add_subdirectory(polluxVenus2)
+IF (CHAOS_EPICS_SUPPORT)
+add_subdirectory(epicsMotor)
+ENDIF()
+
 add_subdirectory(ExternalDriver)
 
 

@@ -325,21 +325,51 @@ void AbstractActuatorCommand::acquireHandler(){
 	if((err = actuator_drv->getState(*axID,&state, descStr))==0) {
 		*o_status_id = state;
 
-		if (state &  ::common::actuators::ACTUATOR_LSP_LIMIT_ACTIVE)
+		if (state &  ::common::actuators::ACTUATOR_LSP_LIMIT_ACTIVE){
 			*o_pswitch=true;
-		else
+		} else {
 			*o_pswitch=false;
+		}
 
-		if (state &  ::common::actuators::ACTUATOR_LSN_LIMIT_ACTIVE)
+		if (state &  ::common::actuators::ACTUATOR_LSN_LIMIT_ACTIVE){
 			*o_nswitch=true;
-		else
+		} else{
 			*o_nswitch=false;
+		}
 
-		if (state &  ::common::actuators::ACTUATOR_POWER_SUPPLIED)
+		if (state &  ::common::actuators::ACTUATOR_POWER_SUPPLIED){
 			*o_stby=true;
-		else
+		} else {
 			*o_stby=false;
+		}
 
+		if (state &  ::common::actuators::ACTUATOR_POWER_SUPPLIED){
+			*o_stby=true;
+		} else{
+			*o_stby=false;
+		}
+		if (state &  ::common::actuators::ACTUATOR_COMM_ERROR){
+			setStateVariableSeverity(StateVariableTypeAlarmDEV,"DRIVER_COMMUNICATION_ERROR", chaos::common::alarm::MultiSeverityAlarmLevelHigh);
+		} else{
+			setStateVariableSeverity(StateVariableTypeAlarmDEV,"DRIVER_COMMUNICATION_ERROR", chaos::common::alarm::MultiSeverityAlarmLevelClear);
+		}
+		if (state &  ::common::actuators::ACTUATOR_FAULT){
+			setStateVariableSeverity(StateVariableTypeAlarmDEV,"DRIVER_CONTROL_ERROR", chaos::common::alarm::MultiSeverityAlarmLevelHigh);
+		} else{
+			setStateVariableSeverity(StateVariableTypeAlarmDEV,"DRIVER_CONTROL_ERROR", chaos::common::alarm::MultiSeverityAlarmLevelClear);
+		}
+		if (state &  ::common::actuators::ACTUATOR_STALL_ERROR){
+			setStateVariableSeverity(StateVariableTypeAlarmDEV,"DRIVER_STALL_ERROR", chaos::common::alarm::MultiSeverityAlarmLevelHigh);
+		} else{
+			setStateVariableSeverity(StateVariableTypeAlarmDEV,"DRIVER_STALL_ERROR", chaos::common::alarm::MultiSeverityAlarmLevelClear);
+		}
+
+		if (state &  ::common::actuators::ACTUATOR_AT_HOME){
+			*o_home=true;
+		} 
+		if (state &  ::common::actuators::ACTUATOR_HOMED){
+			setStateVariableSeverity(StateVariableTypeAlarmCU, "home_lost", chaos::common::alarm::MultiSeverityAlarmLevelClear);
+		} 
 		if (state & ::common::actuators::ACTUATOR_UNKNOWN_STATUS)
 		{
 			*o_lasthoming = 0;
